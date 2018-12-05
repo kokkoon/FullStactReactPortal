@@ -1,22 +1,28 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { fetchTasks } from '../../actions';
 
 class TaskList extends Component {
   componentDidMount() {
-    this.props.fetchTasks();
+    // this.props.fetchTasks();
   }
 
   renderTasks() {
-    return this.props.tasks.map(task => {
+    const { tasks } = this.props;
+
+    return tasks.map(task => {
       return (
         <div className="card darken-1" key={task._id}>
-          <div className="card-content">
-            <span className="card-title">{task.title}</span>
-            <p>
-              {task.description}
-            </p>
-          </div>
+          <Link to={{
+            pathname: '/task',
+            state: {task},
+          }}>
+            <div className="card-content">
+              <span className="card-title">{task.title}</span>
+              <p>{task.description}</p>
+            </div>
+          </Link>
         </div>
       );
     });
@@ -31,8 +37,10 @@ class TaskList extends Component {
   }
 }
 
-function mapStateToProps({ tasks }) {
-  return { tasks };
-}
+export default TaskList;
 
-export default connect(mapStateToProps, { fetchTasks })(TaskList);
+// function mapStateToProps({ tasks }) {
+//   return { tasks };
+// }
+
+// export default connect(mapStateToProps, { fetchTasks })(TaskList);

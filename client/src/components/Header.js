@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+
+import './Header.css';
+
 import Payments from './Payments';
+import Sidenav from './Sidenav';
+
 
 class Header extends Component {
   renderContent() {
@@ -24,16 +29,17 @@ class Header extends Component {
   render() {
     return (
       <nav>
-         <div className="nav-warpper">
-            <Link
-              to={this.props.auth ? '/dashboard' : '/'}
-              className="left brand-logo"
-            >
-               FLOWNGIN
-            </Link>
-            <ul className="right">
-               {this.renderContent()}
-            </ul>
+        <Sidenav />
+         <div className="nav-wrapper">
+          <Link
+            to={this.props.auth ? '/dashboard' : '/'}
+            className="brand-logo left"
+          >
+             FLOWNGIN
+          </Link>
+          <ul className="right">
+             {this.renderContent()}
+          </ul>
          </div>
       </nav>
     );
