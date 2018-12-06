@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import * as actions from '../actions';
 import './App.css';
 import M from 'materialize-css/dist/js/materialize.min.js';
-import { Button, Icon } from 'react-materialize';
 
 import Header from './Header';
 import Landing from './Landing';
@@ -42,7 +41,7 @@ class App extends Component {
             <a class="carousel-item" href="#four!"><img src="https://lorempixel.com/250/250/nature/4"/></a>
             <a class="carousel-item" href="#five!"><img src="https://lorempixel.com/250/250/nature/5"/></a>
           </div>
-          
+
           </div>
         </BrowserRouter>
     );
