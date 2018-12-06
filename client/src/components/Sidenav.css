@@ -1,0 +1,20 @@
+div.active {
+	background: red;
+	color: white !important;
+}
+
+#slide-out {
+	margin-top: 65px;
+}
+
+@media screen and (max-width: 600px) {
+	#slide-out {
+		margin-top: 55px;
+	}
+}
+
+@media screen and (min-width: 993px) {
+	.sidenav-trigger {
+		display: unset !important;
+	}	
+}
