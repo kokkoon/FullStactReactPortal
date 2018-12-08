@@ -1,3 +1,7 @@
+.sidenav {
+	text-align: left;
+}
+
 div.active {
 	background: red;
 	color: white !important;

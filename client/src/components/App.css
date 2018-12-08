@@ -2,4 +2,10 @@
 	width: 100%;
 	margin: 0;
 	max-width: unset;
+
+	text-align: center;
+}
+
+.btn-collection {
+	margin-top: 20px;
 }

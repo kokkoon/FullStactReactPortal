@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 import './App.css';
 import M from 'materialize-css/dist/js/materialize.min.js';
-import { Button, Icon } from 'react-materialize';
 
 import Header from './Header';
 import Landing from './Landing';
@@ -14,6 +13,7 @@ import Task from './tasks/Task';
 import TaskList from './tasks/TaskList';
 import Record from './Record';
 import User from './User';
+import Collection from './Collection';
 
 class App extends Component {
   componentDidMount(){
@@ -33,7 +33,12 @@ class App extends Component {
           <Route exact path="/task" component={Task} />
           <Route exact path="/record" component={Record} />
           <Route exact path="/user" component={User} />
+          <Route exact path="/input" component={Collection} />
           {/*<Route path="" render={() => <Redirect to='/' />} />*/}
+
+          <Link to='input' className="btn-collection">
+            <button>Create Collection</button>
+          </Link>
 
           <div class="carousel">
             <a class="carousel-item" href="#one!"><img src="https://lorempixel.com/250/250/nature/1"/></a>
