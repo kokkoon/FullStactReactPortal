@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './Sidenav.css';
 
 // const SidenavWithRouter = withRouter(props => <Sidenav {...props}/>);
@@ -19,25 +19,19 @@ class Sidenav extends Component {
 		if (pathname.length > 0) {
 			switch(pathname) {
 				case 'dashboard': 
-					{
-						this.setState({
-							selectedNavItem: 0,
-						});
-					};
+					this.setState({
+						selectedNavItem: 0,
+					});
 					break;
 				case 'record': 
-					{
-						this.setState({
-							selectedNavItem: 1,
-						});
-					}; 
+					this.setState({
+						selectedNavItem: 1,
+					});
 					break;
 				case 'user':
-					{
 						this.setState({
 							selectedNavItem: 2,
 						});
-					}; 
 					break;
 				default:
 			}
@@ -51,31 +45,25 @@ class Sidenav extends Component {
 		if (pathname.length > 0) {
 			switch(pathname) {
 				case 'dashboard': 
-					{
-						if (selectedNavItem !== 0) {
-							this.setState({
-								selectedNavItem: 0,
-							});
-						}
-					};
+					if (selectedNavItem !== 0) {
+						this.setState({
+							selectedNavItem: 0,
+						});
+					}
 					break;
 				case 'record': 
-					{
-						if (selectedNavItem !== 1) {
-							this.setState({
-								selectedNavItem: 1,
-							});
-						}
-					}; 
+					if (selectedNavItem !== 1) {
+						this.setState({
+							selectedNavItem: 1,
+						});
+					}
 					break;
 				case 'user':
-					{
-						if (selectedNavItem !== 2) {
-							this.setState({
-								selectedNavItem: 2,
-							});
-						}
-					}; 
+					if (selectedNavItem !== 2) {
+						this.setState({
+							selectedNavItem: 2,
+						});
+					}
 					break;
 				default:
 			}

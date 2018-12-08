@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Redirect, Link } from 'react-router-dom';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 import './App.css';
@@ -8,7 +8,6 @@ import M from 'materialize-css/dist/js/materialize.min.js';
 import Header from './Header';
 import Landing from './Landing';
 import Dashboard from './Dashboard';
-import Sidenav from './Sidenav';
 import Task from './tasks/Task';
 import TaskNew from './tasks/TaskNew';
 import Record from './Record';
@@ -35,7 +34,6 @@ class App extends Component {
           <Route exact path="/record" component={Record} />
           <Route exact path="/user" component={User} />
           <Route exact path="/input" component={Collection} />
-          {/*<Route path="" render={() => <Redirect to='/' />} />*/}
 
           Landing
 
