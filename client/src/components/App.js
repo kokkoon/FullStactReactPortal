@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 import './App.css';
@@ -13,6 +13,7 @@ import Task from './tasks/Task';
 import TaskNew from './tasks/TaskNew';
 import Record from './Record';
 import User from './User';
+import Collection from './Collection';
 
 class App extends Component {
   componentDidMount(){
@@ -33,6 +34,7 @@ class App extends Component {
           <Route path="/tasks/new" component={TaskNew} />
           <Route exact path="/record" component={Record} />
           <Route exact path="/user" component={User} />
+          <Route exact path="/input" component={Collection} />
           {/*<Route path="" render={() => <Redirect to='/' />} />*/}
 
           Landing

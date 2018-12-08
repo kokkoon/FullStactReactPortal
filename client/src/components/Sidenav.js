@@ -93,7 +93,7 @@ class Sidenav extends Component {
 		const { defaultNavItem } = this.props;
 
 		return (
-			<>
+			<div className="sidenav">
 				<a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 
 				<ul id="slide-out" class="sidenav">
@@ -113,7 +113,7 @@ class Sidenav extends Component {
 			    	))
 			  	}
 			  </ul>
-	    </>
+	    </div>
 		);
 	}
 }
