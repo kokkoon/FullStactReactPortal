@@ -17,7 +17,7 @@ class Landing extends Component {
 		return (
 	    <div style={{ textAlign: 'center' }}>
 	      <h1>
-	        Flowngin!
+	        Landing Page!
 	      </h1>
 	      Collaborate made simple
 	    </div>
