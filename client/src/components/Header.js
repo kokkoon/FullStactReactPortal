@@ -29,7 +29,9 @@ class Header extends Component {
   render() {
     return (
       <nav>
-        <Sidenav />
+        <>
+          <Sidenav />
+        </>
          <div className="nav-wrapper">
           <Link
             to={this.props.auth ? '/dashboard' : '/'}

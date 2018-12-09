@@ -2,8 +2,16 @@
 	text-align: left;
 }
 
+.sidenav-trigger {
+	cursor: pointer;
+}
+
+a.subheader {
+	border-bottom: solid 1px #7f7f7f;
+}
+
 div.active {
-	background: red;
+	background: #EE6E73;
 	color: white !important;
 }
 

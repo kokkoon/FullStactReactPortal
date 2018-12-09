@@ -61,6 +61,7 @@ module.exports = (app) => {
         if (err) console.error(err);
         console.log('found data on DB');
         console.log('entries = \n', entries);
+        console.log('entries type = ', entries[0][field], ' ', typeof(entries[0][field]))
 
         res.send({
           message: 'new data saved to DB',

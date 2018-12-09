@@ -81,12 +81,11 @@ class Sidenav extends Component {
 		const { defaultNavItem } = this.props;
 
 		return (
-			<div className="sidenav">
+			<>
 				<a data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 
 				<ul id="slide-out" class="sidenav">
-			    <li><a class="subheader">Menu</a></li>
-			    <li><div class="divider"></div></li>
+			    <li><a class="subheader" className="subheader">Menu</a></li>
 			    {
 			    	defaultNavItem.map((item, i) => (
 			    		<div key={i} className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
@@ -96,12 +95,11 @@ class Sidenav extends Component {
 						    		{item.text}
 						    	</Link>
 						    </li>
-						    <li><div class="divider"></div></li>
 						  </div>
 			    	))
 			  	}
 			  </ul>
-	    </div>
+	    </>
 		);
 	}
 }
