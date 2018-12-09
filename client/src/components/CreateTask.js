@@ -128,7 +128,7 @@ const reorder = (list, startIndex, endIndex) => {
 					  			ref={provided.innerRef}
 					  			style={getListStyle(snapshot.isDraggingOver)}
 					  		>
-					  			<span className="droppable-column-title">Schema</span>
+					  			<span className="droppable-column-title">Schema fields</span>
 					  			{
 					  				this.state.items.map((item, index) => (
 					  				<Draggable
@@ -164,7 +164,7 @@ const reorder = (list, startIndex, endIndex) => {
 				    			ref={provided.innerRef}
 				    			style={getListStyle(snapshot.isDraggingOver)}
 				    		>
-					  			<span className="droppable-column-title">Selected schema</span>
+					  			<span className="droppable-column-title">Selected fields</span>
 				    			{
 				    				this.state.selected.map((item, index) => (
 					    				<Draggable
@@ -200,18 +200,88 @@ const reorder = (list, startIndex, endIndex) => {
 CreateTask.defaultProps = {
 	schema: [
 		{
-			id: 'taskId',
+			id: 'task-id',
 			content: 'Task ID',
 			type: 'Number',
 		},
 		{
-			id: 'taskName',
+			id: 'task-name',
 			content: 'Task Name',
 			type: 'String',
 		},
 		{
-			id: 'taskDescription',
+			id: 'task-description',
 			content: 'Task Description',
+			type: 'String',
+		},
+		{
+			id: 'created-time',
+			content: 'Created Time',
+			type: 'Date',
+		},
+		{
+			id: 'modified-time',
+			content: 'Modified Time',
+			type: 'Date',
+		},
+		{
+			id: 'task-status',
+			content: 'Task Status',
+			type: 'String',
+		},
+		{
+			id: 'task-outcome',
+			content: 'Task Outcome',
+			type: 'String',
+		},
+		{
+			id: 'created-by',
+			content: 'Created By',
+			type: 'Person',
+		},
+		{
+			id: 'modified-by',
+			content: 'Modified By',
+			type: 'Person',
+		},
+		{
+			id: 'start-date',
+			content: 'Start Date',
+			type: 'Date',
+		},
+		{
+			id: 'due-date',
+			content: 'Due Date',
+			type: 'Date',
+		},
+		{
+			id: 'completion-percentage',
+			content: 'Completion Percentage',
+			type: 'Number',
+		},
+		{
+			id: 'assigned-to',
+			content: 'Assigned To',
+			type: 'Person/Group',
+		},
+		{
+			id: 'comments',
+			content: 'Comments',
+			type: 'String',
+		},
+		{
+			id: 'is-completed',
+			content: 'Completed',
+			type: 'Boolean',
+		},
+		{
+			id: 'process-id',
+			content: 'Process ID',
+			type: 'String',
+		},
+		{
+			id: 'process-instance-id',
+			content: 'Process Instance ID',
 			type: 'String',
 		},
 	]
