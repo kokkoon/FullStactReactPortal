@@ -37,24 +37,20 @@ module.exports = (app) => {
 
   var modelStore = {};
 
-  function createSchema(name, field1, field2, modelStore, res) {
-    // let rootSchema = {};
-    // rootSchema[field1] = typeof(field1);
-    // console.log('rootShema = ', { ...rootSchema });
+  function createSchema(name, field, type, value, modelStore, res) {
     const newModelStore = modelStore;
 
     if (!(name in newModelStore)) {
-        var schema = new Schema({ any: Schema.Types.Mixed });
-        console.log('schema = ', schema);
+        let schemaTemp = {};
+        schemaTemp[field] = type;
+
+        const schema = new Schema(schemaTemp);
         newModelStore[name] = mongoose.model(name, schema);
-        console.log('model = ', newModelStore[name]);
     }
 
     let objectTemplate = {};
-    objectTemplate[field1] = field2;
+    objectTemplate[field] = value;
     const object = new newModelStore[name](objectTemplate);
-    
-    console.log('object = ', object);
 
     object.save(function (err, object) {
       if (err) return console.error(err);
@@ -64,7 +60,7 @@ module.exports = (app) => {
       newModelStore[name].find(function (err, entries) {
         if (err) console.error(err);
         console.log('found data on DB');
-        console.log('entries = ', entries);
+        console.log('entries = \n', entries);
 
         res.send({
           message: 'new data saved to DB',
@@ -87,7 +83,7 @@ module.exports = (app) => {
         route: data.field2,
       });
 
-      modelStore = createSchema(data.schemaName, data.field1, data.field2, modelStore, res);
+      modelStore = createSchema(data.schemaName, data.field, data.type, data.value, modelStore, res);
       console.log('modelStore = ', modelStore)
 
       // res.send({

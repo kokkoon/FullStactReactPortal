@@ -10,8 +10,9 @@ class Collection extends Component {
 
 		this.state = {
 			schemaName: '',
-			field1: '',
-			field2: '',
+			field: '',
+			type: '',
+			value: '',
 		};
 	}
 
@@ -22,16 +23,22 @@ class Collection extends Component {
 		this.setState({ schemaName });
 	}
 
-	handleChangeField1(e) {
-		const field1 = e.target.value;
+	handleChangeField(e) {
+		const field = e.target.value;
 
-		this.setState({ field1 });
+		this.setState({ field });
 	}
 
-	handleChangeField2(e) {
-		const field2 = e.target.value;
+	handleChangeType(e) {
+		const type = e.target.value;
 
-		this.setState({ field2 });
+		this.setState({ type });
+	}
+
+	handleChangeValue(e) {
+		const value = e.target.value;
+
+		this.setState({ value });
 	}
 
 	handleSubmit() {
@@ -51,15 +58,16 @@ class Collection extends Component {
 	}
 
 	render() {
-		const { name, address, email } = this.state;
+		const { name, field, type, value } = this.state;
 
 		return (
 			<div className="center">
 				<h3>Create dynamic collection</h3>
 				<div className="collection-form ">
 					<Input autocomplete={'Schema Name'} value={name} onChange={this.handleChangeSchemaName.bind(this)} />
-					<Input autocomplete={'Field 1'} value={address} onChange={this.handleChangeField1.bind(this)} />
-					<Input autocomplete={'Field 2'} value={email} onChange={this.handleChangeField2.bind(this)} />
+					<Input autocomplete={'Field'} value={field} onChange={this.handleChangeField.bind(this)} />
+					<Input autocomplete={'Type'} value={type} onChange={this.handleChangeType.bind(this)} />
+					<Input autocomplete={'Value'} value={value} onChange={this.handleChangeValue.bind(this)} />
 					<button class="btn waves-effect waves-light" type="submit" name="action" onClick={this.handleSubmit.bind(this)}>
 						Submit
 				    <i class="material-icons right">send</i>
