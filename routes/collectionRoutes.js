@@ -55,15 +55,14 @@ module.exports = (app) => {
     object.save(function (err, object) {
       if (err) return console.error(err);
 
-      console.log('new data saved to DB');
+      console.log('new data stored to DB');
 
       newModelStore[name].find(function (err, entries) {
         if (err) console.error(err);
-        console.log('found data on DB');
         console.log('entries = \n', entries);
 
         res.send({
-          message: 'new data saved to DB',
+          message: 'new data stored to DB',
           data: entries,
         })
       });
