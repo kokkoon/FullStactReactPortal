@@ -42,11 +42,19 @@ module.exports = (app) => {
 
     if (!(name in newModelStore)) {
         let schemaTemp = {};
+        // schemaTemp[field] = Schema.Types.Mixed;
         schemaTemp[field] = type;
+        console.log('schemaTemp = ', schemaTemp)
 
         const schema = new Schema(schemaTemp);
         newModelStore[name] = mongoose.model(name, schema);
     }
+    // use to delete schema & model during test
+    // else {
+    //   newModelStore[name].remove({}, function(err){
+    //     console.log('collection removed');
+    //   })
+    // }
 
     let objectTemplate = {};
     objectTemplate[field] = value;
@@ -60,6 +68,9 @@ module.exports = (app) => {
       newModelStore[name].find(function (err, entries) {
         if (err) console.error(err);
         console.log('entries = \n', entries);
+        for(let i=0; i < entries.length; i++) {
+          console.log(typeof(entries[i][field]));
+        }
 
         res.send({
           message: 'new data stored to DB',
@@ -76,19 +87,14 @@ module.exports = (app) => {
     (req, res) => {
       const data = req.body;
 
-      collection.push({
-        name: data.schemaName,
-        method: data.field1,
-        route: data.field2,
-      });
+      // use to push dynamic routing for dynamically created schema
+      // collection.push({
+      //   name: data.schemaName,
+      //   method: data.method,
+      //   route: data.route,
+      // });
 
       modelStore = createSchema(data.schemaName, data.field, data.type, data.value, modelStore, res);
-      console.log('modelStore = ', modelStore)
-
-      // res.send({
-      //   message: 'success',
-      //   data: req.body,
-      // });
     }
   );
 };
