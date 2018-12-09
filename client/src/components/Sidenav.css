@@ -7,11 +7,14 @@
 }
 
 a.subheader {
-	border-bottom: solid 1px #7f7f7f;
+	border-bottom: solid 1px #e0e0e0;
 }
 
 div.active {
 	background: #EE6E73;
+}
+
+div.active > li > a, div.active > li > a > i {
 	color: white !important;
 }
 
