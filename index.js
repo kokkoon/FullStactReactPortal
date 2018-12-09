@@ -11,6 +11,12 @@ require('./services/passport');
 mongoose.Promise = global.Promise;
 mongoose.connect(keys.mongoURI);
 
+// var db = mongoose.connection;
+// db.on('error', console.error.bind(console, 'connection error:'));
+// db.once('open', function() {
+//   console.log('we are connected to MongoDB!')
+// });
+
 const app = express();
 
 app.use(bodyParser.json());

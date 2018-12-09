@@ -82,7 +82,7 @@ class Sidenav extends Component {
 
 		return (
 			<div className="sidenav">
-				<a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+				<a data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 
 				<ul id="slide-out" class="sidenav">
 			    <li><a class="subheader">Menu</a></li>

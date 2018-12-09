@@ -37,13 +37,13 @@ class Collection extends Component {
 	handleSubmit() {
 		const data = this.state;
 
-		// axios.post('http://localhost:5000/create/collection', data)
-		// 	.then(res => console.log(res))
-		// 	.catch(err => console.log(err));
-
-		axios.get('http://localhost:5000/user', data)
+		axios.post('http://localhost:5000/create/collection', data)
 			.then(res => console.log(res))
 			.catch(err => console.log(err));
+
+		// axios.get('http://localhost:5000/dbcheck')
+		// 	.then(res => console.log(res))
+		// 	.catch(err => console.log(err));
 
 			// axios.post('http://localhost:5000/address', data)
 			// .then(res => console.log(res))
