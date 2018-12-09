@@ -13,6 +13,7 @@ import TaskNew from './tasks/TaskNew';
 import Record from './Record';
 import User from './User';
 import Collection from './Collection';
+import CreateTask from './CreateTask';
 
 class App extends Component {
   componentDidMount(){
@@ -34,6 +35,7 @@ class App extends Component {
           <Route exact path="/record" component={Record} />
           <Route exact path="/user" component={User} />
           <Route exact path="/input" component={Collection} />
+          <Route exact path="/create/task" component={CreateTask} />
 
           Landing
 
