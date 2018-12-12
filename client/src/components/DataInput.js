@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 import Input from './Input';
-import './Collection.css';
+import './DataInput.css';
 
-class Collection extends Component {
+class DataInput extends Component {
 	constructor(props) {
 		super(props);
 
@@ -70,4 +70,4 @@ class Collection extends Component {
 	}
 }
 
-export default Collection;
+export default DataInput;

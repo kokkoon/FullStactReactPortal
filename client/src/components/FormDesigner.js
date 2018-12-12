@@ -2,9 +2,9 @@
 
 import React, { Component } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import axios from 'axios';
+// import axios from 'axios';
 
-import './CreateTask.css';
+import './FormDesigner.css';
 
 
 // function to reorder the result
@@ -54,7 +54,7 @@ const reorder = (list, startIndex, endIndex) => {
  	width: 250
  });
 
- class CreateTask extends Component {
+ class FormDesigner extends Component {
  	constructor(props) {
  		super(props);
 
@@ -197,7 +197,7 @@ const reorder = (list, startIndex, endIndex) => {
     }
   }
 
-CreateTask.defaultProps = {
+FormDesigner.defaultProps = {
 	schema: [
 		{
 			id: 'task-id',
@@ -286,4 +286,4 @@ CreateTask.defaultProps = {
 		},
 	]
 }
-export default CreateTask;
+export default FormDesigner;

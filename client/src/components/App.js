@@ -12,8 +12,8 @@ import Task from './tasks/Task';
 import TaskNew from './tasks/TaskNew';
 import Record from './Record';
 import User from './User';
-import Collection from './Collection';
-import CreateTask from './CreateTask';
+import DataInput from './DataInput';
+import FormDesigner from './FormDesigner';
 
 class App extends Component {
   componentDidMount(){
@@ -34,11 +34,8 @@ class App extends Component {
           <Route path="/tasks/new" component={TaskNew} />
           <Route exact path="/record" component={Record} />
           <Route exact path="/user" component={User} />
-          <Route exact path="/input" component={Collection} />
-          <Route exact path="/create/task" component={CreateTask} />
-
-          Landing
-
+          <Route exact path="/data-input" component={DataInput} />
+          <Route exact path="/form-designer" component={FormDesigner} />
         </div>
 
         </BrowserRouter>
