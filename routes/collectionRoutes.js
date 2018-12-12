@@ -37,7 +37,11 @@ module.exports = (app) => {
 
   var modelStore = {};
 
-  function createSchema(name, field, type, value, modelStore, res) {
+  function createSchema(data, modelStore, res) {
+    const name = data.schemaName; 
+    const field = data.field;
+    const type = data.type;
+    const value = data.value;
     const newModelStore = modelStore;
 
     if (!(name in newModelStore)) {
@@ -83,8 +87,7 @@ module.exports = (app) => {
     return newModelStore;
   }
 
-  app.post('/create/collection',
-    (req, res) => {
+  app.post('/create/collection', (req, res) => {
       const data = req.body;
 
       // use to push dynamic routing for dynamically created schema
@@ -94,7 +97,7 @@ module.exports = (app) => {
       //   route: data.route,
       // });
 
-      modelStore = createSchema(data.schemaName, data.field, data.type, data.value, modelStore, res);
+      modelStore = createSchema(data, modelStore, res);
     }
   );
 };

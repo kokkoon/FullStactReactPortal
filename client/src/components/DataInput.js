@@ -1,70 +1,60 @@
-import React, { Component } from 'react';
-import axios from 'axios';
+import React, { Component } from 'react'
+import axios from 'axios'
+import Form from 'react-jsonschema-form'
 
-import Input from './Input';
-import './DataInput.css';
+import Input from './Input'
+import './DataInput.css'
 
 class DataInput extends Component {
-	constructor(props) {
-		super(props);
+	// constructor(props) {
+	// 	super(props)
 
-		this.state = {
-			schemaName: '',
-			field: '',
-			type: '',
-			value: '',
-		};
+	// 	this.state = {
+			
+	// 	}
+	// }
+
+	uiSchema: {
+	  a_date: {
+	    "alt-datetime": {
+	      "ui:widget": "alt-datetime",
+	      "ui:options": {
+	        yearsRange: [1980, 2030],
+	      },
+	    },
+	  },
 	}
 
+	schema = {
+	  title: "Task Form",
+	  type: "object",
+	  required: ["name", "assignedTo", "date"],
+	  properties: {
+	    name: { type: "string", title: "Name", default: "A new task" },
+	    date: { type: "string", format: "date" },
+	    assignedTo: { type: "string", title: "Assigned to" },
+	    done: { type: "boolean", title: "Done?", default: false }
+  	}
+	};
+	 
+	log = (type) => console.log.bind(console, type)
 
-	handleChangeSchemaName(e) {
-		const schemaName = e.target.value;
-
-		this.setState({ schemaName });
-	}
-
-	handleChangeField(e) {
-		const field = e.target.value;
-
-		this.setState({ field });
-	}
-
-	handleChangeType(e) {
-		const type = e.target.value;
-
-		this.setState({ type });
-	}
-
-	handleChangeValue(e) {
-		const value = e.target.value;
-
-		this.setState({ value });
-	}
-
-	handleSubmit() {
-		const data = this.state;
-
-		axios.post('http://localhost:5000/create/collection', data)
+	onSubmit = (formData) => {
+		const formId = window.location.pathname.slice(12)
+		axios.post(`http://localhost:5000/record?id=${formId}`, formData.formData)
 			.then(res => console.log(res))
-			.catch(err => console.log(err));
+			.catch(err => console.log(err))
 	}
 
 	render() {
-		const { name, field, type, value } = this.state;
-
 		return (
-			<div className="center">
-				<h3>Create dynamic collection</h3>
-				<div className="collection-form ">
-					<Input autocomplete={'Schema Name'} value={name} onChange={this.handleChangeSchemaName.bind(this)} />
-					<Input autocomplete={'Field'} value={field} onChange={this.handleChangeField.bind(this)} />
-					<Input autocomplete={'Type'} value={type} onChange={this.handleChangeType.bind(this)} />
-					<Input autocomplete={'Value'} value={value} onChange={this.handleChangeValue.bind(this)} />
-					<button class="btn waves-effect waves-light" type="submit" name="action" onClick={this.handleSubmit.bind(this)}>
-						Submit
-				    <i class="material-icons right">send</i>
-				  </button>
-				</div>
+			<div className="center form-input">
+				<h3>Input form</h3>
+				<Form 
+					uiSchema={this.uiSchema}
+					schema={this.schema}
+        	onSubmit={this.onSubmit.bind(this)}
+        	onError={this.log("errors")} />
 			</div>
 		)
 	}
