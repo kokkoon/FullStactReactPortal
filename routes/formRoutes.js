@@ -13,53 +13,122 @@ module.exports = (app) => {
   app.use(cors());
 
   var modelStore = {}
-  const modelSchema = new Schema({ id: String, schemaField: Schema.Types.Mixed, modelField: Schema.Types.Mixed })
+  const modelSchema = new Schema({ formId: String, schemaField: String })
   const modelModel = mongoose.model('model', modelSchema)
+  let dataSchema = {}
+  let dataModel = null
 
   app.post('/record', (req, res) => {
   	const url = URL.parse(req.url, true)
-  	formId = url.query.id
+  	const formId = url.query.id
   	const formInstanceId = cuid()
-  	const data = { ...req.body, formId } 
+  	const data = { ...req.body, formId, formInstanceId }
+  	let message = ''
 
   	let schemaTemp = {}
 		for(let property in data) {
   		schemaTemp[property] = Schema.Types.Mixed
   	}
-		const dataSchema = new Schema(schemaTemp)
-		const dataModel = mongoose.model('form', dataSchema)
 
-		// storing model and schema to DB
-		modelModel.findOne({ id: formId}, (err, resModel) => {
+  	if (isEmpty(dataSchema)) dataSchema = new Schema(schemaTemp)
+		dataModel = mongoose.model('form', dataSchema)
+  	
+		message = checkSaveFormModel(formId, modelModel, dataSchema, message)
+		saveDataInstance(dataModel, data)
+		
+		findModel(modelModel, message)
+			.then(result => {
+				return res.send({
+					message: result.message,
+					result: result.entries ? result.entries : ''
+				})
+			})
+			.catch(err => console.error(err))
+  })
+
+  // use /cleardb endpoint to clear modelModel in DB
+  app.get('/cleardb', (req, res) => {
+  	modelModel.remove({}, function(err) {
+      if (err) return console.error(err)
+      return console.log('collection removed')
+    })
+
+  	return res.send({
+  		message: 'success'
+  	})
+  })
+
+  // get the record of form instance from DB
+  app.get('/record', (req, res) => {
+  	const url = URL.parse(req.url, true)
+  	const formId = url.query.id
+  	const formInstanceId = url.query.instanceId
+
+ 		modelModel.findOne({ formId: formId }, (err, model) => {
 			if (err) return console.error(err)
-			if (resModel == null) {
-				const modelInstance = new modelModel({ id: formId, schemaField: dataSchema, modelField: dataModel })
+
+			if (model !== null) {
+				const dataSchema = JSON.parse(model.schemaField)
+				console.log('dataSchema = ', dataSchema)
+				const dataModel = mongoose.model('form', dataSchema) 
+				console.log('dataModel = ', dataModel)
+				
+				dataModel.find({ formId, formInstanceId }, (err, form) => {
+					if (err) console.error(err)
+					if (form.length > 0) {
+						console.log('form = ', form)
+
+						res.send({ form })
+					}
+				})
+			}
+		})
+  })
+
+  // check and save form schema that does not exist in DB
+	checkSaveFormModel = (formId, modelModel, dataSchema, message) => {
+		let newMessage = message
+
+		modelModel.findOne({ formId: formId }, (err, model) => {
+			if (err) return console.error(err)
+
+			if (model === null) {
+				const modelInstance = new modelModel({ formId: formId, schemaField: JSON.stringify(dataSchema) })
 			  modelInstance.save((err, object) => {
 			    if (err) return console.error(err)
-			  	console.log('object = ', object)
-			  	console.log('success to save to DB ', object)
-
-			  	modelModel.find((err, result) => {
-			  		console.log('Model that are stored in DB = \n', result)
-
-			  		res.send({
-				      message: 'get your message',
-				      data: result
-				    })
-			  	})
+			    newMessage += 'Success save to DB\n'
 			  })
+			} else {
+				newMessage += 'Model already existed in DB\n'
 			}
-		})  	
-  })
+		})
+		return newMessage
+	}
 
-  app.get('/record', (req, res) => {
-    // modelStore['document'].find(function (err, entries) {
-    //   if (err) console.error(err)
+	// save data instance to DB
+	saveDataInstance = (dataModel, data) => {
+		const dataInstance = new dataModel(data)
+	  dataInstance.save((err, object) => {
+	    if (err) return console.error(err)
+	    console.log('saved to DB = ', object)
+	  })
+	}
 
-    //   res.send({
-    //     message: 'data found on DB',
-    //     data: entries,
-    //   })
-    // })
-  })
+	// find model in DB
+	findModel = (searchModel, message) => {
+		return new Promise(async (resolve, reject) => {
+			let newMessage = message
+			let temp = await searchModel.find((err, result) => {
+				if (err) return console.error(err)
+				
+				if (result.length > 0) {
+					newMessage += 'Model found in DB\n'
+		  		return result
+				} else {
+					newMessage += 'Model not found in DB\n'
+				}
+	  	})
+		  return resolve({ message: newMessage, entries: temp })
+		})
+	}
 }
