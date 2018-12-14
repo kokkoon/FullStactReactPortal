@@ -23,14 +23,19 @@ class Sidenav extends Component {
 						selectedNavItem: 0,
 					});
 					break;
-				case 'record': 
+				case 'data-input': 
 					this.setState({
 						selectedNavItem: 1,
 					});
 					break;
+				case 'record': 
+					this.setState({
+						selectedNavItem: 2,
+					});
+					break;
 				case 'user':
 						this.setState({
-							selectedNavItem: 2,
+							selectedNavItem: 3,
 						});
 					break;
 				default:
@@ -51,17 +56,24 @@ class Sidenav extends Component {
 						});
 					}
 					break;
-				case 'record': 
+				case 'data-input': 
 					if (selectedNavItem !== 1) {
 						this.setState({
 							selectedNavItem: 1,
 						});
 					}
 					break;
-				case 'user':
+				case 'record': 
 					if (selectedNavItem !== 2) {
 						this.setState({
 							selectedNavItem: 2,
+						});
+					}
+					break;
+				case 'user':
+					if (selectedNavItem !== 3) {
+						this.setState({
+							selectedNavItem: 3,
 						});
 					}
 					break;
