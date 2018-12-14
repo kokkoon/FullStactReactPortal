@@ -27,7 +27,7 @@ class Record extends Component {
         <table>
           <thead>
             <tr>
-              { dolumn.filter(c => c.display).map(c => <th>{c.label}</th>) }
+              { column.filter(c => c.display).map(c => <th>{c.label}</th>) }
             </tr>
           </thead>
 
