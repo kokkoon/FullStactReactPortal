@@ -1,8 +1,6 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import './Sidenav.css';
-
-// const SidenavWithRouter = withRouter(props => <Sidenav {...props}/>);
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
+import './Sidenav.css'
 
 class Sidenav extends Component {
 	constructor(props) {
@@ -14,71 +12,32 @@ class Sidenav extends Component {
 	}
 
 	componentWillMount() {
-		const pathname = window.location.pathname.slice(1);
+		const offset = this.props.collectionNavItem.length
+		const pathname = window.location.pathname.slice(1)
+		const query = window.location.search.slice(4)
+		let selectedNavItem
 
 		if (pathname.length > 0) {
-			switch(pathname) {
-				case 'dashboard': 
-					this.setState({
-						selectedNavItem: 0,
-					});
-					break;
+			switch (pathname) {
+				case 'dashboard':
+					selectedNavItem = offset
+					break
 				case 'data-input': 
-					this.setState({
-						selectedNavItem: 1,
-					});
-					break;
+					selectedNavItem = offset + 1
+					break
 				case 'record': 
-					this.setState({
-						selectedNavItem: 2,
-					});
-					break;
+					selectedNavItem = offset + 2
+					break
 				case 'user':
-						this.setState({
-							selectedNavItem: 3,
-						});
-					break;
-				default:
+					selectedNavItem = offset + 3
+					break
 			}
-		}
-	}
 
-	componentDidUpdate() {
-		const pathname = window.location.pathname.slice(1);
-		const { selectedNavItem } = this.state;
-
-		if (pathname.length > 0) {
-			switch(pathname) {
-				case 'dashboard': 
-					if (selectedNavItem !== 0) {
-						this.setState({
-							selectedNavItem: 0,
-						});
-					}
-					break;
-				case 'data-input': 
-					if (selectedNavItem !== 1) {
-						this.setState({
-							selectedNavItem: 1,
-						});
-					}
-					break;
-				case 'record': 
-					if (selectedNavItem !== 2) {
-						this.setState({
-							selectedNavItem: 2,
-						});
-					}
-					break;
-				case 'user':
-					if (selectedNavItem !== 3) {
-						this.setState({
-							selectedNavItem: 3,
-						});
-					}
-					break;
-				default:
+			if (pathname.indexOf('collection') >= 0) {
+				selectedNavItem = Number(query) - 1
 			}
+
+			this.setState({ selectedNavItem })
 		}
 	}
 
@@ -90,7 +49,7 @@ class Sidenav extends Component {
 
 	render() {
 		const { selectedNavItem } = this.state;
-		const { defaultNavItem } = this.props;
+		const { defaultNavItem, collectionNavItem } = this.props;
 
 		return (
 			<>
@@ -99,10 +58,23 @@ class Sidenav extends Component {
 				<ul id="slide-out" class="sidenav">
 			    <li><a class="subheader" className="subheader">Menu</a></li>
 			    {
-			    	defaultNavItem.map((item, i) => (
+			    	collectionNavItem.map((item, i) => (
 			    		<div key={i} className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
 				    		<li>
-						    	<Link to={item.pathname}>
+						    	<Link to={item.route}>
+						    		{item.icon}
+						    		{item.text}
+						    	</Link>
+						    </li>
+						  </div>
+			    	))
+			  	}
+			  	<li><div class="divider"></div></li>
+			    {
+			    	defaultNavItem.map((item, i) => (
+			    		<div key={i} className={selectedNavItem === i + collectionNavItem.length ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i + collectionNavItem.length)}>
+				    		<li>
+						    	<Link to={item.route}>
 						    		{item.icon}
 						    		{item.text}
 						    	</Link>
@@ -118,21 +90,35 @@ class Sidenav extends Component {
 
 Sidenav.defaultProps = {
 	defaultNavItem: [
-		{	pathname: '/dashboard',
+		{	route: '/dashboard',
 			icon: <i class="material-icons">assignment</i>,
 			text: 'Task list', 
 		},
-		{	pathname: '/data-input',
+		{	route: '/data-input',
 			icon: <i class="material-icons">input</i>,
 			text: 'Data input', 
 		},
-		{	pathname: '/record',
+		{	route: '/record',
 			icon: <i class="material-icons">view_headline</i>,
 			text: 'Record list', 
 		},
-		{	pathname: '/user',
+		{	route: '/user',
 			icon: <i class="material-icons">account_circle</i>,
 			text: 'User', 
+		},
+	],
+	collectionNavItem: [
+		{	route: '/collection?id=1',
+			icon: <i class="material-icons">format_list_bulleted</i>,
+			text: 'Collection 1', 
+		},
+		{	route: '/collection?id=2',
+			icon: <i class="material-icons">format_list_bulleted</i>,
+			text: 'Collection 2', 
+		},
+		{	route: '/collection?id=3',
+			icon: <i class="material-icons">format_list_bulleted</i>,
+			text: 'Collection 3', 
 		},
 	]
 } 

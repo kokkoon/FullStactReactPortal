@@ -15,6 +15,7 @@ import User from './User';
 import DataInput from './DataInput';
 import FormDesigner from './FormDesigner';
 import Collection from './Collection';
+import CollectionPage from './CollectionPage';
 
 class App extends Component {
   componentDidMount(){
@@ -36,7 +37,8 @@ class App extends Component {
           <Route exact path="/record" component={Record} />
           <Route exact path="/user" component={User} />
           <Route exact path="/data-input/:id" component={DataInput} />
-          <Route exact path="/collection" component={Collection} />
+          <Route exact path="/test/collection" component={Collection} />
+          <Route exact path="/collection" component={CollectionPage} />
           <Route exact path="/form-designer" component={FormDesigner} />
         </div>
 
