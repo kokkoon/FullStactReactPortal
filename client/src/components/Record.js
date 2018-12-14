@@ -20,25 +20,25 @@ class Record extends Component {
   }
 
   render() {
-    const { title, record } = this.props
+    const { column, data } = this.props
 
     return (
       <div className="record center">
         <table>
           <thead>
             <tr>
-              { title.filter(t => t.display).map(t => <th>{t.label}</th>) }
+              { dolumn.filter(c => c.display).map(c => <th>{c.label}</th>) }
             </tr>
           </thead>
 
           <tbody>
             { 
-              record.filter(r => r.display).map(r => (
+              data.filter(d => d.display).map(d => (
                 <tr>
-                  <td>{r.name}</td>
-                  <td>{r.date}</td>
-                  <td>{r.assignedTo}</td>
-                  <td>{r.done ? <i className="done material-icons">check_circle</i> : <i className="not-done material-icons">do_not_disturb_on</i>}</td>
+                  <td>{d.name}</td>
+                  <td>{d.date}</td>
+                  <td>{d.assignedTo}</td>
+                  <td>{d.done ? <i className="done material-icons">check_circle</i> : <i className="not-done material-icons">do_not_disturb_on</i>}</td>
                 </tr>
               )) 
             }
@@ -51,7 +51,7 @@ class Record extends Component {
 
 // this is fake data to simulate data from DB
 Record.defaultProps = {
-  title: [
+  column: [
     {
       label: 'Name',
       display: true,
@@ -73,7 +73,7 @@ Record.defaultProps = {
       display: true,
     },
   ],
-  record: [
+  data: [
     {
       name: 'create page full screen',
       date: new Date().toString().slice(0,16),

@@ -3,5 +3,9 @@
 }
 
 i.done {
-	color: #EE6E73;
+	color: #4caf50;
+}
+
+i.not-done {
+	color: #f44336;
 }
