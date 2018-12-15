@@ -1,54 +1,57 @@
 const express = require('express');
-const mongoose = require('mongoose');
+// change mongoDB driver to mongodb instead of mongoose
+// const mongoose = require('mongoose'); 
+const mongodb = require('mongodb');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
+
 const keys = require('./config/keys');
+const mongoClient = new mongodb.MongoClient(keys.mongoURI);
 require('./models/User');
 require('./models/Task');
 require('./services/passport');
 
-mongoose.Promise = global.Promise;
-mongoose.connect(keys.mongoURI);
+mongoClient.connect(err => {
+  if (err) console.error(err)
+  console.log('Connected to MongoDB successfully')
+  var db = mongoClient.db('flowngin-dev')
 
-// var db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'connection error:'));
-// db.once('open', function() {
-//   console.log('we are connected to MongoDB!')
-// });
+  const app = express();
 
-const app = express();
+  app.use(bodyParser.json());
+  app.use(
+    cookieSession({
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      keys: [keys.cookieKey]
+    })
+  );
+  app.use(passport.initialize());
+  app.use(passport.session());
 
-app.use(bodyParser.json());
-app.use(
-  cookieSession({
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-    keys: [keys.cookieKey]
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
+  require('./routes/authRoutes')(app);
+  require('./routes/billingRoutes')(app);
+  require('./routes/taskRoutes')(app);
+  require('./routes/collectionRoutes')(app);
+  require('./routes/formRoutes')(app, db);
 
-require('./routes/authRoutes')(app);
-require('./routes/billingRoutes')(app);
-require('./routes/taskRoutes')(app);
-require('./routes/collectionRoutes')(app);
-require('./routes/formRoutes')(app);
+  if (process.env.NODE_ENV === 'production') {
+    // Express will serve up production assets
+    // like our main.js file, or main.css file!
+    app.use(express.static('client/build'));
 
-if (process.env.NODE_ENV === 'production') {
-  // Express will serve up production assets
-  // like our main.js file, or main.css file!
-  app.use(express.static('client/build'));
+    // Express will serve up the index.html profile
+    // if it doesn't recognize the route
+    const path = require('path');
+    app.get('*', (req, res) => {
+      res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    });
+  }
 
-  // Express will serve up the index.html profile
-  // if it doesn't recognize the route
-  const path = require('path');
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`)
   });
-}
+})
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`)
-});
+

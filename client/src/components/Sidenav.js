@@ -38,6 +38,8 @@ class Sidenav extends Component {
 				case 'user':
 					selectedNavItem = offset + 3
 					break
+				default:
+					selectedNavItem = offset
 			}
 
 			if (pathname.indexOf('collection') >= 0) {
@@ -226,7 +228,7 @@ Sidenav.defaultProps = {
 
 	// current group that the user belongs
 	// test: change below value to be: 'admin' or 'premiumUser'
-	currentUserGroup: 'premiumUser'
+	currentUserGroup: 'admin'
 } 
 
 export default Sidenav;

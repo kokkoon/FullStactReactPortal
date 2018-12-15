@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import Form from 'react-jsonschema-form'
 
-import Input from './Input'
 import './DataInput.css'
 
 class DataInput extends Component {
@@ -41,6 +40,7 @@ class DataInput extends Component {
 
 	onSubmit = (formData) => {
 		const formId = window.location.pathname.slice(12)
+		console.log('formId = ', formId)
 		axios.post(`http://localhost:5000/record?id=${formId}`, formData.formData)
 			.then(res => console.log(res))
 			.catch(err => console.log(err))

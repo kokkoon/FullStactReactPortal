@@ -1,5 +1,62 @@
 // WIP
+const bodyParser = require('body-parser')
+const lodash = require('lodash')
+const cors = require('cors')
+const cuid = require('cuid')
+const URL = require('url')
+const { isEmpty } = lodash
 
+module.exports = (app, db) => {	  
+  app.use(cors());
+
+  app.post('/record', (req, res) => {
+  	const url = URL.parse(req.url, true)
+  	const formId = url.query.id
+  	const formInstanceId = cuid()
+  	const data = { ...req.body, formId, formInstanceId }
+  	let message = ''
+  	const collection = db.collection(`form${formId}`)
+
+  	collection.insertOne(data, (err, result) => {
+  		if (err) console.error(err)
+  		console.log('inserted = ', result.insertedCount)
+  		res.send({ message: 'success add form to DB' })
+  	})
+  })
+
+  // use /cleardb endpoint to clear modelModel in DB
+  app.get('/cleardb', (req, res) => {
+  	const collection = db.collection('form')
+
+  	collection.deleteMany({}, (err, result) => {
+  		if (err) console.error(err)
+  		console.log('deleted = ', result.n)
+  		res.send({ message: 'success delete form on DB' })
+  	})
+  })
+
+  // get the record of form instance from DB
+  app.get('/record', (req, res) => {
+  	const url = URL.parse(req.url, true)
+  	const formId = url.query.id
+  	const formInstanceId = url.query.instanceId
+  	const collection = db.collection(`form${formId}`)
+
+  	if (!isEmpty(formInstanceId)) {
+	  	collection.find({ formInstanceId }).toArray((err, data) => {
+	  		if (err) console.error(err)
+	  		res.send({ data })
+	  	})	
+  	} else {
+  		collection.find({}).toArray((err, data) => {
+	  		if (err) console.error(err)
+	  		res.send({ data })
+	  	})
+  	}
+  })
+}
+
+/*Mongoose implementation unsuccessful
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
@@ -54,7 +111,7 @@ module.exports = (app) => {
     })
 
   	return res.send({
-  		message: 'success'
+  		message: 'success clear modelModel in DB'
   	})
   })
 
@@ -66,7 +123,7 @@ module.exports = (app) => {
 
  		modelModel.findOne({ formId: formId }, (err, model) => {
 			if (err) return console.error(err)
-
+			console.log('model = ', model)
 			if (model !== null) {
 				const dataSchema = JSON.parse(model.schemaField)
 				console.log('dataSchema = ', dataSchema)
@@ -131,4 +188,4 @@ module.exports = (app) => {
 		  return resolve({ message: newMessage, entries: temp })
 		})
 	}
-}
+}*/
