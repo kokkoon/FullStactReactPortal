@@ -18,6 +18,10 @@ div.active > li > a, div.active > li > a > i {
 	color: white !important;
 }
 
+.sublink {
+	padding-left: 20px;
+}
+
 #slide-out {
 	margin-top: 65px;
 }

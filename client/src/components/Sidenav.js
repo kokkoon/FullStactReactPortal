@@ -59,13 +59,27 @@ class Sidenav extends Component {
 			    <li><a class="subheader" className="subheader">Menu</a></li>
 			    {
 			    	collectionNavItem.map((item, i) => (
-			    		<div key={i} className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
-				    		<li>
-						    	<Link to={item.route}>
-						    		{item.icon}
-						    		{item.text}
-						    	</Link>
-						    </li>
+			    		<div key={i} >
+				    		<div className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
+					    		<li>
+							    	<Link to={item.route}>
+							    		{item.icon}
+							    		{item.text}
+							    	</Link>
+							    </li>
+							  </div>
+						    {
+						    	item.sublink &&
+					    		item.sublink.length > 0 && 
+					    		item.sublink.map((subitem, idx) => (
+					    			<li key={idx} className="sublink">
+								    	<Link to={subitem.route}>
+								    		{subitem.icon}
+								    		{subitem.text}
+								    	</Link>
+								    </li>
+					    		))
+					    	}
 						  </div>
 			    	))
 			  	}
@@ -110,7 +124,17 @@ Sidenav.defaultProps = {
 	collectionNavItem: [
 		{	route: '/collection?id=1',
 			icon: <i class="material-icons">format_list_bulleted</i>,
-			text: 'Collection 1', 
+			text: 'Collection 1',
+			sublink: [
+				{	route: '/collection?id=1a',
+					icon: <i class="material-icons">format_list_bulleted</i>,
+					text: 'Collection 1a', 
+				},
+				{	route: '/collection?id=1b',
+					icon: <i class="material-icons">format_list_bulleted</i>,
+					text: 'Collection 1b', 
+				},
+			],
 		},
 		{	route: '/collection?id=2',
 			icon: <i class="material-icons">format_list_bulleted</i>,
