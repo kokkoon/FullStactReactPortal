@@ -12,10 +12,17 @@ class Sidenav extends Component {
 	}
 
 	componentWillMount() {
-		const offset = this.props.collectionNavItem.length
+		const { userGroupLinkAccess, currentUserGroup, collectionNavItem } = this.props
 		const pathname = window.location.pathname.slice(1)
 		const query = window.location.search.slice(4)
 		let selectedNavItem
+
+		// show menu based on user group authorization
+		const shownCollectionNavItemLinks =
+			collectionNavItem.links.filter(item => 
+				userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
+
+		const offset = shownCollectionNavItemLinks.length
 
 		if (pathname.length > 0) {
 			switch (pathname) {
@@ -49,16 +56,35 @@ class Sidenav extends Component {
 
 	render() {
 		const { selectedNavItem } = this.state;
-		const { defaultNavItem, collectionNavItem } = this.props;
+		const { 
+			defaultNavItem, 
+			collectionNavItem, 
+			userGroupLinkAccess, 
+			currentUserGroup 
+		} = this.props;
+
+		// show menu based on user group authorization
+		const shownDefaultNavItemLinks = 
+			defaultNavItem.links.filter(item => 
+				userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
+		
+		const shownCollectionNavItemLinks = 
+			collectionNavItem.links.filter(item => 
+				userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
+		
+		const offset = shownCollectionNavItemLinks.length
 
 		return (
 			<>
 				<a data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 
 				<ul id="slide-out" class="sidenav">
-			    <li><a class="subheader" className="subheader">Menu</a></li>
 			    {
-			    	collectionNavItem.map((item, i) => (
+			    	collectionNavItem.header.length > 0 &&
+			    	<li><a class="subheader" className="subheader">{collectionNavItem.header}</a></li>
+			    }
+			    {
+			    	shownCollectionNavItemLinks.map((item, i) => (
 			    		<div key={i} >
 				    		<div className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
 					    		<li>
@@ -83,10 +109,17 @@ class Sidenav extends Component {
 						  </div>
 			    	))
 			  	}
-			  	<li><div class="divider"></div></li>
+			  	{
+			  		collectionNavItem.dividerBottom &&
+			  		<li><div class="divider"></div></li>
+			  	}
+			  	{
+			    	defaultNavItem.header.length > 0 &&
+			    	<li><a class="subheader" className="subheader">{defaultNavItem.header}</a></li>
+			    }
 			    {
-			    	defaultNavItem.map((item, i) => (
-			    		<div key={i} className={selectedNavItem === i + collectionNavItem.length ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i + collectionNavItem.length)}>
+			    	shownDefaultNavItemLinks.map((item, i) => (
+			    		<div key={i} className={selectedNavItem === offset + i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, offset + i)}>
 				    		<li>
 						    	<Link to={item.route}>
 						    		{item.icon}
@@ -96,6 +129,10 @@ class Sidenav extends Component {
 						  </div>
 			    	))
 			  	}
+			  	{
+			  		defaultNavItem.dividerBottom &&
+			  		<li><div class="divider"></div></li>
+			  	}
 			  </ul>
 	    </>
 		);
@@ -103,48 +140,93 @@ class Sidenav extends Component {
 }
 
 Sidenav.defaultProps = {
-	defaultNavItem: [
-		{	route: '/dashboard',
-			icon: <i class="material-icons">assignment</i>,
-			text: 'Task list', 
-		},
-		{	route: '/data-input',
-			icon: <i class="material-icons">input</i>,
-			text: 'Data input', 
-		},
-		{	route: '/record',
-			icon: <i class="material-icons">view_headline</i>,
-			text: 'Record list', 
-		},
-		{	route: '/user',
-			icon: <i class="material-icons">account_circle</i>,
-			text: 'User', 
-		},
-	],
-	collectionNavItem: [
-		{	route: '/collection?id=1',
-			icon: <i class="material-icons">format_list_bulleted</i>,
-			text: 'Collection 1',
-			sublink: [
-				{	route: '/collection?id=1a',
-					icon: <i class="material-icons">format_list_bulleted</i>,
-					text: 'Collection 1a', 
-				},
-				{	route: '/collection?id=1b',
-					icon: <i class="material-icons">format_list_bulleted</i>,
-					text: 'Collection 1b', 
-				},
-			],
-		},
-		{	route: '/collection?id=2',
-			icon: <i class="material-icons">format_list_bulleted</i>,
-			text: 'Collection 2', 
-		},
-		{	route: '/collection?id=3',
-			icon: <i class="material-icons">format_list_bulleted</i>,
-			text: 'Collection 3', 
-		},
-	]
+	defaultNavItem: {
+		header: 'Default menu',
+		links: [
+			{	name: 'dashboard',
+				route: '/dashboard',
+				icon: <i class="material-icons">assignment</i>,
+				text: 'Task list',
+			},
+			{	name: 'data-input',
+				route: '/data-input',
+				icon: <i class="material-icons">input</i>,
+				text: 'Data input', 
+			},
+			{	name: 'record',
+				route: '/record',
+				icon: <i class="material-icons">view_headline</i>,
+				text: 'Record list', 
+			},
+			{	name: 'user',
+				route: '/user',
+				icon: <i class="material-icons">account_circle</i>,
+				text: 'User', 
+			},
+		],
+		dividerBottom: false,
+	},
+
+	collectionNavItem: {
+		header: 'List of collection',
+		links: [
+			{	name: 'collection1',
+				route: '/collection?id=1',
+				icon: <i class="material-icons">format_list_bulleted</i>,
+				text: 'Collection 1',
+				sublink: [
+					{	name: 'collection1a',
+						route: '/collection?id=1a',
+						icon: <i class="material-icons">format_list_bulleted</i>,
+						text: 'Collection 1a', 
+					},
+					{	name: 'collection1b',
+						route: '/collection?id=1b',
+						icon: <i class="material-icons">format_list_bulleted</i>,
+						text: 'Collection 1b', 
+					},
+				],
+			},
+			{	name: 'collection2',
+				route: '/collection?id=2',
+				icon: <i class="material-icons">format_list_bulleted</i>,
+				text: 'Collection 2', 
+			},
+			{	name: 'collection3',
+				route: '/collection?id=3',
+				icon: <i class="material-icons">format_list_bulleted</i>,
+				text: 'Collection 3', 
+			},
+		],
+		dividerBottom: true,
+	},
+
+	// options of current user group links authorization
+	// menu in sidenav will be filtered based on the specified menu name
+	// in the strings array
+	userGroupLinkAccess:  {
+		admin: [
+			'dashboard', 
+			'data-input', 
+			'record', 
+			'user', 
+			'collection1',
+			'collection2', 
+			'collection3',
+		],
+		
+		premiumUser: [
+			'dashboard',
+			'record',
+			'user', 
+			'collection1',
+			'collection3',
+		]
+	},
+
+	// current group that the user belongs
+	// test: change below value to be: 'admin' or 'premiumUser'
+	currentUserGroup: 'premiumUser'
 } 
 
 export default Sidenav;
