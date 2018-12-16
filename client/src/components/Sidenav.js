@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
+
 import './Sidenav.css'
 
 class Sidenav extends Component {
@@ -8,6 +10,7 @@ class Sidenav extends Component {
 
 		this.state = {
 			selectedNavItem: undefined,
+			collectionNavItemLinks: []
 		}
 	}
 
@@ -48,6 +51,15 @@ class Sidenav extends Component {
 
 			this.setState({ selectedNavItem })
 		}
+
+		// get collection data from backend
+		axios.get('http://localhost:5000/sidenav-links')
+			.then(res => {
+				this.setState({
+					collectionNavItemLinks: res.data.data
+				})
+			})
+			.catch(e => console.error(e))
 	}
 
 	handleClickNavItem(i) {
@@ -57,7 +69,7 @@ class Sidenav extends Component {
 	}
 
 	render() {
-		const { selectedNavItem } = this.state;
+		const { selectedNavItem, collectionNavItemLinks } = this.state;
 		const { 
 			defaultNavItem, 
 			collectionNavItem, 
@@ -65,14 +77,18 @@ class Sidenav extends Component {
 			currentUserGroup 
 		} = this.props;
 
+		console.log('state = ', collectionNavItemLinks)
+
 		// show menu based on user group authorization
 		const shownDefaultNavItemLinks = 
 			defaultNavItem.links.filter(item => 
 				userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
 		
-		const shownCollectionNavItemLinks = 
-			collectionNavItem.links.filter(item => 
-				userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
+		const shownCollectionNavItemLinks = collectionNavItemLinks
+
+			// collectionNavItem.links.filter(item => 
+				// userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
+		// console.log('shownCollectionNavItemLinks = ', shownCollectionNavItemLinks)
 		
 		const offset = shownCollectionNavItemLinks.length
 
@@ -91,7 +107,7 @@ class Sidenav extends Component {
 				    		<div className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
 					    		<li>
 							    	<Link to={item.route}>
-							    		{item.icon}
+							    		<i class="material-icons">{item.icon}</i>
 							    		{item.text}
 							    	</Link>
 							    </li>
@@ -102,7 +118,7 @@ class Sidenav extends Component {
 					    		item.sublink.map((subitem, idx) => (
 					    			<li key={idx} className="sublink">
 								    	<Link to={subitem.route}>
-								    		{subitem.icon}
+								    		<i class="material-icons">{subitem.icon}</i>
 								    		{subitem.text}
 								    	</Link>
 								    </li>
@@ -124,7 +140,7 @@ class Sidenav extends Component {
 			    		<div key={i} className={selectedNavItem === offset + i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, offset + i)}>
 				    		<li>
 						    	<Link to={item.route}>
-						    		{item.icon}
+						    		<i class="material-icons">{item.icon}</i>
 						    		{item.text}
 						    	</Link>
 						    </li>
@@ -147,22 +163,22 @@ Sidenav.defaultProps = {
 		links: [
 			{	name: 'dashboard',
 				route: '/dashboard',
-				icon: <i class="material-icons">assignment</i>,
+				icon: 'assignment',
 				text: 'Task list',
 			},
 			{	name: 'data-input',
 				route: '/data-input',
-				icon: <i class="material-icons">input</i>,
+				icon: 'input',
 				text: 'Data input', 
 			},
 			{	name: 'record',
 				route: '/record',
-				icon: <i class="material-icons">view_headline</i>,
+				icon: 'view_headline',
 				text: 'Record list', 
 			},
 			{	name: 'user',
 				route: '/user',
-				icon: <i class="material-icons">account_circle</i>,
+				icon: 'account_circle',
 				text: 'User', 
 			},
 		],
@@ -174,29 +190,29 @@ Sidenav.defaultProps = {
 		links: [
 			{	name: 'collection1',
 				route: '/collection?id=1',
-				icon: <i class="material-icons">format_list_bulleted</i>,
+				icon: 'format_list_bulleted',
 				text: 'Collection 1',
 				sublink: [
 					{	name: 'collection1a',
 						route: '/collection?id=1a',
-						icon: <i class="material-icons">format_list_bulleted</i>,
+						icon: 'format_list_bulleted',
 						text: 'Collection 1a', 
 					},
 					{	name: 'collection1b',
 						route: '/collection?id=1b',
-						icon: <i class="material-icons">format_list_bulleted</i>,
+						icon: 'format_list_bulleted',
 						text: 'Collection 1b', 
 					},
 				],
 			},
 			{	name: 'collection2',
 				route: '/collection?id=2',
-				icon: <i class="material-icons">format_list_bulleted</i>,
+				icon: 'format_list_bulleted',
 				text: 'Collection 2', 
 			},
 			{	name: 'collection3',
 				route: '/collection?id=3',
-				icon: <i class="material-icons">format_list_bulleted</i>,
+				icon: 'format_list_bulleted',
 				text: 'Collection 3', 
 			},
 		],
@@ -212,9 +228,9 @@ Sidenav.defaultProps = {
 			'data-input', 
 			'record', 
 			'user', 
-			'collection1',
-			'collection2', 
-			'collection3',
+			'form1',
+			'form2', 
+			'form3',
 		],
 		
 		premiumUser: [

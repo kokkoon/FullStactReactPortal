@@ -22,7 +22,14 @@ module.exports = (app, db) => {
   		if (err) console.error(err)
 
   		if (data.length === 0) {
-  			formCollection.insertOne({name: `form${formId}`}, (err, result) => {
+  			const form = {
+  				name: `form${formId}`,
+  				route: `/collection?id=${formId}`,
+  				icon: 'format_list_bulleted',
+  				text: `Collection ${formId}`
+  			}
+
+  			formCollection.insertOne(form, (err, result) => {
 		  		if (err) console.error(err)
 		  		console.log('added new form = ', result.n)
 		  	})
@@ -64,7 +71,26 @@ module.exports = (app, db) => {
   	const formCollection = db.collection('form')
   	formCollection.find({}).toArray((err, result) => {
   		console.log('result = ', result)
-  		res.send({ result })
+  		const data = result.map(r => {
+  			return r.name
+  		})
+  		res.send({ data })
+  	})
+  })
+
+  app.get('/sidenav-links', (req, res) => {
+  	const formCollection = db.collection('form')
+  	formCollection.find({}).toArray((err, result) => {
+  		console.log('result = ', result)
+  		const data = result.map(r => 
+  			({ 
+  				name: r.name,
+  				route: r.route,
+  				icon: r.icon,
+  				text: r.text
+  			})
+  		)
+  		res.send({ data })
   	})
   })
 
