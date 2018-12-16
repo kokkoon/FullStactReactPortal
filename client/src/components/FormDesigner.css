@@ -1,27 +1,3 @@
-.container-middle {
-	position: relative;
-	height: 100vh;
-	width: 100vw;
+.form-designer {
+	margin: 20px 10vw 0 10vw;
 }
-
-.container-dnd {
-	display: flex;
-	margin: auto;
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	top: 0;
-}
-
-.droppable-column {
-	min-height: 200px;
-}
-
-.droppable-column-title {
-	padding-top: 10px;
-	padding-bottom: 10px;
-	font-weight: bold;
-	display: block;
-}
-

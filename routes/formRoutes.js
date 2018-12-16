@@ -23,6 +23,7 @@ module.exports = (app, db) => {
 
   		if (data.length === 0) {
   			const form = {
+  				id: formId,
   				name: `form${formId}`,
   				route: `/collection?id=${formId}`,
   				icon: 'format_list_bulleted',
@@ -66,13 +67,81 @@ module.exports = (app, db) => {
   	}
   })
 
+  // create/update and save the new form to DB
+  app.post('/create-form', (req, res) => {
+  	const formCollection = db.collection('form')
+  	const url = URL.parse(req.url, true)
+  	const formId = url.query.id
+  	let counter = 0
+  	const schema = req.body
+
+  	formCollection.find({}).toArray((err, result) => {
+  		counter = result.length
+  		if (Number(formId) <= counter && Number(formId) > 0) {
+  			const form = {
+  				id: formId,
+  				name: `form${formId}`,
+  				route: `/collection?id=${formId}`,
+  				icon: 'format_list_bulleted',
+  				text: `Collection ${formId}`,
+  				schema
+  			}
+
+		  	formCollection.deleteOne({id: formId})
+  			formCollection.insertOne(form, (err, obj) => {
+		  		if (err) console.error(err)
+		  		console.log('added new form = ', obj.result.n)
+
+		  		res.send({ message: `Form-${formId} schema updated`})
+		  	})
+  		} else {
+  			const newId = counter + 1
+  			const form = {
+  				id: newId.toString(),
+  				name: `form${newId}`,
+  				route: `/collection?id=${newId}`,
+  				icon: 'format_list_bulleted',
+  				text: `Collection ${newId}`,
+  				schema
+  			}
+
+  			formCollection.insertOne(form, (err, obj) => {
+		  		if (err) console.error(err)
+		  		console.log('added new form = ', obj.result.n)
+		  	})
+
+		  	res.send({ message: `New Form-${newId} schema created`})
+  		}
+
+  	}) 
+  })
+
+  // get form schema to be rendered in jsonschema-form
+  app.get('/form', (req, res) => {
+  	const formCollection = db.collection('form')
+  	const url = URL.parse(req.url, true)
+  	const formId = url.query.id
+
+  	formCollection.findOne({id: formId}, (err, form) => {
+  		console.log('found form = ', form)
+  		if (form.schema !== null) {
+				res.send({ data: form.schema })
+  		}
+  	})
+  })
+
   // get all type of forms in DB
   app.get('/all-form', (req, res) => {
   	const formCollection = db.collection('form')
   	formCollection.find({}).toArray((err, result) => {
   		console.log('result = ', result)
   		const data = result.map(r => {
-  			return r.name
+  			return { 
+  				id: r.id,
+  				name: r.name, 
+  				urlDesigner: `/form-designer?id=${r.id}`,
+  				urlForm: `/data-input?id=${r.id}` 
+  			}
   		})
   		res.send({ data })
   	})

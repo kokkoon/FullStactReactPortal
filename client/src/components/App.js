@@ -14,8 +14,11 @@ import Record from './Record';
 import User from './User';
 import DataInput from './DataInput';
 import FormDesigner from './FormDesigner';
+import DNDFormDesigner from './DNDFormDesigner';
 import Collection from './Collection';
 import CollectionPage from './CollectionPage';
+import SetupPage from './SetupPage';
+import FormList from './FormList';
 
 class App extends Component {
   componentDidMount(){
@@ -36,10 +39,13 @@ class App extends Component {
           <Route path="/tasks/new" component={TaskNew} />
           <Route exact path="/record" component={Record} />
           <Route exact path="/user" component={User} />
-          <Route exact path="/data-input/:id" component={DataInput} />
+          <Route exact path="/data-input" component={DataInput} />
           <Route exact path="/test/collection" component={Collection} />
           <Route exact path="/collection" component={CollectionPage} />
           <Route exact path="/form-designer" component={FormDesigner} />
+          <Route exact path="/dnd-form-designer" component={DNDFormDesigner} />
+          <Route exact path="/setup" component={SetupPage} />
+          <Route exact path="/form" component={FormList} />
         </div>
 
         </BrowserRouter>
