@@ -39,26 +39,6 @@ module.exports = (app, db) => {
   	})
   })
 
-  // get all type of forms in DB
-  app.get('/all-form', (req, res) => {
-  	const formCollection = db.collection('form')
-  	formCollection.find({}).toArray((err, result) => {
-  		console.log('result = ', result)
-  		res.send({ result })
-  	})
-  })
-
-  // clear form collection in DB
-  app.get('/clear-form', (req, res) => {
-  	const formCollection = db.collection('form')
-
-  	formCollection.deleteMany({}, (err, result) => {
-  		if (err) console.error(err)
-  		console.log('deleted = ', result)
-  		res.send({ message: `success delete forms on DB` })
-  	})
-  })
-
   // get the record of form instance by form id & instanceId from DB
   app.get('/record', (req, res) => {
   	const url = URL.parse(req.url, true)
@@ -77,6 +57,26 @@ module.exports = (app, db) => {
 	  		res.send({ data })
 	  	})
   	}
+  })
+
+  // get all type of forms in DB
+  app.get('/all-form', (req, res) => {
+  	const formCollection = db.collection('form')
+  	formCollection.find({}).toArray((err, result) => {
+  		console.log('result = ', result)
+  		res.send({ result })
+  	})
+  })
+
+  // clear form collection in DB
+  app.get('/clear-form', (req, res) => {
+  	const formCollection = db.collection('form')
+
+  	formCollection.deleteMany({}, (err, result) => {
+  		if (err) console.error(err)
+  		console.log('deleted = ', result)
+  		res.send({ message: `success delete forms on DB` })
+  	})
   })
 
   // delete a collection in DB
