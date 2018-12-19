@@ -53,37 +53,6 @@ class FormDesigner extends Component {
 	  });
 	}
 
-	componentDidUpdate() {
-		
-	}
-
-	uiSchema: {
-	  a_date: {
-	    "alt-datetime": {
-	      "ui:widget": "alt-datetime",
-	      "ui:options": {
-	        yearsRange: [1980, 2030],
-	      },
-	    },
-	  },
-	}
-	 
-	log = (type) => console.log.bind(console, type)
-
-	onSubmit = (formData) => {
-		const { location } = this.props
-		const id = location.search.slice(4)
-		const { formStructure } = this.state
-
-		axios.post(`http://localhost:5000/create-form?id=${id}`, formStructure)
-			.then(res => {
-				this.setState({
-					message: res.data.message
-				})
-			})
-			.catch(err => console.log(err))
-	}
-
 	handleCheck = (i) => {
 		const { fields } = this.state
 
