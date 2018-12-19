@@ -73,7 +73,8 @@ module.exports = (app, db) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
   	let counter = 0
-  	const schema = req.body
+  	const formStructure = req.body.formStructure
+    const collectionName = req.body.collectionName
 
   	formCollection.find({}).toArray((err, result) => {
   		counter = result.length
@@ -83,8 +84,8 @@ module.exports = (app, db) => {
   				name: `form${formId}`,
   				route: `/collection?id=${formId}`,
   				icon: 'format_list_bulleted',
-  				text: `Collection ${formId}`,
-  				schema
+  				collectionName,
+  				formStructure
   			}
 
 		  	formCollection.deleteOne({id: formId})
@@ -92,7 +93,7 @@ module.exports = (app, db) => {
 		  		if (err) console.error(err)
 		  		console.log('added new form = ', obj.result.n)
 
-		  		res.send({ message: `Form-${formId} schema updated`})
+		  		res.send({ message: `${collectionName} schema updated`})
 		  	})
   		} else {
   			const newId = counter + 1
@@ -101,8 +102,8 @@ module.exports = (app, db) => {
   				name: `form${newId}`,
   				route: `/collection?id=${newId}`,
   				icon: 'format_list_bulleted',
-  				text: `Collection ${newId}`,
-  				schema
+  				collectionName,
+  				formStructure
   			}
 
   			formCollection.insertOne(form, (err, obj) => {
@@ -110,7 +111,7 @@ module.exports = (app, db) => {
 		  		console.log('added new form = ', obj.result.n)
 		  	})
 
-		  	res.send({ message: `New Form-${newId} schema created`})
+		  	res.send({ message: `${collectionName} schema created`})
   		}
 
   	}) 
@@ -138,7 +139,7 @@ module.exports = (app, db) => {
   		const data = result.map(r => {
   			return { 
   				id: r.id,
-  				name: r.name, 
+  				name: r.collectionName, 
   				urlDesigner: `/form-designer?id=${r.id}`,
   				urlForm: `/data-input?id=${r.id}` 
   			}
@@ -153,10 +154,10 @@ module.exports = (app, db) => {
   		console.log('result = ', result)
   		const data = result.map(r => 
   			({ 
-  				name: r.name,
+  				name: r.collectionName,
   				route: r.route,
   				icon: r.icon,
-  				text: r.text
+  				text: r.collectionName
   			})
   		)
   		res.send({ data })

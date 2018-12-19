@@ -215,9 +215,7 @@ class FormDesigner extends Component {
 		const id = location.search.slice(4)
 		const { formStructure, input } = this.state
 
-		formStructure.title = input.collectionName
-
-		axios.post(`http://localhost:5000/create-form?id=${id}`, formStructure)
+		axios.post(`http://localhost:5000/create-form?id=${id}`, { collectionName: input.collectionName, formStructure })
 			.then(res => {
 				this.setState({
 					message: res.data.message
@@ -355,7 +353,7 @@ class FormDesigner extends Component {
 					</div>
 					<div className="row btn-add-container">
 		        <a className="waves-effect waves-light btn" 
-		        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || isEmpty(defaultValue)} 
+		        	 disabled={isEmpty(fieldName) || isEmpty(dataType)} 
 		        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
 		        >
 				    	{isNewField ? 'Add' : 'Update'}
