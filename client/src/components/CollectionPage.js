@@ -11,6 +11,7 @@ class CollectionPage extends Component {
 
     this.state = {
       id: undefined,
+      collectionName: '',
       column: [],
     	record: null
     }
@@ -21,9 +22,14 @@ class CollectionPage extends Component {
 
     axios.get(`http://localhost:5000/form/?id=${id}`)
       .then(res => {
+        const collectionName = res.data.data.title
         const rawColumn = res.data.column
         const column = rawColumn.filter(c => c.showInTable).map(c => c.fieldName)
-        this.setState({ column })
+
+        this.setState({ 
+          collectionName,
+          column 
+        })
       })
       .catch(err => console.log(err))
 
@@ -42,9 +48,14 @@ class CollectionPage extends Component {
     if (id !== this.state.id) {
       axios.get(`http://localhost:5000/form/?id=${id}`)
       .then(res => {
+        const collectionName = res.data.data.title
         const rawColumn = res.data.column
         const column = rawColumn.filter(c => c.showInTable).map(c => c.fieldName)
-        this.setState({ column })
+
+        this.setState({ 
+          collectionName,
+          column 
+        })
       })
       .catch(err => console.log(err))
 
@@ -59,15 +70,12 @@ class CollectionPage extends Component {
   }
 
   render() {
-    const { column, record } = this.state
+    const { collectionName, column, record } = this.state
 		const id = window.location.search.slice(4)
-
-    console.log('column = ', column)
-    console.log('record = ', record)
 
     return (
       <div className="record center">
-      	<h5 className="collection-title">/ Collection {id}</h5>
+      	<h5 className="collection-title">/ {collectionName}</h5>
         <div className="button-new">
           <a className="waves-effect waves-light btn" href={`/data-input?id=${id}`}>New</a>
         </div>
