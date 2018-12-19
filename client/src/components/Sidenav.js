@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
+import M from 'materialize-css/dist/js/materialize.min.js'
 
 import './Sidenav.css'
 
@@ -62,6 +63,13 @@ class Sidenav extends Component {
 			.catch(e => console.error(e))
 	}
 
+	componentDidMount() {
+		document.addEventListener('DOMContentLoaded', function() {
+			var elems = document.querySelectorAll('.sidenav');
+		  var instances = M.Sidenav.init(elems);
+		})
+	}
+
 	handleClickNavItem(i) {
 		this.setState({
 			selectedNavItem: i,
@@ -76,8 +84,6 @@ class Sidenav extends Component {
 			userGroupLinkAccess, 
 			currentUserGroup 
 		} = this.props;
-
-		console.log('state = ', collectionNavItemLinks)
 
 		// show menu based on user group authorization
 		const shownDefaultNavItemLinks = 

@@ -21,7 +21,7 @@ import SetupPage from './SetupPage';
 import CollectionList from './CollectionList';
 
 class App extends Component {
-  componentDidMount(){
+  componentWillMount(){
     this.props.fetchUser();
 
     //initialize the materialize script effect

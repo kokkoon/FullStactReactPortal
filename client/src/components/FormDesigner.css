@@ -1,3 +1,49 @@
 .form-designer {
 	margin: 20px 10vw 0 10vw;
+	text-align: left;
+}
+
+.collection-name-input {
+	width: 200px !important;
+}
+
+.collection-name-input > input {
+	height: 2rem !important;
+	margin-bottom: 5px !important;
+}
+
+.collection-name-label {
+	color: black;
+	font-size: 15px;
+	display: inline-block;
+	margin-right: 8px;
+}
+
+.document-fields-label {
+	display: block;
+	margin-bottom: 8px;
+	font-weight: bold;
+}
+
+.btn-action {
+	margin-right: 7px;
+	width: 35px;
+	padding-left: 8px;
+}
+
+.btn-submit {
+	position: relative;
+	top: 10px;
+}
+
+.add-new-field {
+	margin-top: 30px;
+}
+
+.btn-add-container {
+	text-align: center;
+}
+
+.btn-add-container > a {
+	width: 150px;
 }
