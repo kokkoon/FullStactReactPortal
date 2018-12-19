@@ -1,38 +1,69 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import './CollectionPage.css';
+import React, { Component } from 'react'
+import axios from 'axios'
+import { isEmpty } from 'lodash'
+
+import './CollectionPage.css'
+
 
 class CollectionPage extends Component {
 	constructor(props) {
     super(props)
 
     this.state = {
+      id: undefined,
+      column: [],
     	record: null
     }
   }
 
 	componentWillMount() {
 		const id = window.location.search.slice(4)
+
+    axios.get(`http://localhost:5000/form/?id=${id}`)
+      .then(res => {
+        const rawColumn = res.data.column
+        const column = rawColumn.filter(c => c.showInTable).map(c => c.fieldName)
+        this.setState({ column })
+      })
+      .catch(err => console.log(err))
+
     axios.get(`http://localhost:5000/record/?id=${id}`)
       .then(res => {
-        this.setState({ record: res.data.data })
+        this.setState({ 
+          record: res.data.data
+        })
       })
       .catch(err => console.log(err))
   }
 
   componentDidUpdate() {
 		const id = window.location.search.slice(4)
-    axios.get(`http://localhost:5000/record/?id=${id}`)
+
+    if (id !== this.state.id) {
+      axios.get(`http://localhost:5000/form/?id=${id}`)
+      .then(res => {
+        const rawColumn = res.data.column
+        const column = rawColumn.filter(c => c.showInTable).map(c => c.fieldName)
+        this.setState({ column })
+      })
+      .catch(err => console.log(err))
+
+      axios.get(`http://localhost:5000/record/?id=${id}`)
       .then(res => {
         this.setState({ record: res.data.data })
       })
       .catch(err => console.log(err))
+
+      this.setState({ id })
+    }
   }
 
   render() {
-    const { column, data } = this.props
-    const { record } = this.state
+    const { column, record } = this.state
 		const id = window.location.search.slice(4)
+
+    console.log('column = ', column)
+    console.log('record = ', record)
 
     return (
       <div className="record center">
@@ -43,7 +74,7 @@ class CollectionPage extends Component {
         <table className="table-collection">
           <thead>
             <tr>
-              { column.filter(c => c.display).map(c => <th>{c.label}</th>) }
+              { !isEmpty(column) && column.map(c => <th>{c}</th>) }
             </tr>
           </thead>
 
@@ -52,12 +83,18 @@ class CollectionPage extends Component {
               !record && <p> loading .... </p>
             }
             { 
-              record && record.map(d => (
+              record && record.map(r => (
                 <tr>
-                  <td>{d.name}</td>
-                  <td>{d.date}</td>
-                  <td>{d.assignedTo}</td>
-                  <td>{d.done ? <i className="done material-icons">check_circle</i> : <i className="not-done material-icons">do_not_disturb_on</i>}</td>
+                  {
+                    Object.keys(r).filter(k => column.indexOf(k) >= 0).map(k => (
+                      <td>{r[k]}</td>
+                    ))
+                  }
+
+                  {/*<td>{r.name}</td>
+                                    <td>{d.date}</td>
+                                    <td>{d.assignedTo}</td>
+                                    <td>{d.done ? <i className="done material-icons">check_circle</i> : <i className="not-done material-icons">do_not_disturb_on</i>}</td>*/}
                 </tr>
               )) 
             }

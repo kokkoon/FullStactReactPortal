@@ -127,7 +127,7 @@ class FormDesigner extends Component {
 	updateFormStructure = (fieldName, dataType, defaultValue) => {
 		const { formStructure } = this.state
 
-		if (dataType !== 'date' || dataType !== 'object') {
+		if (dataType !== 'date') {
 			formStructure.properties[fieldName] = {
 				title: fieldName,
 				type: dataType,
@@ -213,9 +213,15 @@ class FormDesigner extends Component {
 	handleCreateCollection = () => {
 		const { location } = this.props
 		const id = location.search.slice(4)
-		const { formStructure, input } = this.state
+		const { formStructure, input, fields } = this.state
+		const tableColumns = fields.reduce((arr, field) => {
+														return [...arr, { fieldName: field.fieldName, showInTable: field.showInTable }]
+												 }, [])
+		
+		formStructure.title = input.collectionName
 
-		axios.post(`http://localhost:5000/create-form?id=${id}`, { collectionName: input.collectionName, formStructure })
+		axios.post(`http://localhost:5000/create-form?id=${id}`, 
+							 { collectionName: input.collectionName, tableColumns, formStructure })
 			.then(res => {
 				this.setState({
 					message: res.data.message

@@ -18,24 +18,24 @@ module.exports = (app, db) => {
   	const collection = db.collection(`form${formId}`)
   	const formCollection = db.collection('form')
 
-  	formCollection.find({name: `form${formId}`}).toArray((err, data) => {
-  		if (err) console.error(err)
+  	// formCollection.find({name: `form${formId}`}).toArray((err, data) => {
+  	// 	if (err) console.error(err)
 
-  		if (data.length === 0) {
-  			const form = {
-  				id: formId,
-  				name: `form${formId}`,
-  				route: `/collection?id=${formId}`,
-  				icon: 'format_list_bulleted',
-  				text: `Collection ${formId}`
-  			}
+  	// 	if (data.length === 0) {
+  	// 		const form = {
+  	// 			id: formId,
+  	// 			name: `form${formId}`,
+  	// 			route: `/collection?id=${formId}`,
+  	// 			icon: 'format_list_bulleted',
+  	// 			text: `Collection ${formId}`
+  	// 		}
 
-  			formCollection.insertOne(form, (err, result) => {
-		  		if (err) console.error(err)
-		  		console.log('added new form = ', result.n)
-		  	})
-  		}
-  	})
+  	// 		formCollection.insertOne(form, (err, result) => {
+		 //  		if (err) console.error(err)
+		 //  		console.log('added new form = ', result.n)
+		 //  	})
+  	// 	}
+  	// })
 
   	collection.insertOne(data, (err, result) => {
   		if (err) console.error(err)
@@ -75,6 +75,7 @@ module.exports = (app, db) => {
   	let counter = 0
   	const formStructure = req.body.formStructure
     const collectionName = req.body.collectionName
+    const tableColumns = req.body.tableColumns
 
   	formCollection.find({}).toArray((err, result) => {
   		counter = result.length
@@ -85,7 +86,8 @@ module.exports = (app, db) => {
   				route: `/collection?id=${formId}`,
   				icon: 'format_list_bulleted',
   				collectionName,
-  				formStructure
+  				formStructure,
+          tableColumns
   			}
 
 		  	formCollection.deleteOne({id: formId})
@@ -103,7 +105,8 @@ module.exports = (app, db) => {
   				route: `/collection?id=${newId}`,
   				icon: 'format_list_bulleted',
   				collectionName,
-  				formStructure
+  				formStructure,
+          tableColumns
   			}
 
   			formCollection.insertOne(form, (err, obj) => {
@@ -125,8 +128,8 @@ module.exports = (app, db) => {
 
   	formCollection.findOne({id: formId}, (err, form) => {
   		console.log('found form = ', form)
-  		if (form.schema !== null) {
-				res.send({ data: form.schema })
+  		if (form.formStructure !== null) {
+				res.send({ data: form.formStructure, column: form.tableColumns })
   		}
   	})
   })
