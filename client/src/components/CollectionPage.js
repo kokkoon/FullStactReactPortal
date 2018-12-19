@@ -34,11 +34,13 @@ class CollectionPage extends Component {
     const { record } = this.state
 		const id = window.location.search.slice(4)
 
-
     return (
       <div className="record center">
-      	<h3 className="center">Collection {id}</h3>
-        <table>
+      	<h5 className="collection-title">/ Collection {id}</h5>
+        <div className="button-new">
+          <a className="waves-effect waves-light btn" href={`/data-input?id=${id}`}>New</a>
+        </div>
+        <table className="table-collection">
           <thead>
             <tr>
               { column.filter(c => c.display).map(c => <th>{c.label}</th>) }

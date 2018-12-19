@@ -1,0 +1,27 @@
+.collection-title {
+	text-align: left;
+}
+
+.table-collection {
+	border: 1px solid rgba(0,0,0,0.12);
+	border-spacing: 10px !important;
+}
+
+.button-new {
+	text-align: left;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+.button-new a {
+	width: 150px;
+}
+
+thead {
+	margin: 10px;
+	padding: 10px;
+}
+
+th, td {
+	padding: 15px;
+}
