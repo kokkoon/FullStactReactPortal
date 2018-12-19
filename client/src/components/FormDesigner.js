@@ -89,7 +89,7 @@ class FormDesigner extends Component {
 
 		fields.map((field, idx) => {
 			if (i === idx) {
-				field.defaultInView = !field.defaultInView
+				field.showInTable = !field.showInTable
 			}
 		})
 
@@ -129,7 +129,7 @@ class FormDesigner extends Component {
 			fieldName, 
 			dataType, 
 			defaultValue, 
-			defaultInView: true, 
+			showInTable: true, 
 			action: [
 				{
 					name: 'edit',
@@ -188,7 +188,7 @@ class FormDesigner extends Component {
 			fieldName, 
 			dataType, 
 			defaultValue, 
-			defaultInView: true, 
+			showInTable: true, 
 			action: [
 				{
 					name: 'edit',
@@ -307,7 +307,7 @@ class FormDesigner extends Component {
 								        <input 
 								        	type="checkbox" 
 								        	className="filled-in" 
-								        	checked={field.defaultInView? "checked" : ""} 
+								        	checked={field.showInTable? "checked" : ""} 
 								        	onClick={this.handleCheck.bind(this, index)} 
 								        />
 								        <span> </span>
@@ -399,7 +399,7 @@ class FormDesigner extends Component {
 }
 
 FormDesigner.defaultProps = {
-	documentFieldsTableHeader: [ 'Name', 'Data Type', 'Default Value', 'Default in View', 'Action' ],
+	documentFieldsTableHeader: [ 'Name', 'Data Type', 'Default Value', 'Show in Table', 'Action' ],
 
 	//data structure
 	formStructure: {
@@ -422,14 +422,14 @@ FormDesigner.defaultProps = {
 			fieldName: 'Title', 
 			dataType: 'String', 
 			defaultValue: 'test', 
-			defaultInView: false, 
+			showInTable: false, 
 			action: ['edit', 'delete'] 
 		},
 		{
 			fieldName: 'Description', 
 			dataType: 'String', 
 			defaultValue: 'yes', 
-			defaultInView: true, 
+			showInTable: true, 
 			action: [
 				{
 					name: 'edit',
