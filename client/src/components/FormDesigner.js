@@ -23,6 +23,7 @@ class FormDesigner extends Component {
 			},
 			isNewField: true,
 			currentIndex: -1,
+			isFieldNameExisted: false,
 			// see fields data structure at the bottom of the code
 			fields: [],
 		}
@@ -185,7 +186,7 @@ class FormDesigner extends Component {
 	}
 
 	handleInputChange = (inputType, event) => {
-		const { input } = this.state
+		const { input, fields } = this.state
 
 		switch (inputType) {
 			case 'collection_name': 
@@ -194,6 +195,9 @@ class FormDesigner extends Component {
 
 			case 'field_name':
 				input.fieldName = event.target.value
+				this.setState({ 
+					isFieldNameExisted: fields.map(f => f.fieldName).indexOf(event.target.value) >= 0 
+				})
 				break
 
 			case 'data_type':
@@ -237,7 +241,8 @@ class FormDesigner extends Component {
 			message,
 			isNewField, 
 			currentIndex,
-			fields
+			fields,
+			isFieldNameExisted
 		} = this.state
 
 		const {
@@ -359,7 +364,7 @@ class FormDesigner extends Component {
 					</div>
 					<div className="row btn-add-container">
 		        <a className="waves-effect waves-light btn" 
-		        	 disabled={isEmpty(fieldName) || isEmpty(dataType)} 
+		        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || isFieldNameExisted} 
 		        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
 		        >
 				    	{isNewField ? 'Add' : 'Update'}
