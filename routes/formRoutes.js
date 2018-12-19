@@ -131,7 +131,7 @@ module.exports = (app, db) => {
   })
 
   // get all type of forms in DB
-  app.get('/all-form', (req, res) => {
+  app.get('/collection-list', (req, res) => {
   	const formCollection = db.collection('form')
   	formCollection.find({}).toArray((err, result) => {
   		console.log('result = ', result)

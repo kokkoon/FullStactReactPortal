@@ -159,7 +159,7 @@ class Sidenav extends Component {
 
 Sidenav.defaultProps = {
 	defaultNavItem: {
-		header: 'Default menu',
+		header: 'Setup',
 		links: [
 			{	name: 'dashboard',
 				route: '/dashboard',
@@ -172,9 +172,9 @@ Sidenav.defaultProps = {
 				text: 'Setup page', 
 			},
 			{	name: 'form-list',
-				route: '/form',
+				route: '/collection-list',
 				icon: 'apps',
-				text: 'Form list',
+				text: 'Collections',
 			},
 			{	name: 'record',
 				route: '/record',
@@ -191,7 +191,7 @@ Sidenav.defaultProps = {
 	},
 
 	collectionNavItem: {
-		header: 'List of collection',
+		header: 'Collections',
 		links: [
 			{	name: 'collection1',
 				route: '/collection?id=1',

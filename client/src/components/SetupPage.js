@@ -8,23 +8,23 @@ class SetupPage extends Component {
 		super(props);
 
 		this.state = {
-			formList: []
+			collectionList: []
 		}
 	}
 
 	componentWillMount() {
 		// get form data from backend
-		axios.get('http://localhost:5000/all-form')
+		axios.get('http://localhost:5000/collection-list')
 			.then(res => {
 				this.setState({
-					formList: res.data.data
+					collectionList: res.data.data
 				})
 			})
 			.catch(e => console.error(e))
 	}
 
 	render() {
-		const { formList } = this.state
+		const { collectionList } = this.state
 
 		return (
 			<div className="setup-page">
@@ -33,10 +33,10 @@ class SetupPage extends Component {
 				<a className="waves-effect waves-light btn" href="/form-designer?id=new">create new form</a>
 			</div>
 			{
-				formList.map(form => (
-					<a href={form.urlDesigner}>
+				collectionList.map(collection => (
+					<a href={collection.urlDesigner}>
 						<div className="form-card">
-							{form.name}
+							{collection.name}
 						</div>
 					</a>
 				))

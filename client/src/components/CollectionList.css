@@ -1,0 +1,13 @@
+.collection-list {
+	margin-top: 20px;
+}
+
+.collection-card {
+	height: 150px;
+	width: 150px;
+	color: white;
+	background-color: #2196f3;
+	display: inline-block;
+	vertical-align: center;
+	margin: 10px;
+}

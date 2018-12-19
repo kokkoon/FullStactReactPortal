@@ -18,7 +18,7 @@ import DNDFormDesigner from './DNDFormDesigner';
 import Collection from './Collection';
 import CollectionPage from './CollectionPage';
 import SetupPage from './SetupPage';
-import FormList from './FormList';
+import CollectionList from './CollectionList';
 
 class App extends Component {
   componentDidMount(){
@@ -45,7 +45,7 @@ class App extends Component {
           <Route exact path="/form-designer" component={FormDesigner} />
           <Route exact path="/dnd-form-designer" component={DNDFormDesigner} />
           <Route exact path="/setup" component={SetupPage} />
-          <Route exact path="/form" component={FormList} />
+          <Route exact path="/collection-list" component={CollectionList} />
         </div>
 
         </BrowserRouter>
