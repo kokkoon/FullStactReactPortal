@@ -24,6 +24,8 @@ div.active > li > a, div.active > li > a > i {
 
 #slide-out {
 	margin-top: 65px;
+	max-height: 100vh;
+	overflow-y: scroll;
 }
 
 @media screen and (max-width: 600px) {
