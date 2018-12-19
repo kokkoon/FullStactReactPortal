@@ -98,45 +98,14 @@ class CollectionPage extends Component {
                       <td>{r[k]}</td>
                     ))
                   }
-
-                  {/*<td>{r.name}</td>
-                                    <td>{d.date}</td>
-                                    <td>{d.assignedTo}</td>
-                                    <td>{d.done ? <i className="done material-icons">check_circle</i> : <i className="not-done material-icons">do_not_disturb_on</i>}</td>*/}
                 </tr>
               )) 
             }
           </tbody>
         </table>
       </div>
-    );
+    )
   }
-};
-
-// this is config data to configure column table
-CollectionPage.defaultProps = {
-  column: [
-    {
-      label: 'Name',
-      display: true,
-    },
-    {
-      label: 'Date',
-      display: true,
-    },
-    {
-      label: 'Due',
-      display: false,
-    },
-    {
-      label: 'Assigned to',
-      display: true,
-    },
-    {
-      label: 'Done',
-      display: true,
-    },
-  ]
 }
 
 export default CollectionPage;
