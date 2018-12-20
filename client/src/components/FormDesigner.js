@@ -12,6 +12,7 @@ class FormDesigner extends Component {
 		super(props);
 
 		this.state = {
+			formId: undefined,
 			// see formStructure data structure at the bottom of the code
 			formStructure: { title: 'New Collection', type: "object", properties: {} },
 			message: '',
@@ -36,6 +37,7 @@ class FormDesigner extends Component {
 		axios.get(`http://localhost:5000/form?id=${id}`)
 			.then(res => {
 				let { input } = this.state
+				const { formId } = res.data
 				const formStructure = res.data.data
 				const { properties } = formStructure
 				let fields = res.data.column
@@ -82,6 +84,7 @@ class FormDesigner extends Component {
 				input.collectionName = formStructure.title
 
 				this.setState({
+					formId,
 					formStructure,
 					fields,
 					input
@@ -281,10 +284,13 @@ class FormDesigner extends Component {
 				})
 			})
 			.catch(err => console.log(err))
+
+		this.setState({ formStructure })
 	}
 
 	render() {
-		const { 
+		const {
+			formId,
 			formStructure, 
 			formControl, 
 			message,
@@ -305,7 +311,7 @@ class FormDesigner extends Component {
 
 		return (
 			<div className="form-designer">
-				<h4 className="center">Create New Collection</h4>
+				<h4 className="center">{formId ? 'Update Collection' : 'Create New Collection'}</h4>
 				<div className="row">
 					<span className="collection-name-label"> Collection name : </span>
 					<div className="input-field inline collection-name-input">
@@ -380,7 +386,7 @@ class FormDesigner extends Component {
 	        	<a className="waves-effect waves-light btn btn-submit right" 
 		        	 disabled={isEmpty(formStructure.properties) || isEmpty(collectionName)} 
 	        		 onClick={this.handleCreateCollection}>
-				    	Create collection
+				    	{formId ? 'Update Collection' : 'Create collection'}
 				    </a>
 	        </div>
 				</div>
