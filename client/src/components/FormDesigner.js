@@ -128,17 +128,17 @@ class FormDesigner extends Component {
 	updateFormStructure = (fieldName, dataType, defaultValue) => {
 		const { formStructure } = this.state
 
-		if (dataType !== 'date') {
-			formStructure.properties[fieldName] = {
-				title: fieldName,
-				type: dataType,
-				default: defaultValue
-			}
-		} else {
+		if (dataType === 'date') {
 			formStructure.properties[fieldName] = {
 				title: fieldName,
 				type: 'string',
 				format: dataType
+			}
+		} else {
+			formStructure.properties[fieldName] = {
+				title: fieldName,
+				type: dataType,
+				default: defaultValue
 			}
 		}
 
