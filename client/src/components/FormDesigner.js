@@ -364,7 +364,7 @@ class FormDesigner extends Component {
 					</div>
 					<div className="row btn-add-container">
 		        <a className="waves-effect waves-light btn" 
-		        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || isFieldNameExisted} 
+		        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || isFieldNameExisted && !isNewField} 
 		        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
 		        >
 				    	{isNewField ? 'Add' : 'Update'}
