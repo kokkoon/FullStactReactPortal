@@ -33,10 +33,58 @@ class FormDesigner extends Component {
 		const { location } = this.props
 		const id = location.search.slice(4)
 
-		axios.get(`http://localhost:5000/form-designer?id=${id}`)
+		axios.get(`http://localhost:5000/form?id=${id}`)
 			.then(res => {
+				let { input } = this.state
+				const formStructure = res.data.data
+				const { properties } = formStructure
+				let fields = res.data.column
+
+				fields = fields.map(field => { 
+					const { fieldName } = field
+
+					// take data type and default value fields from schema
+					const derivedFields = Object.keys(properties[fieldName]).reduce((obj, key) => {
+							if (key === 'type') {
+								return { 
+									...obj, 
+									dataType : properties[fieldName][key]
+								}
+							} else if (key === 'default') {
+								return { 
+									...obj, 
+									defaultValue : properties[fieldName][key] 
+								}
+							} else if (key === 'format' && properties[fieldName][key] === 'date') {
+								return { 
+									...obj, 
+									dataType: properties[fieldName][key] 
+								}
+							}
+						}, {})	
+
+					return {
+						...field,
+						...derivedFields,
+						action: [
+							{
+								name: 'edit',
+								enable: true
+							},
+							{
+								name: 'delete',
+								enable: true
+							}
+						]
+					}
+				})
+
+				input.collectionName = formStructure.title
+
 				this.setState({
-					formStructure: res.data.data,
+					formStructure,
+					fields,
+					input
 				})
 			})
 			.catch(e => console.error(e))
@@ -132,7 +180,8 @@ class FormDesigner extends Component {
 			formStructure.properties[fieldName] = {
 				title: fieldName,
 				type: 'string',
-				format: dataType
+				format: dataType,
+				default: defaultValue
 			}
 		} else {
 			formStructure.properties[fieldName] = {

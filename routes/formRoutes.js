@@ -129,7 +129,10 @@ module.exports = (app, db) => {
   	formCollection.findOne({id: formId}, (err, form) => {
   		console.log('found form = ', form)
   		if (form.formStructure !== null) {
-				res.send({ data: form.formStructure, column: form.tableColumns })
+				res.send({
+          column: form.tableColumns, 
+          data: form.formStructure
+        })
   		}
   	})
   })
