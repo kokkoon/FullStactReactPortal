@@ -14,6 +14,7 @@ class FormDesigner extends Component {
 
 		this.state = {
 			formId: undefined,
+			isCollectionNameOK: false,
 			// see formStructure data structure at the bottom of the code
 			formStructure: { title: 'New Collection', type: "object", properties: {} },
 			message: '',
@@ -273,20 +274,19 @@ class FormDesigner extends Component {
 		
 		axios.get(`${API_URL}/check-collection-name?name=${collectionName}&id=${formId}`)
 			.then(res => {
-				console.log(res)
-				const { data } = res.data
-				const { currentName } = res.data
-				let message
-				let icon
+				const { data, currentName } = res.data
+				let message, icon, isCollectionNameOK
 
 				// found
 				if (data === 1) {
 					if (currentName === collectionName.toLowerCase()) {
 						message = '<span> Name is the same with current collection name.</span>'
 						icon = '<i class="material-icons">check_circle</i>'
+						isCollectionNameOK = true
 					} else {
 						message = '<span> Name is already used for other collection, please change.</span>'
 						icon = '<i class="material-icons">highlight_off</i>'
+						isCollectionNameOK = false
 					}
 					
 				} 
@@ -294,12 +294,15 @@ class FormDesigner extends Component {
 				else if (data === 0) {
 					message = '<span> Name is unique, you can create new collection with it.</span>'
 					icon = '<i class="material-icons">check_circle</i>'
+					isCollectionNameOK = true
 				}
 
 				M.toast({
 					html: icon + message,
 					displayLength: 5000,
 				})
+
+				this.setState({ isCollectionNameOK })
 			})
 			.catch(e => console.error(e))
 	}
@@ -335,7 +338,8 @@ class FormDesigner extends Component {
 			isNewField, 
 			currentIndex,
 			fields,
-			isFieldNameExisted
+			isFieldNameExisted,
+			isCollectionNameOK
 		} = this.state
 
 		const {
@@ -433,7 +437,7 @@ class FormDesigner extends Component {
 	        </div>
 	        <div className="col s12">
 	        	<a className="waves-effect waves-light btn btn-submit right" 
-		        	 disabled={isEmpty(formStructure.properties) || isEmpty(collectionName)} 
+		        	 disabled={isEmpty(formStructure.properties) || isEmpty(collectionName) || !isCollectionNameOK} 
 	        		 onClick={this.handleCreateCollection}>
 				    	{formId ? 'Update Collection' : 'Create collection'}
 				    </a>
