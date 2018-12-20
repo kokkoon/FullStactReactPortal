@@ -5,6 +5,7 @@ import Form from 'react-jsonschema-form'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import { isEmpty } from 'lodash'
 
+import API_URL from '../utils/api_url'
 import './FormDesigner.css'
 
 class FormDesigner extends Component {
@@ -266,6 +267,43 @@ class FormDesigner extends Component {
 		this.setState({ input	})
 	}
 
+	handleCheckCollectionName = () => {
+		const { formId } = this.state
+		const { collectionName } = this.state.input
+		
+		axios.get(`${API_URL}/check-collection-name?name=${collectionName}&id=${formId}`)
+			.then(res => {
+				console.log(res)
+				const { data } = res.data
+				const { currentName } = res.data
+				let message
+				let icon
+
+				// found
+				if (data === 1) {
+					if (currentName === collectionName.toLowerCase()) {
+						message = '<span> Name is the same with current collection name.</span>'
+						icon = '<i class="material-icons">check_circle</i>'
+					} else {
+						message = '<span> Name is already used for other collection, please change.</span>'
+						icon = '<i class="material-icons">highlight_off</i>'
+					}
+					
+				} 
+				// not found
+				else if (data === 0) {
+					message = '<span> Name is unique, you can create new collection with it.</span>'
+					icon = '<i class="material-icons">check_circle</i>'
+				}
+
+				M.toast({
+					html: icon + message,
+					displayLength: 5000,
+				})
+			})
+			.catch(e => console.error(e))
+	}
+
 	handleCreateCollection = () => {
 		const { location } = this.props
 		const id = location.search.slice(4)
@@ -313,75 +351,86 @@ class FormDesigner extends Component {
 			<div className="form-designer">
 				<h4 className="center">{formId ? 'Update Collection' : 'Create New Collection'}</h4>
 				<div className="row">
-					<span className="collection-name-label"> Collection name : </span>
-					<div className="input-field inline collection-name-input">
-						<input id="collection_name" type="text" value={collectionName} onChange={(e) => this.handleInputChange('collection_name', e)}/>
-					</div>
-					<span className="document-fields-label">Document fields</span>
-					<table className="table-collection centered responsive-table">
-	          <thead>
-	            <tr>
-	              { documentFieldsTableHeader.map(header => <th className={header === "Name" ? "left" : ""}>{header}</th>) }
-	            </tr>
-	          </thead>
+					<div className="col s12">
+						<span className="collection-name-label"> Collection name : </span>
+						<div className="input-field inline collection-name-input">
+							<input id="collection_name" type="text" value={collectionName} onChange={(e) => this.handleInputChange('collection_name', e)}/>
+						</div>
+						<a className="waves-effect waves-light btn btn-check-collection-name tooltipped"
+							 disabled={this.isEmptyString(collectionName)}
+							 data-position="right"
+							 data-tooltip="Check collection name"
+	        		 onClick={this.handleCheckCollectionName}>
+				    	Check
+				    </a>
+			    </div>
+			    <div className="col s12">
+						<span className="document-fields-label">Document fields</span>
+						<table className="table-collection centered responsive-table">
+		          <thead>
+		            <tr>
+		              { documentFieldsTableHeader.map(header => <th className={header === "Name" ? "left" : ""}>{header}</th>) }
+		            </tr>
+		          </thead>
 
-	          <tbody>
-	            { 
-	              !fields && <p> loading .... </p>
-	            }
-	            { 
-	              fields && fields.map((field, index) => (
-	                <tr>
-	                  <td className="left">{field.fieldName}</td>
-	                  <td>{field.dataType}</td>
-	                  <td>{field.defaultValue}</td>
-	                  <td>
-	                  	<label>
-								        <input 
-								        	type="checkbox" 
-								        	className="filled-in" 
-								        	checked={field.showInTable? "checked" : ""} 
-								        	onClick={this.handleCheck.bind(this, index)} 
-								        />
-								        <span> </span>
-								      </label>
-								    </td>
-								    <td>
-								    {
-								    	field.action.map(action => {
-								    		if (action.name === 'edit') {
-							    				return (
-							    			    <a className={action.enable 
-							    			    							? "waves-effect waves-light btn btn-action blue lighten-2 tooltipped"
-							    			    							: "waves-effect waves-light btn btn-action blue lighten-2 disabled"}
-							    			    	 data-position="bottom" 
-							    			    	 data-tooltip="edit field"
-							    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
-							    			    >
-							    			    	<i className="material-icons">{action.name}</i>
-							    			    </a>
-							    			  )
-						    			  } else if (action.name === 'delete') {
-						    			  	return (
-							    			    <a className={action.enable 
-							    			    							? "waves-effect waves-light btn btn-action red lighten-2 tooltipped"
-							    			    							: "waves-effect waves-light btn btn-action red lighten-2 disabled"}
-							    			    	 data-position="bottom" 
-							    			    	 data-tooltip="delete field"
-							    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
-							    			    >
-							    			    	<i className="material-icons">{action.name}</i>
-							    			    </a>
-							    			  )
-						    			  }
-								    	})
-								    }
-								    </td>
-	                </tr>
-	              )) 
-	            }
-	          </tbody>
-	        </table>
+		          <tbody>
+		            { 
+		              !fields && <p> loading .... </p>
+		            }
+		            { 
+		              fields && fields.map((field, index) => (
+		                <tr>
+		                  <td className="left">{field.fieldName}</td>
+		                  <td>{field.dataType}</td>
+		                  <td>{field.defaultValue}</td>
+		                  <td>
+		                  	<label>
+									        <input 
+									        	type="checkbox" 
+									        	className="filled-in" 
+									        	checked={field.showInTable? "checked" : ""} 
+									        	onClick={this.handleCheck.bind(this, index)} 
+									        />
+									        <span> </span>
+									      </label>
+									    </td>
+									    <td>
+									    {
+									    	field.action.map(action => {
+									    		if (action.name === 'edit') {
+								    				return (
+								    			    <a className={action.enable 
+								    			    							? "waves-effect waves-light btn btn-action blue lighten-2 tooltipped"
+								    			    							: "waves-effect waves-light btn btn-action blue lighten-2 disabled"}
+								    			    	 data-position="bottom" 
+								    			    	 data-tooltip="edit field"
+								    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
+								    			    >
+								    			    	<i className="material-icons">{action.name}</i>
+								    			    </a>
+								    			  )
+							    			  } else if (action.name === 'delete') {
+							    			  	return (
+								    			    <a className={action.enable 
+								    			    							? "waves-effect waves-light btn btn-action red lighten-2 tooltipped"
+								    			    							: "waves-effect waves-light btn btn-action red lighten-2 disabled"}
+								    			    	 data-position="bottom" 
+								    			    	 data-tooltip="delete field"
+								    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
+								    			    >
+								    			    	<i className="material-icons">{action.name}</i>
+								    			    </a>
+								    			  )
+							    			  }
+									    	})
+									    }
+									    </td>
+		                </tr>
+		              )) 
+		            }
+		          </tbody>
+		        </table>
+	        </div>
 	        <div className="col s12">
 	        	<a className="waves-effect waves-light btn btn-submit right" 
 		        	 disabled={isEmpty(formStructure.properties) || isEmpty(collectionName)} 
@@ -428,6 +477,11 @@ class FormDesigner extends Component {
         </div>
       </div>
 		)
+	}
+
+	// helper functions always put below the main code
+	isEmptyString(string) {
+		return /^\s*$/.test(string)
 	}
 }
 

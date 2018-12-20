@@ -4,7 +4,7 @@
 }
 
 .collection-name-input {
-	width: 200px !important;
+	width: 270px !important;
 }
 
 .collection-name-input > input {
@@ -17,6 +17,11 @@
 	font-size: 15px;
 	display: inline-block;
 	margin-right: 8px;
+}
+
+.btn-check-collection-name {
+	margin-left: 10px;
+	margin-bottom: 5px;
 }
 
 .document-fields-label {

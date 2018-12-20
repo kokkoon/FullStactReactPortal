@@ -67,6 +67,32 @@ module.exports = (app, db) => {
   	}
   })
 
+  // check if collection name already exist in DB
+  app.get('/check-collection-name', (req, res) => {
+    const formCollection = db.collection('form')
+    const url = URL.parse(req.url, true)
+    const name = url.query.name.toLowerCase()
+    const id = url.query.id
+
+    formCollection.find({collectionName: name}).toArray((err, result) => {
+      if (err) console.error(err)
+      console.log('check result = ', result)
+      if (result.length === 0) {
+        res.send({ data: 0, message: 'not found' })
+      } else {
+        formCollection.findOne({id}, (err, form) => {
+          if (err) console.error(err)
+          console.log('form = ', form)
+          if (form !== null) {
+            res.send({ data: 1, currentName: form.collectionName, message: 'found' })
+          } else {
+            res.send({ data: 1, message: 'found' })
+          }
+        })
+      }
+    })
+  })
+
   // create/update and save the new form to DB
   app.post('/create-form', (req, res) => {
   	const formCollection = db.collection('form')
@@ -74,7 +100,7 @@ module.exports = (app, db) => {
   	const formId = url.query.id
   	let counter = 0
   	const formStructure = req.body.formStructure
-    const collectionName = req.body.collectionName
+    const collectionName = req.body.collectionName.toLowerCase()
     const tableColumns = req.body.tableColumns
 
   	formCollection.find({}).toArray((err, result) => {
@@ -157,20 +183,46 @@ module.exports = (app, db) => {
   	})
   })
 
+  // get dynamic sidenav links based on created collection
   app.get('/sidenav-links', (req, res) => {
   	const formCollection = db.collection('form')
   	formCollection.find({}).toArray((err, result) => {
   		console.log('result = ', result)
+
   		const data = result.map(r => 
-  			({ 
-  				name: r.collectionName,
-  				route: r.route,
-  				icon: r.icon,
-  				text: r.collectionName
-  			})
+  			{
+          // send Pascalcase collection name
+          let { collectionName } = r
+          collectionName = collectionName.charAt(0).toUpperCase() + collectionName.slice(1)
+
+          return { 
+    				name: collectionName,
+    				route: r.route,
+    				icon: r.icon,
+    				text: collectionName
+    			}
+        }
   		)
   		res.send({ data })
   	})
+  })
+
+  // delete a document in a collection
+  app.delete('/delete-document', (req, res) => {
+    const url = URL.parse(req.url, true)
+    const doc = url.query.document
+    const form = url.query.form
+    const collection = db.collection(form)
+
+    collection.deleteOne({collectionName: doc}, (err, obj) => {
+      if (err) console.error(err)
+      console.log('deleted = ', obj.result.n)
+      if (obj.result.n > 0) {
+        res.send({ message: `success delete document ${doc} from ${form} collection` })
+      } else {
+        res.send({ message: `no document ${doc} in ${form} collection` })
+      }
+    })
   })
 
   // clear form collection in DB
