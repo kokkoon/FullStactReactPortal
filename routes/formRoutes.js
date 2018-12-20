@@ -5,7 +5,10 @@ const cuid = require('cuid')
 const URL = require('url')
 const { isEmpty } = lodash
 
-module.exports = (app, db) => {	  
+const mongoUtil = require( '../services/mongoUtil' );
+const db = mongoUtil.getDB();
+
+module.exports = (app) => {	  
   app.use(cors());
 
   // store new form type and form instance altogether in DB

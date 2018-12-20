@@ -1,21 +1,17 @@
 const express = require('express');
-// change mongoDB driver to mongodb instead of mongoose
-// const mongoose = require('mongoose'); 
-const mongodb = require('mongodb');
+const mongoUtil = require( './services/mongoUtil' );
 const cookieSession = require('cookie-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
 
 const keys = require('./config/keys');
-const mongoClient = new mongodb.MongoClient(keys.mongoURI);
 require('./models/User');
 require('./models/Task');
 require('./services/passport');
 
-mongoClient.connect(err => {
+mongoUtil.connectToDB(err => {
   if (err) console.error(err)
   console.log('Connected to MongoDB successfully')
-  var db = mongoClient.db('flowngin-dev')
 
   const app = express();
 
@@ -33,7 +29,7 @@ mongoClient.connect(err => {
   require('./routes/billingRoutes')(app);
   require('./routes/taskRoutes')(app);
   require('./routes/collectionRoutes')(app);
-  require('./routes/formRoutes')(app, db);
+  require('./routes/formRoutes')(app);
 
   if (process.env.NODE_ENV === 'production') {
     // Express will serve up production assets
