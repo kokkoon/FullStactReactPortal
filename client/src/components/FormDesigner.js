@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
 import axios from 'axios'
 import Form from 'react-jsonschema-form'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import { isEmpty } from 'lodash'
 
 import API_URL from '../utils/api_url'
+import * as ACT from '../actions'
 import './FormDesigner.css'
 
 class FormDesigner extends Component {
@@ -308,7 +310,7 @@ class FormDesigner extends Component {
 	}
 
 	handleCreateCollection = () => {
-		const { location } = this.props
+		const { location, loadCollectionNavItemLinks } = this.props
 		const id = location.search.slice(4)
 		const { formStructure, input, fields } = this.state
 		const tableColumns = fields.reduce((arr, field) => {
@@ -323,6 +325,8 @@ class FormDesigner extends Component {
 				this.setState({
 					message: res.data.message
 				})
+
+				loadCollectionNavItemLinks()
 			})
 			.catch(err => console.log(err))
 
@@ -535,4 +539,16 @@ FormDesigner.defaultProps = {
 	]
 }
 
-export default FormDesigner
+const mapStateToProps = (state) => {
+  return {
+    
+  }
+}
+
+const mapDispacthToProps = (dispatch) => {
+	return {
+		loadCollectionNavItemLinks: () => dispatch(ACT.loadCollectionNavItemLinks())
+	}
+}
+
+export default connect(mapStateToProps, mapDispacthToProps)(FormDesigner)

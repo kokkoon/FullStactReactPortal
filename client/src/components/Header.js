@@ -10,7 +10,7 @@ import Sidenav from './Sidenav';
 
 class Header extends Component {
   renderContent() {
-    switch (this.props.auth) {
+    switch (this.props.user) {
       case null: 
       case false:
         return <li><a href="/auth/google">Login With Google</a></li>;
@@ -18,7 +18,7 @@ class Header extends Component {
         return [
           <li key="1"><Payments /></li>,
           <li key="3" style={{ margin: '0 10px'}}>
-            Credits: {this.props.auth.credits}
+            Credits: {this.props.user.credits}
           </li>,
           <li key="2"><a href="/api/logout">Logout</a></li>
         ];
@@ -34,7 +34,7 @@ class Header extends Component {
         </Fragment>
          <div className="nav-wrapper">
           <Link
-            to={this.props.auth ? '/dashboard' : '/'}
+            to={this.props.user ? '/dashboard' : '/'}
             className="brand-logo left"
           >
              FLOWNGIN
@@ -48,8 +48,8 @@ class Header extends Component {
   }
 }
 
-function mapStateToProps({ auth }) {
-  return { auth };
+function mapStateToProps({ user }) {
+  return { user };
 }
 
 export default connect(mapStateToProps) (Header);

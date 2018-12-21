@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
 import API_URL from '../utils/api_url'
 import './Sidenav.css'
+import * as ACT from '../actions'
 
 class Sidenav extends Component {
 	constructor(props) {
@@ -17,14 +19,24 @@ class Sidenav extends Component {
 	}
 
 	componentWillMount() {
-		const { userGroupLinkAccess, currentUserGroup, collectionNavItem } = this.props
 		const pathname = window.location.pathname.slice(1)
 		const query = window.location.search.slice(4)
 		let selectedNavItem
+		const { 
+			userGroupLinkAccess, 
+			currentUserGroup, 
+			collectionNavItem, 
+			user,
+			collectionNavItemLinks,
+			loadCollectionNavItemLinks 
+		} = this.props
+		
+		// get collection links from backend
+		if (user) loadCollectionNavItemLinks()
 
 		// show menu based on user group authorization
 		const shownCollectionNavItemLinks =
-			collectionNavItem.links.filter(item => 
+			collectionNavItemLinks.filter(item => 
 				userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
 
 		const offset = shownCollectionNavItemLinks.length
@@ -53,21 +65,12 @@ class Sidenav extends Component {
 
 			this.setState({ selectedNavItem })
 		}
-
-		// get collection data from backend
-		axios.get(`${API_URL}/sidenav-links`)
-			.then(res => {
-				this.setState({
-					collectionNavItemLinks: res.data.data
-				})
-			})
-			.catch(e => console.error(e))
 	}
 
 	componentDidMount() {
 		document.addEventListener('DOMContentLoaded', function() {
-			var elems = document.querySelectorAll('.sidenav');
-		  var instances = M.Sidenav.init(elems);
+			let sidenav = document.querySelectorAll('.sidenav');
+		  var sidenavinstances = M.Sidenav.init(sidenav);
 		})
 	}
 
@@ -78,12 +81,14 @@ class Sidenav extends Component {
 	}
 
 	render() {
-		const { selectedNavItem, collectionNavItemLinks } = this.state;
+		const { selectedNavItem } = this.state;
 		const { 
+			user,
 			defaultNavItem, 
 			collectionNavItem, 
 			userGroupLinkAccess, 
-			currentUserGroup 
+			currentUserGroup,
+			collectionNavItemLinks
 		} = this.props;
 
 		// show menu based on user group authorization
@@ -97,7 +102,7 @@ class Sidenav extends Component {
 				// userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
 		// console.log('shownCollectionNavItemLinks = ', shownCollectionNavItemLinks)
 		
-		const offset = shownCollectionNavItemLinks.length
+		const offset = shownCollectionNavItemLinks ? shownCollectionNavItemLinks.length : 0
 
 		return (
 			<>
@@ -109,7 +114,7 @@ class Sidenav extends Component {
 			    	<li><a class="subheader" className="subheader">{collectionNavItem.header}</a></li>
 			    }
 			    {
-			    	shownCollectionNavItemLinks.map((item, i) => (
+			    	shownCollectionNavItemLinks && shownCollectionNavItemLinks.map((item, i) => (
 			    		<div key={i} >
 				    		<div className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
 					    		<li>
@@ -146,10 +151,20 @@ class Sidenav extends Component {
 			    	shownDefaultNavItemLinks.map((item, i) => (
 			    		<div key={i} className={selectedNavItem === offset + i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, offset + i)}>
 				    		<li>
-						    	<Link to={item.route}>
-						    		<i class="material-icons">{item.icon}</i>
-						    		{item.text}
-						    	</Link>
+						    	{
+						    		user && 
+						    		<Link to={item.route}>
+							    		<i className="material-icons">{item.icon}</i>
+							    		{item.text}
+							    	</Link>
+						    	}
+						    	{
+						    		!user && 
+						    		<a className="modal-trigger" href="#modal1">
+							    		<i className="material-icons">{item.icon}</i>
+							    		{item.text}
+							    	</a>
+						    	}
 						    </li>
 						  </div>
 			    	))
@@ -159,6 +174,13 @@ class Sidenav extends Component {
 			  		<li><div class="divider"></div></li>
 			  	}
 			  </ul>
+
+			  <div id="modal1" className="modal">
+			  	<div className="modal-content">
+						<i className="large material-icons">info</i>
+			      <h5>Please login to access the page</h5>
+			    </div>
+			  </div>
 	    </>
 		);
 	}
@@ -249,6 +271,19 @@ Sidenav.defaultProps = {
 	// current group that the user belongs
 	// test: change below value to be: 'admin' or 'premiumUser'
 	currentUserGroup: 'admin'
-} 
+}
 
-export default Sidenav;
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+    collectionNavItemLinks: state.user ? state.user.collectionNavItemLinks : [],
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		loadCollectionNavItemLinks: () => dispatch(ACT.loadCollectionNavItemLinks())
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Sidenav);
