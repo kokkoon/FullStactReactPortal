@@ -173,11 +173,6 @@ Sidenav.defaultProps = {
 				icon: 'assignment',
 				text: 'Task list',
 			},
-			{	name: 'setup-page',
-				route: '/setup',
-				icon: 'settings',
-				text: 'Setup page', 
-			},
 			{	name: 'form-list',
 				route: '/collection-list',
 				icon: 'apps',
@@ -236,8 +231,7 @@ Sidenav.defaultProps = {
 	// in the strings array
 	userGroupLinkAccess:  {
 		admin: [
-			'dashboard', 
-			'setup-page',
+			'dashboard',
 			'form-list',
 			'record', 
 			'user',
