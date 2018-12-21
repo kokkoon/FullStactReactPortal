@@ -13,7 +13,7 @@ passport.use(
       callbackURL: '/auth/google/callback',
       proxy: true
     },
-    async (accessToken, refreshToken, profile, done) => {
+    (accessToken, refreshToken, profile, done) => {
       User.findOne({ googleId: profile.id }, (err, user) => {
         if (err) console.error(err)
 

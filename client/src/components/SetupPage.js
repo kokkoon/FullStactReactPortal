@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 
+import API_URL from '../utils/api_url'
 import './SetupPage.css'
 
 class SetupPage extends Component {
@@ -14,7 +15,7 @@ class SetupPage extends Component {
 
 	componentWillMount() {
 		// get form data from backend
-		axios.get('http://localhost:5000/collection-list')
+		axios.get(`${API_URL}/collection-list`)
 			.then(res => {
 				this.setState({
 					collectionList: res.data.data

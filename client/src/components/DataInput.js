@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import Form from 'react-jsonschema-form'
 
+import API_URL from '../utils/api_url'
 import './DataInput.css'
 
 class DataInput extends Component {
@@ -32,7 +33,7 @@ class DataInput extends Component {
 		const { location } = this.props
 		const formId = location.search.slice(4)
 
-		axios.post(`http://localhost:5000/record?id=${formId}`, formData.formData)
+		axios.post(`${API_URL}/record?id=${formId}`, formData.formData)
 			.then(res => console.log(res))
 			.catch(err => console.log(err))
 	}

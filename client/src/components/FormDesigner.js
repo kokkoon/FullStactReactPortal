@@ -36,7 +36,7 @@ class FormDesigner extends Component {
 		const { location } = this.props
 		const id = location.search.slice(4)
 
-		axios.get(`http://localhost:5000/form?id=${id}`)
+		axios.get(`${API_URL}/form?id=${id}`)
 			.then(res => {
 				let { input } = this.state
 				const { formId } = res.data
@@ -317,7 +317,7 @@ class FormDesigner extends Component {
 		
 		formStructure.title = input.collectionName
 
-		axios.post(`http://localhost:5000/create-form?id=${id}`, 
+		axios.post(`${API_URL}/create-form?id=${id}`, 
 							 { collectionName: input.collectionName, tableColumns, formStructure })
 			.then(res => {
 				this.setState({

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
+import API_URL from '../utils/api_url'
 import './Sidenav.css'
 
 class Sidenav extends Component {
@@ -54,7 +55,7 @@ class Sidenav extends Component {
 		}
 
 		// get collection data from backend
-		axios.get('http://localhost:5000/sidenav-links')
+		axios.get(`${API_URL}/sidenav-links`)
 			.then(res => {
 				this.setState({
 					collectionNavItemLinks: res.data.data

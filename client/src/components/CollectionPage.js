@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import { isEmpty } from 'lodash'
 
+import API_URL from '../utils/api_url'
 import './CollectionPage.css'
-
 
 class CollectionPage extends Component {
 	constructor(props) {
@@ -20,7 +20,7 @@ class CollectionPage extends Component {
 	componentWillMount() {
 		const id = window.location.search.slice(4)
 
-    axios.get(`http://localhost:5000/form/?id=${id}`)
+    axios.get(`${API_URL}/form/?id=${id}`)
       .then(res => {
         const collectionName = res.data.data.title
         const rawColumn = res.data.column
@@ -33,7 +33,7 @@ class CollectionPage extends Component {
       })
       .catch(err => console.log(err))
 
-    axios.get(`http://localhost:5000/record/?id=${id}`)
+    axios.get(`${API_URL}/record/?id=${id}`)
       .then(res => {
         this.setState({ 
           record: res.data.data
@@ -46,7 +46,7 @@ class CollectionPage extends Component {
 		const id = window.location.search.slice(4)
 
     if (id !== this.state.id) {
-      axios.get(`http://localhost:5000/form/?id=${id}`)
+      axios.get(`${API_URL}/form/?id=${id}`)
       .then(res => {
         const collectionName = res.data.data.title
         const rawColumn = res.data.column
@@ -59,7 +59,7 @@ class CollectionPage extends Component {
       })
       .catch(err => console.log(err))
 
-      axios.get(`http://localhost:5000/record/?id=${id}`)
+      axios.get(`${API_URL}/record/?id=${id}`)
       .then(res => {
         this.setState({ record: res.data.data })
       })
