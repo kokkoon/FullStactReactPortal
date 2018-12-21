@@ -37,7 +37,7 @@ class CollectionList extends Component {
 				</a>
 				{
 					collectionList.map(collection => (
-						<a href={collection.urlForm}>
+						<a href={collection.urlDesigner}>
 							<div className="collection-card">
 								{collection.name}
 							</div>
