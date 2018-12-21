@@ -70,7 +70,12 @@ class Sidenav extends Component {
 	componentDidMount() {
 		document.addEventListener('DOMContentLoaded', function() {
 			let sidenav = document.querySelectorAll('.sidenav');
-		  var sidenavinstances = M.Sidenav.init(sidenav);
+		  var instances = M.Sidenav.init(sidenav);
+		})
+
+		document.addEventListener('DOMContentLoaded', function() {
+			let modal = document.querySelectorAll('.modal');
+		  var instances = M.Modal.init(modal);
 		})
 	}
 
@@ -81,7 +86,7 @@ class Sidenav extends Component {
 	}
 
 	render() {
-		const { selectedNavItem } = this.state;
+		const { selectedNavItem } = this.state
 		const { 
 			user,
 			defaultNavItem, 

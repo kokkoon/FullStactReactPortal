@@ -28,11 +28,6 @@ div.active > li > a, div.active > li > a > i {
 	overflow-y: auto;
 }
 
-#modal1 {
-	display: flex;
-	justify-content: center;
-}
-
 #modal1 > .modal-content {
 	color: black;
 	height: 30vh;
