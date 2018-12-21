@@ -75,9 +75,11 @@ class CollectionPage extends Component {
 
     return (
       <div className="record center">
-      	<h5 className="collection-title">/ {collectionName}</h5>
-        <div className="button-new">
-          <a className="waves-effect waves-light btn" href={`/data-input?id=${id}`}>New</a>
+        <div className="row">
+        	<h5 className="collection-title">/ {collectionName}</h5>
+          <span className="button-new">
+            <a className="waves-effect waves-light btn" href={`/data-input?id=${id}`}>New</a>
+          </span>
         </div>
         <table className="table-collection">
           <thead>

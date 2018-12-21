@@ -1,5 +1,14 @@
+.record .row {
+	position: relative;
+	height: 3rem;
+	margin-top: 10px;
+}
+
 .collection-title {
+	display: inline-block;
 	text-align: left;
+	position: absolute;
+	left: 0;
 }
 
 .table-collection {
@@ -8,9 +17,11 @@
 }
 
 .button-new {
-	text-align: left;
-	margin-top: 20px;
-	margin-bottom: 10px;
+	display: inline-block;
+	text-align: right;
+	position: absolute;
+	right: 0;
+	margin-top: 10px;
 }
 
 .button-new a {
