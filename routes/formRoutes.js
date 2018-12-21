@@ -12,7 +12,7 @@ module.exports = (app) => {
   app.use(cors());
 
   // store new form type and form instance altogether in DB
-  app.post('/record', (req, res) => {
+  app.post('/api/record', (req, res) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
   	const formInstanceId = cuid()
@@ -52,7 +52,7 @@ module.exports = (app) => {
   })
 
   // get the record of form instance by form id & instanceId from DB
-  app.get('/record', (req, res) => {
+  app.get('/api/record', (req, res) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
   	const formInstanceId = url.query.instanceId
@@ -72,7 +72,7 @@ module.exports = (app) => {
   })
 
   // check if collection name already exist in DB
-  app.get('/check-collection-name', (req, res) => {
+  app.get('/api/check-collection-name', (req, res) => {
     const formCollection = db.collection('form')
     const url = URL.parse(req.url, true)
     const name = url.query.name.toLowerCase()
@@ -98,7 +98,7 @@ module.exports = (app) => {
   })
 
   // create/update and save the new form to DB
-  app.post('/create-form', (req, res) => {
+  app.post('/api/create-form', (req, res) => {
   	const formCollection = db.collection('form')
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
@@ -151,7 +151,7 @@ module.exports = (app) => {
   })
 
   // get form schema to be rendered in jsonschema-form
-  app.get('/form', (req, res) => {
+  app.get('/api/form', (req, res) => {
   	const formCollection = db.collection('form')
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
@@ -171,7 +171,7 @@ module.exports = (app) => {
   })
 
   // get all type of forms in DB
-  app.get('/collection-list', (req, res) => {
+  app.get('/api/collection-list', (req, res) => {
   	const formCollection = db.collection('form')
   	formCollection.find({}).toArray((err, result) => {
   		console.log('result = ', result)
@@ -188,7 +188,7 @@ module.exports = (app) => {
   })
 
   // get dynamic sidenav links based on created collection
-  app.get('/sidenav-links', (req, res) => {
+  app.get('/api/sidenav-links', (req, res) => {
   	const formCollection = db.collection('form')
   	formCollection.find({}).toArray((err, result) => {
   		console.log('result = ', result)
@@ -212,7 +212,7 @@ module.exports = (app) => {
   })
 
   // delete a document in a collection
-  app.delete('/delete-document', (req, res) => {
+  app.delete('/api/delete-document', (req, res) => {
     const url = URL.parse(req.url, true)
     const doc = url.query.document
     const form = url.query.form
@@ -230,7 +230,7 @@ module.exports = (app) => {
   })
 
   // clear form collection in DB
-  app.get('/clear-form', (req, res) => {
+  app.get('/api/clear-form', (req, res) => {
   	const formCollection = db.collection('form')
 
   	formCollection.deleteMany({}, (err, result) => {
@@ -241,7 +241,7 @@ module.exports = (app) => {
   })
 
   // delete a collection in DB
-  app.get('/delete-collection', (req, res) => {
+  app.get('/api/delete-collection', (req, res) => {
   	const url = URL.parse(req.url, true)
   	const name = url.query.name
   	const collection = db.collection(name)
@@ -254,7 +254,7 @@ module.exports = (app) => {
   })
 
   // get the all collections in DB
-  app.get('/all-collection', (req, res) => {
+  app.get('/api/all-collection', (req, res) => {
   	db.listCollections().toArray((err, result) => {
   		console.log('result = ', result)
   		res.send({ result })
@@ -262,7 +262,7 @@ module.exports = (app) => {
   })
 
   // find collection by name in DB
-  app.get('/collection', (req, res) => {
+  app.get('/api/collection', (req, res) => {
   	const url = URL.parse(req.url, true)
   	const name = url.query.name
   	const collection = db.collection(name)
