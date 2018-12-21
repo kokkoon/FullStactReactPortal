@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { FETCH_USER, FETCH_TASKS } from './types';
+
+import API_URL from '../utils/api_url'
+import { 
+	FETCH_USER, 
+	FETCH_TASKS,
+	LOAD_COLLECTION_NAV_ITEM_LINKS
+} from './types';
 
 export const fetchUser = () => async dispatch => {
    const res = await axios.get('/api/current_user');
@@ -25,3 +31,13 @@ export const fetchTasks = () => async dispatch => {
 
   dispatch({ type: FETCH_TASKS, payload: res.data });
 };
+
+export const loadCollectionNavItemLinks = () => {
+	return (dispatch) => {
+		axios.get(`${API_URL}/sidenav-links`)
+			.then(res => {
+				dispatch({ type: LOAD_COLLECTION_NAV_ITEM_LINKS, payload: res.data.data })
+			})
+			.catch(e => console.error(e))
+	}
+}
