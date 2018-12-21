@@ -31,15 +31,12 @@ class Sidenav extends Component {
 			loadCollectionNavItemLinks 
 		} = this.props
 		
-		// get collection links from backend
-		if (user) loadCollectionNavItemLinks()
-
 		// show menu based on user group authorization
-		const shownCollectionNavItemLinks =
+		const shownCollectionNavItemLinks = collectionNavItemLinks ?
 			collectionNavItemLinks.filter(item => 
-				userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
+				userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0) : []
 
-		const offset = shownCollectionNavItemLinks.length
+		const offset = collectionNavItemLinks ? shownCollectionNavItemLinks.length : 0
 
 		if (pathname.length > 0) {
 			switch (pathname) {
@@ -65,17 +62,17 @@ class Sidenav extends Component {
 
 			this.setState({ selectedNavItem })
 		}
+
+		// get collection links from backend
+		loadCollectionNavItemLinks()
 	}
 
 	componentDidMount() {
 		document.addEventListener('DOMContentLoaded', function() {
 			let sidenav = document.querySelectorAll('.sidenav');
-		  var instances = M.Sidenav.init(sidenav);
-		})
-
-		document.addEventListener('DOMContentLoaded', function() {
-			let modal = document.querySelectorAll('.modal');
-		  var instances = M.Modal.init(modal);
+		  var sidenavinstances = M.Sidenav.init(sidenav);
+		  let modal = document.querySelectorAll('.modal');
+		  var modalinstances = M.Modal.init(modal);
 		})
 	}
 
@@ -101,7 +98,7 @@ class Sidenav extends Component {
 			defaultNavItem.links.filter(item => 
 				userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
 		
-		const shownCollectionNavItemLinks = collectionNavItemLinks
+		const shownCollectionNavItemLinks = user.isLoggedIn ? collectionNavItemLinks : []
 
 			// collectionNavItem.links.filter(item => 
 				// userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
@@ -157,14 +154,14 @@ class Sidenav extends Component {
 			    		<div key={i} className={selectedNavItem === offset + i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, offset + i)}>
 				    		<li>
 						    	{
-						    		user && 
+						    		user.isLoggedIn && 
 						    		<Link to={item.route}>
 							    		<i className="material-icons">{item.icon}</i>
 							    		{item.text}
 							    	</Link>
 						    	}
 						    	{
-						    		!user && 
+						    		!user.isLoggedIn && 
 						    		<a className="modal-trigger" href="#modal1">
 							    		<i className="material-icons">{item.icon}</i>
 							    		{item.text}

@@ -10,11 +10,10 @@ import Sidenav from './Sidenav';
 
 class Header extends Component {
   renderContent() {
-    switch (this.props.user) {
-      case null: 
+    switch (this.props.user.isLoggedIn) {
       case false:
-        return <li><a href="/auth/google">Login With Google</a></li>;
-      default:
+        return <li><a href="/auth/google">Login With Google</a></li>
+      case true:
         return [
           <li key="1"><Payments /></li>,
           <li key="3" style={{ margin: '0 10px'}}>
@@ -22,6 +21,8 @@ class Header extends Component {
           </li>,
           <li key="2"><a href="/api/logout">Logout</a></li>
         ];
+      default:
+        return <li><a href="/auth/google">Login With Google</a></li>
     }
   }
 
