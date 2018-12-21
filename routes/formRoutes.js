@@ -44,7 +44,8 @@ module.exports = (app) => {
   		if (err) console.error(err)
   		console.log('inserted = ', result.insertedCount)
   		res.send({ 
-  			message: 'success add form to DB',
+        result: 1,
+  			message: 'success add data',
   			data: { formInstanceId } 
   		})
   	})

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import Form from 'react-jsonschema-form'
+import M from 'materialize-css/dist/js/materialize.min.js'
 
 import API_URL from '../utils/api_url'
 import './DataInput.css'
@@ -18,7 +19,7 @@ class DataInput extends Component {
 		const { location } = this.props
 		const formId = location.search.slice(4)
 
-		axios.get(`http://localhost:5000/form?id=${formId}`)
+		axios.get(`${API_URL}/form?id=${formId}`)
 			.then(res => {
 				this.setState({
 					formStructure: res.data.data
@@ -34,7 +35,15 @@ class DataInput extends Component {
 		const formId = location.search.slice(4)
 
 		axios.post(`${API_URL}/record?id=${formId}`, formData.formData)
-			.then(res => console.log(res))
+			.then(res => {
+				if (res.data.result) {
+					M.toast({
+						html: 'Data submitted'
+					})
+					
+					window.location = `/collection?id=${formId}`
+				}
+			})
 			.catch(err => console.log(err))
 	}
 
