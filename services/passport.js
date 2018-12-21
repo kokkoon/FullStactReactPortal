@@ -1,19 +1,19 @@
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const mongoose = require('mongoose');
-const keys = require('../config/keys');
+const passport = require('passport')
+const GoogleStrategy = require('passport-google-oauth20').Strategy
+const mongoUtil = require('./mongoUtil')
+const keys = require('../config/keys')
 
-const User = mongoose.model('users');
+const User = mongoUtil.getDB().collection('users')
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
+  done(null, user.googleId)
+})
 
-passport.deserializeUser((id, done) => {
-  User.findById(id).then(user => {
-    done(null, user);
-  });
-});
+passport.deserializeUser((googleId, done) => {
+  User.findOne({ googleId }, (err, user) => {
+    done(err, user)
+  })
+})
 
 passport.use(
   new GoogleStrategy(
@@ -24,14 +24,16 @@ passport.use(
       proxy: true
     },
     async (accessToken, refreshToken, profile, done) => {
-      const existingUser = await User.findOne({ googleId: profile.id });
+      User.findOne({ googleId: profile.id }, (err, user) => {
+        if (err) console.error(err)
 
-      if (existingUser) {
-        return done(null, existingUser);
-      }
-
-      const user = await new User({ googleId: profile.id }).save();
-      done(null, user);
+        if (user) return done(null, user)
+        else {
+          User.insertOne({ googleId: profile.id, credits: 0 }, (err, obj) => {
+            if (obj.result.ok) done(null, obj.ops[0])
+          })
+        }
+      })
     }
   )
-);
+)

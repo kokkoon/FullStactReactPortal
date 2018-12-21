@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -11,8 +11,7 @@ import Sidenav from './Sidenav';
 class Header extends Component {
   renderContent() {
     switch (this.props.auth) {
-      case null:
-        return;
+      case null: 
       case false:
         return <li><a href="/auth/google">Login With Google</a></li>;
       default:
@@ -27,11 +26,12 @@ class Header extends Component {
   }
 
   render() {
+    console.log(this.props)
     return (
       <nav>
-        <>
+        <Fragment>
           <Sidenav />
-        </>
+        </Fragment>
          <div className="nav-wrapper">
           <Link
             to={this.props.auth ? '/dashboard' : '/'}
@@ -48,7 +48,7 @@ class Header extends Component {
   }
 }
 
-function mapStateToProps({ auth}) {
+function mapStateToProps({ auth }) {
   return { auth };
 }
 

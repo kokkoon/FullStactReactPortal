@@ -7,12 +7,13 @@ const bodyParser = require('body-parser');
 const keys = require('./config/keys');
 require('./models/User');
 require('./models/Task');
-require('./services/passport');
 
 mongoUtil.connectToDB(err => {
   if (err) console.error(err)
   console.log('Connected to MongoDB successfully')
-
+  
+  require('./services/passport');
+  
   const app = express();
 
   app.use(bodyParser.json());
