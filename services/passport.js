@@ -5,16 +5,6 @@ const keys = require('../config/keys')
 
 const User = mongoUtil.getDB().collection('users')
 
-passport.serializeUser((user, done) => {
-  done(null, user.googleId)
-})
-
-passport.deserializeUser((googleId, done) => {
-  User.findOne({ googleId }, (err, user) => {
-    done(err, user)
-  })
-})
-
 passport.use(
   new GoogleStrategy(
     {
@@ -37,3 +27,13 @@ passport.use(
     }
   )
 )
+
+passport.serializeUser((user, done) => {
+  done(null, user.googleId)
+})
+
+passport.deserializeUser((googleId, done) => {
+  User.findOne({ googleId }, (err, user) => {
+    done(err, user)
+  })
+})
