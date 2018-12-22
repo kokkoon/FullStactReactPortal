@@ -80,7 +80,7 @@ module.exports = (app) => {
 
     formCollection.deleteOne({formInstanceId: recordId}, (err, obj) => {
       if (err) console.error(err)
-        
+
       if (obj.result.n > 0) {
         res.send({ message: `success delete record ${recordId}` })
       } else {
@@ -126,7 +126,6 @@ module.exports = (app) => {
     const tableColumns = req.body.tableColumns
 
   	formCollection.find({}).toArray((err, result) => {
-  		counter = result.length
   		if (Number(formId) <= counter && Number(formId) > 0) {
   			const form = {
   				id: formId,
@@ -146,7 +145,7 @@ module.exports = (app) => {
 		  		res.send({ message: `${collectionName} schema updated`})
 		  	})
   		} else {
-  			const newId = counter + 1
+        const newId = Number(result[result.length - 1].id) + 1
   			const form = {
   				id: newId.toString(),
   				name: `form${newId}`,
