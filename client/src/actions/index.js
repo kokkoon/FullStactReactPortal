@@ -1,43 +1,81 @@
 import axios from 'axios';
 
 import API_URL from '../utils/api_url'
-import { 
-	FETCH_USER, 
-	FETCH_TASKS,
-	LOAD_COLLECTION_NAV_ITEM_LINKS
-} from './types';
+import * as TYPES from './types';
 
 export const fetchUser = () => async dispatch => {
    const res = await axios.get('/api/current_user');
 
-   dispatch({ type: FETCH_USER, payload: {...res.data, isLoggedIn: res.data.googleId != null} });
+   dispatch({ type: TYPES.FETCH_USER, payload: {...res.data, isLoggedIn: res.data.googleId != null} });
 };
 
 export const handleToken = token => async dispatch => {
   const res = await axios.post('/api/stripe', token);
 
-  dispatch({ type: FETCH_USER, payload: res.data });
+  dispatch({ type: TYPES.FETCH_USER, payload: res.data });
 };
 
 export const submitTask = (values, history) => async dispatch => {
   const res = await axios.post('/api/tasks', values);
 
   history.push('/tasks');
-  dispatch({ type: FETCH_USER, payload: res.data });
+  dispatch({ type: TYPES.FETCH_USER, payload: res.data });
 };
 
 export const fetchTasks = () => async dispatch => {
   const res = await axios.get('/api/tasks');
 
-  dispatch({ type: FETCH_TASKS, payload: res.data });
+  dispatch({ type: TYPES.FETCH_TASKS, payload: res.data });
 };
+
+export const setCollectionNavItem = () => {
+	return (dispatch) => {
+		const collectionNavItem = {
+			header: 'Collections',
+			dividerBottom: true,
+		}
+
+		dispatch({ type: TYPES.SET_COLLECTION_NAV_ITEM, collectionNavItem })
+	}
+}
 
 export const loadCollectionNavItemLinks = () => {
 	return (dispatch) => {
 		axios.get(`${API_URL}/sidenav-links`)
 			.then(res => {
-				dispatch({ type: LOAD_COLLECTION_NAV_ITEM_LINKS, payload: res.data.data })
+				dispatch({ type: TYPES.LOAD_COLLECTION_NAV_ITEM_LINKS, payload: res.data.data })
 			})
 			.catch(e => console.error(e))
+	}
+}
+
+export const setSidenavAdmin = () => {
+	return (dispatch) => {
+		const defaultNavItem = {
+			header: 'Admin',
+			links: [
+				{	name: 'user',
+					route: '/user',
+					icon: 'account_circle',
+					text: 'User management',
+				},
+				{	name: 'settings',
+					route: '/settings',
+					icon: 'settings',
+					text: 'Settings',
+				},
+			],
+			dividerBottom: false,
+		}
+
+		dispatch({ type: TYPES.SET_COLLECTION_NAV_ITEM, collectionNavItem: undefined })
+		dispatch({ type: TYPES.LOAD_COLLECTION_NAV_ITEM_LINKS, payload: undefined })
+		dispatch({ type: TYPES.LOAD_ADMIN_SIDENAV_LINKS, defaultNavItem })
+	}
+}
+
+export const unsetSidenavAdmin = () => {
+	return (dispatch) => {
+		dispatch({ type: TYPES.LOAD_ADMIN_SIDENAV_LINKS, defaultNavItem: undefined })
 	}
 }

@@ -1,3 +1,6 @@
 export const FETCH_USER = 'fetch_user'
 export const FETCH_TASKS = 'fetch_tasks'
 export const LOAD_COLLECTION_NAV_ITEM_LINKS = 'LOAD_COLLECTION_NAV_ITEM_LINKS'
+export const SET_COLLECTION_NAV_ITEM = 'SET_COLLECTION_NAV_ITEM'
+export const LOAD_ADMIN_SIDENAV_LINKS = 'LOAD_ADMIN_SIDENAV_LINKS'
+

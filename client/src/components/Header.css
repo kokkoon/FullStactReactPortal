@@ -1,5 +1,13 @@
-@media screen and (max-width: 992px) {
+.brand-logo {
+		margin-left: 55px;
+		position: relative;
+		left: 0;
+	}	
+
+/*@media screen and (max-width: 992px) {
 	.brand-logo {
 		margin-left: 55px;
+		position: relative;
+		left: 0;
 	}	
-}
+}*/

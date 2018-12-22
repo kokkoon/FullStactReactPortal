@@ -28,7 +28,8 @@ class Sidenav extends Component {
 			collectionNavItem, 
 			user,
 			collectionNavItemLinks,
-			loadCollectionNavItemLinks 
+			setCollectionNavItem,
+			loadCollectionNavItemLinks
 		} = this.props
 		
 		// show menu based on user group authorization
@@ -64,6 +65,7 @@ class Sidenav extends Component {
 		}
 
 		// get collection links from backend
+		setCollectionNavItem()
 		loadCollectionNavItemLinks()
 	}
 
@@ -93,13 +95,17 @@ class Sidenav extends Component {
 			collectionNavItemLinks
 		} = this.props;
 
-		// show menu based on user group authorization
-		const shownDefaultNavItemLinks = 
-			defaultNavItem.links.filter(item => 
-				userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
-		
+		console.log('defaultNavItem = ', defaultNavItem)
+		console.log('collectionNavItem = ', collectionNavItem)
+
+		const shownDefaultNavItemLinks = defaultNavItem.links
 		const shownCollectionNavItemLinks = user.isLoggedIn ? collectionNavItemLinks : []
 
+		// show menu based on user group authorization
+		// const shownDefaultNavItemLinks = 
+		// 	defaultNavItem.links.filter(item => 
+		// 		userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
+		
 			// collectionNavItem.links.filter(item => 
 				// userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
 		// console.log('shownCollectionNavItemLinks = ', shownCollectionNavItemLinks)
@@ -112,7 +118,7 @@ class Sidenav extends Component {
 
 				<ul id="slide-out" class="sidenav">
 			    {
-			    	collectionNavItem.header.length > 0 &&
+			    	collectionNavItem && collectionNavItem.header.length > 0 &&
 			    	<li><a class="subheader" className="subheader">{collectionNavItem.header}</a></li>
 			    }
 			    {
@@ -142,7 +148,7 @@ class Sidenav extends Component {
 			    	))
 			  	}
 			  	{
-			  		collectionNavItem.dividerBottom &&
+			  		collectionNavItem && collectionNavItem.dividerBottom &&
 			  		<li><div class="divider"></div></li>
 			  	}
 			  	{
@@ -197,57 +203,13 @@ Sidenav.defaultProps = {
 				icon: 'assignment',
 				text: 'Task list',
 			},
-			{	name: 'form-list',
+			{	name: 'collection-list',
 				route: '/collection-list',
 				icon: 'apps',
 				text: 'Collections',
 			},
-			{	name: 'record',
-				route: '/record',
-				icon: 'view_headline',
-				text: 'Record list', 
-			},
-			{	name: 'user',
-				route: '/user',
-				icon: 'account_circle',
-				text: 'User', 
-			},
 		],
 		dividerBottom: false,
-	},
-
-	collectionNavItem: {
-		header: 'Collections',
-		links: [
-			{	name: 'collection1',
-				route: '/collection?id=1',
-				icon: 'format_list_bulleted',
-				text: 'Collection 1',
-				sublink: [
-					{	name: 'collection1a',
-						route: '/collection?id=1a',
-						icon: 'format_list_bulleted',
-						text: 'Collection 1a', 
-					},
-					{	name: 'collection1b',
-						route: '/collection?id=1b',
-						icon: 'format_list_bulleted',
-						text: 'Collection 1b', 
-					},
-				],
-			},
-			{	name: 'collection2',
-				route: '/collection?id=2',
-				icon: 'format_list_bulleted',
-				text: 'Collection 2', 
-			},
-			{	name: 'collection3',
-				route: '/collection?id=3',
-				icon: 'format_list_bulleted',
-				text: 'Collection 3', 
-			},
-		],
-		dividerBottom: true,
 	},
 
 	// options of current user group links authorization
@@ -279,11 +241,14 @@ const mapStateToProps = (state) => {
   return {
     user: state.user,
     collectionNavItemLinks: state.user ? state.user.collectionNavItemLinks : [],
+    collectionNavItem: state.user.collectionNavItem,
+    defaultNavItem: state.user.defaultNavItem,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		setCollectionNavItem: () => dispatch(ACT.setCollectionNavItem()),
 		loadCollectionNavItemLinks: () => dispatch(ACT.loadCollectionNavItemLinks())
 	}
 }
