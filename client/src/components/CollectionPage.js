@@ -96,36 +96,53 @@ class CollectionPage extends Component {
             <a className="waves-effect waves-light btn" href={`/data-input?id=${id}`}>New</a>
           </span>
         </div>
-        <table className="table-collection">
-          <thead>
-            <tr>
-              { !isEmpty(column) && column.map(c => <th>{c}</th>) }
-            </tr>
-          </thead>
+        <div className="row">
+          <div className="col s11">
+            <table className="table-collection">
+              <thead>
+                <tr>
+                  { !isEmpty(column) && column.map(c => <th>{c}</th>) }
+                </tr>
+              </thead>
 
+              <tbody>
+                { 
+                  !record && <p> loading .... </p>
+                }
+                { 
+                  record && record.map((r,i) => (
+                    <tr>
+                      {
+                        Object.keys(r).filter(k => column.indexOf(k) >= 0).map(k => (
+                          <td>{r[k]}</td>
+                        ))
+                      }
+                    </tr>
+                  )) 
+                }
+              </tbody>
+            </table>
+          </div>
+          <div className="col s1 delete-button-container">
+          <table className="table-delete-button">
+          <thead><tr><th></th></tr></thead>
           <tbody>
             { 
-              !record && <p> loading .... </p>
-            }
-            { 
-              record && record.map(r => (
+              record && record.map((r, i) => (
                 <tr>
-                  {
-                    Object.keys(r).filter(k => column.indexOf(k) >= 0).map(k => (
-                      <td>{r[k]}</td>
-                    ))
-                  }
+                  <td className="cell-delete-btn-container">
+                    <a key={i} 
+                      className="waves-effect waves-light btn-floating red" 
+                      onClick={e => this.deleteRecord(i)}>
+                      <i className="small material-icons">delete</i>
+                    </a>
+                  </td>
                 </tr>
-              )) 
+              ))
             }
           </tbody>
-        </table>
-        <div className="delete-button-container">
-        {
-          record && record.map((r, i) => (
-            <a key={i} className="waves-effect waves-light btn-floating red" onClick={e => this.deleteRecord(i)}><i className="material-icons">delete</i></a>
-          ))
-        }
+          </table>
+          </div>
         </div>
       </div>
     )

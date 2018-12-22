@@ -16,6 +16,27 @@
 	border-spacing: 10px !important;
 }
 
+.delete-button-container {
+	padding-left: 0 !important;
+}
+
+.table-delete-button {
+	border-color: transparent;
+}
+
+.table-delete-button th {
+	height: 52px;
+}
+
+.table-delete-button tr {
+	height: 52px;
+	border-color: transparent;
+}
+
+.cell-delete-btn-container {
+	padding: 5px;
+}
+
 .button-new {
 	display: inline-block;
 	text-align: right;
