@@ -15,6 +15,7 @@ module.exports = (app) => {
   app.post('/api/record', (req, res) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
+    // TODO: change formInstanceId to recordId
   	const formInstanceId = cuid()
   	const data = { ...req.body, formId, formInstanceId }
   	let message = ''
@@ -69,6 +70,23 @@ module.exports = (app) => {
 	  		res.send({ data })
 	  	})
   	}
+  })
+
+  app.delete('/api/record', (req, res) => {
+    const url = URL.parse(req.url, true)
+    const formId = url.query.form_id
+    const recordId = url.query.record_id
+    const formCollection = db.collection(`form${formId}`)
+
+    formCollection.deleteOne({formInstanceId: recordId}, (err, obj) => {
+      if (err) console.error(err)
+        
+      if (obj.result.n > 0) {
+        res.send({ message: `success delete record ${recordId}` })
+      } else {
+        res.send({ message: `failed to delete record ${recordId}` })
+      }
+    })
   })
 
   // check if collection name already exist in DB

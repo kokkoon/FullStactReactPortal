@@ -69,6 +69,21 @@ class CollectionPage extends Component {
     }
   }
 
+  deleteRecord = (index) => {
+    const { record } = this.state
+    // TODO: change formInstanceId to recordId from backend
+    const formId = record[index].formId
+    const recordId = record[index].formInstanceId
+
+    axios.delete(`${API_URL}/record?form_id=${formId}&record_id=${recordId}`)
+      .then(res => {
+        console.log(res)
+        record.splice(index, 1)
+        this.setState({ record })
+      })
+      .catch(e => console.error(e))
+  }
+
   render() {
     const { collectionName, column, record } = this.state
 		const id = window.location.search.slice(4)
@@ -105,6 +120,13 @@ class CollectionPage extends Component {
             }
           </tbody>
         </table>
+        <div className="delete-button-container">
+        {
+          record && record.map((r, i) => (
+            <a key={i} className="waves-effect waves-light btn-floating red" onClick={e => this.deleteRecord(i)}><i className="material-icons">delete</i></a>
+          ))
+        }
+        </div>
       </div>
     )
   }
