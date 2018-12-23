@@ -310,7 +310,7 @@ class FormDesigner extends Component {
 	handleCreateCollection = () => {
 		const { location, loadCollectionNavItemLinks } = this.props
 		const id = location.search.slice(4)
-		const { formStructure, input, fields } = this.state
+		const { formId, formStructure, input, fields } = this.state
 		const tableColumns = fields.reduce((arr, field) => {
 														return [...arr, { fieldName: field.fieldName, showInTable: field.showInTable }]
 												 }, [])
@@ -330,7 +330,25 @@ class FormDesigner extends Component {
 			})
 			.catch(err => console.log(err))
 
-		this.setState({ formStructure })
+		// if create new collection, set back to initial state
+		// after user click create button
+		if (formId === undefined) {
+			this.setState({ 
+				formId: undefined,
+				isCollectionNameOK: false,
+				formStructure: { title: 'New Collection', type: "object", properties: {} },
+				input: {
+					collectionName: '',
+					fieldName: '',
+					dataType: '',
+					defaultValue: ''
+				},
+				isNewField: true,
+				currentIndex: -1,
+				isFieldNameExisted: false,
+				fields: [], 
+			})
+		}
 	}
 
 	render() {
@@ -374,7 +392,10 @@ class FormDesigner extends Component {
 						<table className="table-collection centered responsive-table">
 		          <thead>
 		            <tr>
-		              { documentFieldsTableHeader.map(header => <th className={header === "Name" ? "left" : ""}>{header}</th>) }
+		              { 
+		              	documentFieldsTableHeader.map((header, i) => 
+		              		<th key={i} className={header === "Name" ? "left" : ""}>{header}</th>) 
+		              }
 		            </tr>
 		          </thead>
 
@@ -384,7 +405,7 @@ class FormDesigner extends Component {
 		            }
 		            { 
 		              fields && fields.map((field, index) => (
-		                <tr>
+		                <tr key={index}>
 		                  <td className="left">{field.fieldName}</td>
 		                  <td>{field.dataType}</td>
 		                  <td>{field.defaultValue}</td>
@@ -393,18 +414,19 @@ class FormDesigner extends Component {
 									        <input 
 									        	type="checkbox" 
 									        	className="filled-in" 
-									        	checked={field.showInTable? "checked" : ""} 
-									        	onClick={this.handleCheck.bind(this, index)} 
+									        	checked={field.showInTable ? "checked" : ""} 
+									        	onChange={this.handleCheck.bind(this, index)} 
 									        />
 									        <span> </span>
 									      </label>
 									    </td>
 									    <td>
 									    {
-									    	field.action.map(action => {
+									    	field.action.map((action, index2) => {
 									    		if (action.name === 'edit') {
 								    				return (
-								    			    <a className={action.enable 
+								    			    <a key={index2}
+								    			    	 className={action.enable 
 								    			    							? "waves-effect waves-light btn btn-action blue lighten-2 tooltipped"
 								    			    							: "waves-effect waves-light btn btn-action blue lighten-2 disabled"}
 								    			    	 data-position="bottom" 
@@ -416,7 +438,8 @@ class FormDesigner extends Component {
 								    			  )
 							    			  } else if (action.name === 'delete') {
 							    			  	return (
-								    			    <a className={action.enable 
+								    			    <a key={index2}
+								    			    	 className={action.enable 
 								    			    							? "waves-effect waves-light btn btn-action red lighten-2 tooltipped"
 								    			    							: "waves-effect waves-light btn btn-action red lighten-2 disabled"}
 								    			    	 data-position="bottom" 
@@ -427,7 +450,7 @@ class FormDesigner extends Component {
 								    			    </a>
 								    			  )
 							    			  }
-							    			  return <div />
+							    			  return <div key={index2}/>
 									    	})
 									    }
 									    </td>
@@ -451,7 +474,7 @@ class FormDesigner extends Component {
 	       	<div className="row">
 						<div className="input-field col s6">
 							<input id="field_name" type="text" value={fieldName} onChange={(e) => this.handleInputChange('field_name', e)}/>
-		          <label for="field_name">Field name</label>
+		          <label htmlFor="field_name">Field name</label>
 						</div>
 						<div className="col s6">
 						  <div className="input-field col s12">
@@ -467,7 +490,7 @@ class FormDesigner extends Component {
 						</div>
 						<div className="input-field col s6">
 							<input id="default_value" type="text" value={defaultValue} onChange={(e) => this.handleInputChange('default_value', e)}/>
-		          <label for="default_value">Default value</label>
+		          <label htmlFor="default_value">Default value</label>
 						</div>
 					</div>
 					<div className="row btn-add-container">

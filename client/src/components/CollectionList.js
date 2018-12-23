@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 
 import API_URL from '../utils/api_url'
@@ -36,12 +37,12 @@ class CollectionList extends Component {
 					</div>
 				</a>
 				{
-					collectionList.map(collection => (
-						<a href={collection.urlDesigner}>
+					collectionList.map((collection, i) => (
+						<Link key={i} to={collection.urlDesigner}>
 							<div className="collection-card">
 								{collection.name}
 							</div>
-						</a>
+						</Link>
 					))
 				}
 			</div>

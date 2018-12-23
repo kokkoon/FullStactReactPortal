@@ -109,44 +109,64 @@ module.exports = (app) => {
   	formCollection.find({}).toArray((err, result) => {
       if (err) console.error(err)
 
-      if (result.length > 0 ) lastId = result[result.length - 1].id
+      if (result.length > 0 ) {
+        lastId = result[result.length - 1].id
 
-  		if (Number(formId) <= lastId && Number(formId) > 0) {
-  			const form = {
-  				id: formId,
-  				name: `form${formId}`,
-  				route: `/collection?id=${formId}`,
-  				icon: 'format_list_bulleted',
-  				collectionName,
-  				formStructure,
+    		if (Number(formId) <= lastId && Number(formId) > 0) {
+    			const form = {
+    				id: formId,
+    				name: `form${formId}`,
+    				route: `/collection?id=${formId}`,
+    				icon: 'format_list_bulleted',
+    				collectionName,
+    				formStructure,
+            tableColumns
+    			}
+
+  		  	formCollection.deleteOne({id: formId})
+    			formCollection.insertOne(form, (err, obj) => {
+  		  		if (err) console.error(err)
+  		  		// console.log('added new form = ', obj.result.n)
+  		  		res.send({ message: `${collectionName} schema updated`})
+  		  	})
+    		} else {
+          const newId = Number(lastId) + 1
+    			const form = {
+    				id: newId.toString(),
+    				name: `form${newId}`,
+    				route: `/collection?id=${newId}`,
+    				icon: 'format_list_bulleted',
+    				collectionName,
+    				formStructure,
+            tableColumns
+    			}
+
+    			formCollection.insertOne(form, (err, obj) => {
+  		  		if (err) console.error(err)
+  		  		// console.log('added new form = ', obj.result.n)
+  		  	})
+
+  		  	res.send({ message: `${collectionName} schema created`})
+    		}
+      } else {
+        const newId = 1
+        const form = {
+          id: newId.toString(),
+          name: `form${newId}`,
+          route: `/collection?id=${newId}`,
+          icon: 'format_list_bulleted',
+          collectionName,
+          formStructure,
           tableColumns
-  			}
+        }
 
-		  	formCollection.deleteOne({id: formId})
-  			formCollection.insertOne(form, (err, obj) => {
-		  		if (err) console.error(err)
-		  		// console.log('added new form = ', obj.result.n)
-		  		res.send({ message: `${collectionName} schema updated`})
-		  	})
-  		} else {
-        const newId = Number(lastId) + 1
-  			const form = {
-  				id: newId.toString(),
-  				name: `form${newId}`,
-  				route: `/collection?id=${newId}`,
-  				icon: 'format_list_bulleted',
-  				collectionName,
-  				formStructure,
-          tableColumns
-  			}
+        formCollection.insertOne(form, (err, obj) => {
+          if (err) console.error(err)
+          // console.log('added new form = ', obj.result.n)
+        })
 
-  			formCollection.insertOne(form, (err, obj) => {
-		  		if (err) console.error(err)
-		  		// console.log('added new form = ', obj.result.n)
-		  	})
-        
-		  	res.send({ message: `${collectionName} schema created`})
-  		}
+        res.send({ message: `${collectionName} schema created`})
+      }
 
   	}) 
   })

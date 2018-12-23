@@ -1,4 +1,5 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { isEmpty } from 'lodash'
 
@@ -89,60 +90,65 @@ class CollectionPage extends Component {
 		const id = window.location.search.slice(4)
 
     return (
-      <div className="record center">
+      <div className="collection-page center">
         <div className="row">
         	<h5 className="collection-title">/ {collectionName}</h5>
           <span className="button-new">
-            <a className="waves-effect waves-light btn" href={`/data-input?id=${id}`}>New</a>
+            <Link className="waves-effect waves-light btn" to={`/data-input?id=${id}`}>New</Link>
           </span>
         </div>
         <div className="row">
-          <div className="col s11">
-            <table className="table-collection">
-              <thead>
-                <tr>
-                  { !isEmpty(column) && column.map(c => <th>{c}</th>) }
-                </tr>
-              </thead>
-
-              <tbody>
-                { 
-                  !record && <p> loading .... </p>
-                }
-                { 
-                  record && record.map((r,i) => (
+        { 
+          !record && <p> loading .... </p>
+        }
+        {
+          record &&
+          <Fragment>
+            <div className="col s11">
+                <table className="table-collection">
+                  <thead>
                     <tr>
-                      {
-                        Object.keys(r).filter(k => column.indexOf(k) >= 0).map(k => (
-                          <td>{r[k]}</td>
-                        ))
-                      }
+                      { !isEmpty(column) && column.map(c => <th>{c}</th>) }
                     </tr>
-                  )) 
-                }
-              </tbody>
-            </table>
-          </div>
-          <div className="col s1 delete-button-container">
-          <table className="table-delete-button">
-          <thead><tr><th></th></tr></thead>
-          <tbody>
-            { 
-              record && record.map((r, i) => (
-                <tr>
-                  <td className="cell-delete-btn-container">
-                    <a key={i} 
-                      className="waves-effect waves-light btn-floating red" 
-                      onClick={e => this.deleteRecord(i)}>
-                      <i className="small material-icons">delete</i>
-                    </a>
-                  </td>
-                </tr>
-              ))
-            }
-          </tbody>
-          </table>
-          </div>
+                  </thead>
+
+                  <tbody>
+                    { 
+                      record.map((r,i) => (
+                        <tr key={i}>
+                          {
+                            Object.keys(r).filter(k => column.indexOf(k) >= 0).map(k => (
+                              <td>{r[k]}</td>
+                            ))
+                          }
+                        </tr>
+                      )) 
+                    }
+                  </tbody>
+                </table>
+            </div>
+            <div className="col s1 delete-button-container">
+              <table className="table-delete-button">
+                <thead><tr><th></th></tr></thead>
+                <tbody>
+                  { 
+                    record && record.map((r, i) => (
+                      <tr key={i}>
+                        <td className="cell-delete-btn-container">
+                          <a key={i} 
+                            className="waves-effect waves-light btn-floating red" 
+                            onClick={e => this.deleteRecord(i)}>
+                            <i className="small material-icons">delete</i>
+                          </a>
+                        </td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+          </Fragment>
+        }
         </div>
       </div>
     )

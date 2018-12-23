@@ -1,4 +1,8 @@
-.record .row {
+.collection-page {
+	margin: 0 10vw 0 10vw;
+}
+
+.collection-page > .row {
 	position: relative;
 	height: 3rem;
 	margin-top: 10px;
