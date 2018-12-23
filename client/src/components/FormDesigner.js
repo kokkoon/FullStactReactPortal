@@ -19,7 +19,6 @@ class FormDesigner extends Component {
 			isCollectionNameOK: false,
 			// see formStructure data structure at the bottom of the code
 			formStructure: { title: 'New Collection', type: "object", properties: {} },
-			message: '',
 			input: {
 				collectionName: '',
 				fieldName: '',
@@ -322,8 +321,10 @@ class FormDesigner extends Component {
 		axios.post(`${API_URL}/create-form?id=${id}`, 
 							 { collectionName: input.collectionName, tableColumns, formStructure })
 			.then(res => {
-				this.setState({
-					message: res.data.message
+
+				M.toast({
+					html: res.data.message,
+					displayLength: 5000,
 				})
 
 				loadCollectionNavItemLinks()
@@ -338,7 +339,6 @@ class FormDesigner extends Component {
 			formId,
 			formStructure, 
 			formControl, 
-			message,
 			isNewField, 
 			currentIndex,
 			fields,
@@ -447,8 +447,6 @@ class FormDesigner extends Component {
 				    </a>
 	        </div>
 				</div>
-
-				<h5>{message}</h5>
 
         <div className="add-new-field card-panel indigo lighten-5">
 	        <h4 className="center">{isNewField ? 'Add new field' : 'Edit field'}</h4>	

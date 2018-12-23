@@ -119,14 +119,18 @@ module.exports = (app) => {
   app.post('/api/create-form', (req, res) => {
   	const formCollection = db.collection('form')
   	const url = URL.parse(req.url, true)
+    let lastId
   	const formId = url.query.id
-  	let counter = 0
   	const formStructure = req.body.formStructure
     const collectionName = req.body.collectionName.toLowerCase()
     const tableColumns = req.body.tableColumns
 
   	formCollection.find({}).toArray((err, result) => {
-  		if (Number(formId) <= counter && Number(formId) > 0) {
+      if (err) console.error(err)
+
+      if (result.length > 0 ) lastId = result[result.length - 1].id
+
+  		if (Number(formId) <= lastId && Number(formId) > 0) {
   			const form = {
   				id: formId,
   				name: `form${formId}`,
@@ -145,7 +149,7 @@ module.exports = (app) => {
 		  		res.send({ message: `${collectionName} schema updated`})
 		  	})
   		} else {
-        const newId = Number(result[result.length - 1].id) + 1
+        const newId = Number(lastId) + 1
   			const form = {
   				id: newId.toString(),
   				name: `form${newId}`,
