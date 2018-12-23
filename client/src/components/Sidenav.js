@@ -95,9 +95,6 @@ class Sidenav extends Component {
 			collectionNavItemLinks
 		} = this.props;
 
-		console.log('defaultNavItem = ', defaultNavItem)
-		console.log('collectionNavItem = ', collectionNavItem)
-
 		const shownDefaultNavItemLinks = defaultNavItem.links
 		const shownCollectionNavItemLinks = user.isLoggedIn ? collectionNavItemLinks : []
 
