@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
@@ -31,7 +31,7 @@ class Header extends Component {
   renderContent() {
     switch (this.props.user.isLoggedIn) {
       case false:
-        return <li><a href="/auth/google">Login With Google</a></li>
+        return <li><a href="/auth/google">Login with Google</a></li>
       case true:
         return [
           <li key="1"><Link to="/user" onClick={this.setSidenavAdmin}>Admin</Link></li>,

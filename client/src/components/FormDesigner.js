@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import axios from 'axios'
-import Form from 'react-jsonschema-form'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import { isEmpty } from 'lodash'
 
@@ -66,6 +64,7 @@ class FormDesigner extends Component {
 									dataType: properties[fieldName][key] 
 								}
 							}
+							return {...obj}
 						}, {})	
 
 					return {
@@ -96,15 +95,14 @@ class FormDesigner extends Component {
 			.catch(e => console.error(e))
 
 		// materialize css initialization
-		// tooltip
 		document.addEventListener('DOMContentLoaded', function() {
-	    let elems = document.querySelectorAll('.tooltipped');
-	    let instances = M.Tooltip.init(elems);
-	  });
-		// select
-	  document.addEventListener('DOMContentLoaded', function() {
-	    let elems = document.querySelectorAll('select');
-	    let instances = M.FormSelect.init(elems);
+			// tooltip
+	    let tooltippedElems = document.querySelectorAll('.tooltipped');
+	    M.Tooltip.init(tooltippedElems);
+			
+			// dropdown select
+	    let selectElems = document.querySelectorAll('select');
+	    M.FormSelect.init(selectElems);
 	  });
 	}
 
@@ -115,6 +113,7 @@ class FormDesigner extends Component {
 			if (i === idx) {
 				field.showInTable = !field.showInTable
 			}
+			return field
 		})
 
 		this.setState({ fields })
@@ -338,9 +337,7 @@ class FormDesigner extends Component {
 		const {
 			formId,
 			formStructure, 
-			formControl, 
 			isNewField, 
-			currentIndex,
 			fields,
 			isFieldNameExisted,
 			isCollectionNameOK
@@ -430,6 +427,7 @@ class FormDesigner extends Component {
 								    			    </a>
 								    			  )
 							    			  }
+							    			  return <div />
 									    	})
 									    }
 									    </td>
@@ -474,7 +472,7 @@ class FormDesigner extends Component {
 					</div>
 					<div className="row btn-add-container">
 		        <a className="waves-effect waves-light btn" 
-		        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || isFieldNameExisted && isNewField} 
+		        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || ( isFieldNameExisted && isNewField )} 
 		        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
 		        >
 				    	{isNewField ? 'Add' : 'Update'}

@@ -10,7 +10,6 @@ import Landing from './Landing';
 import Dashboard from './Dashboard';
 import Task from './tasks/Task';
 import TaskNew from './tasks/TaskNew';
-import Record from './Record';
 import User from './Admin/User';
 import Settings from './Admin/Settings';
 import DataInput from './DataInput';
@@ -38,7 +37,6 @@ class App extends Component {
           <Route exact path="/dashboard" component={Dashboard} />
           <Route exact path="/task" component={Task} />
           <Route path="/tasks/new" component={TaskNew} />
-          <Route exact path="/record" component={Record} />
           <Route exact path="/user" component={User} />
           <Route exact path="/settings" component={Settings} />
           <Route exact path="/data-input" component={DataInput} />

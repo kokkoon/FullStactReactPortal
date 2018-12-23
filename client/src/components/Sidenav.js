@@ -1,10 +1,8 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
-import API_URL from '../utils/api_url'
 import './Sidenav.css'
 import * as ACT from '../actions'
 
@@ -23,19 +21,19 @@ class Sidenav extends Component {
 		const query = window.location.search.slice(4)
 		let selectedNavItem
 		const { 
-			userGroupLinkAccess, 
-			currentUserGroup, 
-			collectionNavItem, 
-			user,
+			// userGroupLinkAccess, 
+			// currentUserGroup, 
 			collectionNavItemLinks,
 			setCollectionNavItem,
 			loadCollectionNavItemLinks
 		} = this.props
+
+		const shownCollectionNavItemLinks = collectionNavItemLinks
 		
 		// show menu based on user group authorization
-		const shownCollectionNavItemLinks = collectionNavItemLinks ?
-			collectionNavItemLinks.filter(item => 
-				userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0) : []
+		// const shownCollectionNavItemLinks = collectionNavItemLinks ?
+		// 	collectionNavItemLinks.filter(item => 
+		// 		userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0) : []
 
 		const offset = collectionNavItemLinks ? shownCollectionNavItemLinks.length : 0
 
@@ -71,10 +69,11 @@ class Sidenav extends Component {
 
 	componentDidMount() {
 		document.addEventListener('DOMContentLoaded', function() {
-			let sidenav = document.querySelectorAll('.sidenav');
-		  var sidenavinstances = M.Sidenav.init(sidenav);
-		  let modal = document.querySelectorAll('.modal');
-		  var modalinstances = M.Modal.init(modal);
+			let sidenav = document.querySelectorAll('.sidenav')
+		  let modal = document.querySelectorAll('.modal')
+		  
+		  M.Sidenav.init(sidenav)
+		  M.Modal.init(modal)
 		})
 	}
 
@@ -90,8 +89,8 @@ class Sidenav extends Component {
 			user,
 			defaultNavItem, 
 			collectionNavItem, 
-			userGroupLinkAccess, 
-			currentUserGroup,
+			// userGroupLinkAccess, 
+			// currentUserGroup,
 			collectionNavItemLinks
 		} = this.props;
 
@@ -110,13 +109,13 @@ class Sidenav extends Component {
 		const offset = shownCollectionNavItemLinks ? shownCollectionNavItemLinks.length : 0
 
 		return (
-			<>
-				<a data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+			<Fragment>
+				<a data-target="slide-out" className="sidenav-trigger"><i className="material-icons">menu</i></a>
 
-				<ul id="slide-out" class="sidenav">
+				<ul id="slide-out" className="sidenav">
 			    {
 			    	collectionNavItem && collectionNavItem.header.length > 0 &&
-			    	<li><a class="subheader" className="subheader">{collectionNavItem.header}</a></li>
+			    	<li><a className="subheader">{collectionNavItem.header}</a></li>
 			    }
 			    {
 			    	shownCollectionNavItemLinks && shownCollectionNavItemLinks.map((item, i) => (
@@ -124,7 +123,7 @@ class Sidenav extends Component {
 				    		<div className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
 					    		<li>
 							    	<Link to={item.route}>
-							    		<i class="material-icons">{item.icon}</i>
+							    		<i className="material-icons">{item.icon}</i>
 							    		{item.text}
 							    	</Link>
 							    </li>
@@ -135,7 +134,7 @@ class Sidenav extends Component {
 					    		item.sublink.map((subitem, idx) => (
 					    			<li key={idx} className="sublink">
 								    	<Link to={subitem.route}>
-								    		<i class="material-icons">{subitem.icon}</i>
+								    		<i className="material-icons">{subitem.icon}</i>
 								    		{subitem.text}
 								    	</Link>
 								    </li>
@@ -146,11 +145,11 @@ class Sidenav extends Component {
 			  	}
 			  	{
 			  		collectionNavItem && collectionNavItem.dividerBottom &&
-			  		<li><div class="divider"></div></li>
+			  		<li><div className="divider"></div></li>
 			  	}
 			  	{
 			    	defaultNavItem.header.length > 0 &&
-			    	<li><a class="subheader" className="subheader">{defaultNavItem.header}</a></li>
+			    	<li><a className="subheader">{defaultNavItem.header}</a></li>
 			    }
 			    {
 			    	shownDefaultNavItemLinks.map((item, i) => (
@@ -176,7 +175,7 @@ class Sidenav extends Component {
 			  	}
 			  	{
 			  		defaultNavItem.dividerBottom &&
-			  		<li><div class="divider"></div></li>
+			  		<li><div className="divider"></div></li>
 			  	}
 			  </ul>
 
@@ -186,7 +185,7 @@ class Sidenav extends Component {
 			      <h5>Please login to access the page</h5>
 			    </div>
 			  </div>
-	    </>
+	    </Fragment>
 		);
 	}
 }
@@ -212,26 +211,26 @@ Sidenav.defaultProps = {
 	// options of current user group links authorization
 	// menu in sidenav will be filtered based on the specified menu name
 	// in the strings array
-	userGroupLinkAccess:  {
-		admin: [
-			'dashboard',
-			'form-list',
-			'record', 
-			'user',
-		],
+	// userGroupLinkAccess:  {
+	// 	admin: [
+	// 		'dashboard',
+	// 		'form-list',
+	// 		'record', 
+	// 		'user',
+	// 	],
 		
-		premiumUser: [
-			'dashboard',
-			'record',
-			'user', 
-			'collection1',
-			'collection3',
-		]
-	},
+	// 	premiumUser: [
+	// 		'dashboard',
+	// 		'record',
+	// 		'user', 
+	// 		'collection1',
+	// 		'collection3',
+	// 	]
+	// },
 
 	// current group that the user belongs
 	// test: change below value to be: 'admin' or 'premiumUser'
-	currentUserGroup: 'admin'
+	// currentUserGroup: 'admin'
 }
 
 const mapStateToProps = (state) => {
