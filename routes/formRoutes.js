@@ -22,28 +22,9 @@ module.exports = (app) => {
   	const collection = db.collection(`form${formId}`)
   	const formCollection = db.collection('form')
 
-  	// formCollection.find({name: `form${formId}`}).toArray((err, data) => {
-  	// 	if (err) console.error(err)
-
-  	// 	if (data.length === 0) {
-  	// 		const form = {
-  	// 			id: formId,
-  	// 			name: `form${formId}`,
-  	// 			route: `/collection?id=${formId}`,
-  	// 			icon: 'format_list_bulleted',
-  	// 			text: `Collection ${formId}`
-  	// 		}
-
-  	// 		formCollection.insertOne(form, (err, result) => {
-		 //  		if (err) console.error(err)
-		 //  		console.log('added new form = ', result.n)
-		 //  	})
-  	// 	}
-  	// })
-
   	collection.insertOne(data, (err, result) => {
   		if (err) console.error(err)
-  		console.log('inserted = ', result.insertedCount)
+  		// console.log('inserted = ', result.insertedCount)
   		res.send({ 
         result: 1,
   			message: 'success add data',
@@ -98,13 +79,13 @@ module.exports = (app) => {
 
     formCollection.find({collectionName: name}).toArray((err, result) => {
       if (err) console.error(err)
-      console.log('check result = ', result)
+      // console.log('check result = ', result)
       if (result.length === 0) {
         res.send({ data: 0, message: 'not found' })
       } else {
         formCollection.findOne({id}, (err, form) => {
           if (err) console.error(err)
-          console.log('form = ', form)
+          // console.log('form = ', form)
           if (form !== null) {
             res.send({ data: 1, currentName: form.collectionName, message: 'found' })
           } else {
@@ -144,8 +125,7 @@ module.exports = (app) => {
 		  	formCollection.deleteOne({id: formId})
   			formCollection.insertOne(form, (err, obj) => {
 		  		if (err) console.error(err)
-		  		console.log('added new form = ', obj.result.n)
-
+		  		// console.log('added new form = ', obj.result.n)
 		  		res.send({ message: `${collectionName} schema updated`})
 		  	})
   		} else {
@@ -162,9 +142,9 @@ module.exports = (app) => {
 
   			formCollection.insertOne(form, (err, obj) => {
 		  		if (err) console.error(err)
-		  		console.log('added new form = ', obj.result.n)
+		  		// console.log('added new form = ', obj.result.n)
 		  	})
-
+        
 		  	res.send({ message: `${collectionName} schema created`})
   		}
 
@@ -178,7 +158,7 @@ module.exports = (app) => {
   	const formId = url.query.id
 
   	formCollection.findOne({id: formId}, (err, form) => {
-  		console.log('found form = ', form)
+  		// console.log('found form = ', form)
   		if (form !== null) {
         if (form.formStructure !== null) {
   				res.send({
@@ -195,7 +175,7 @@ module.exports = (app) => {
   app.get('/api/collection-list', (req, res) => {
   	const formCollection = db.collection('form')
   	formCollection.find({}).toArray((err, result) => {
-  		console.log('result = ', result)
+  		// console.log('result = ', result)
   		const data = result.map(r => {
   			return { 
   				id: r.id,
@@ -212,7 +192,7 @@ module.exports = (app) => {
   app.get('/api/sidenav-links', (req, res) => {
   	const formCollection = db.collection('form')
   	formCollection.find({}).toArray((err, result) => {
-  		console.log('result = ', result)
+  		// console.log('result = ', result)
 
   		const data = result.map(r => 
   			{
@@ -241,7 +221,7 @@ module.exports = (app) => {
 
     collection.deleteOne({collectionName: doc}, (err, obj) => {
       if (err) console.error(err)
-      console.log('deleted = ', obj.result.n)
+      // console.log('deleted = ', obj.result.n)
       if (obj.result.n > 0) {
         res.send({ message: `success delete document ${doc} from ${form} collection` })
       } else {
@@ -256,7 +236,7 @@ module.exports = (app) => {
 
   	formCollection.deleteMany({}, (err, result) => {
   		if (err) console.error(err)
-  		console.log('deleted = ', result)
+  		// console.log('deleted = ', result)
   		res.send({ message: `success delete forms on DB` })
   	})
   })
@@ -269,7 +249,7 @@ module.exports = (app) => {
 
   	collection.drop((err, result) => {
   		if (err) console.error(err)
-  		console.log('result = ', result)
+  		// console.log('result = ', result)
   		res.send({ result })
   	})
   })
@@ -277,7 +257,7 @@ module.exports = (app) => {
   // get the all collections in DB
   app.get('/api/all-collection', (req, res) => {
   	db.listCollections().toArray((err, result) => {
-  		console.log('result = ', result)
+  		// console.log('result = ', result)
   		res.send({ result })
   	})
   })
@@ -289,7 +269,7 @@ module.exports = (app) => {
   	const collection = db.collection(name)
 
   	collection.find({}).toArray((err, result) => {
-  		console.log('result = ', result)
+  		// console.log('result = ', result)
   		res.send({ result })
   	})
   })

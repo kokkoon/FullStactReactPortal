@@ -97,12 +97,12 @@ class FormDesigner extends Component {
 		// materialize css initialization
 		document.addEventListener('DOMContentLoaded', function() {
 			// tooltip
-	    let tooltippedElems = document.querySelectorAll('.tooltipped');
-	    M.Tooltip.init(tooltippedElems);
+	    let tooltippedElems = document.querySelectorAll('.tooltipped')
+	    M.Tooltip.init(tooltippedElems)
 			
 			// dropdown select
-	    let selectElems = document.querySelectorAll('select');
-	    M.FormSelect.init(selectElems);
+	    let selectElems = document.querySelectorAll('select')
+	    M.FormSelect.init(selectElems)
 	  });
 	}
 
