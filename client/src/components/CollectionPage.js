@@ -108,7 +108,7 @@ class CollectionPage extends Component {
                 <table className="table-collection">
                   <thead>
                     <tr>
-                      { !isEmpty(column) && column.map(c => <th>{c}</th>) }
+                      { !isEmpty(column) && column.map((c, i) => <th key={i}>{c}</th>) }
                     </tr>
                   </thead>
 
@@ -117,8 +117,8 @@ class CollectionPage extends Component {
                       record.map((r,i) => (
                         <tr key={i}>
                           {
-                            Object.keys(r).filter(k => column.indexOf(k) >= 0).map(k => (
-                              <td>{r[k]}</td>
+                            Object.keys(r).filter(k => column.indexOf(k) >= 0).map((k, i_2) => (
+                              <td key={i_2}>{r[k]}</td>
                             ))
                           }
                         </tr>
@@ -135,9 +135,8 @@ class CollectionPage extends Component {
                     record && record.map((r, i) => (
                       <tr key={i}>
                         <td className="cell-delete-btn-container">
-                          <a key={i} 
-                            className="waves-effect waves-light btn-floating red" 
-                            onClick={e => this.deleteRecord(i)}>
+                          <a className="waves-effect waves-light btn-floating red" 
+                             onClick={e => this.deleteRecord(i)}>
                             <i className="small material-icons">delete</i>
                           </a>
                         </td>
