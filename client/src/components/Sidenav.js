@@ -29,6 +29,10 @@ class Sidenav extends Component {
 		} = this.props
 
 		const shownCollectionNavItemLinks = collectionNavItemLinks
+
+		// get collection links from backend
+		setCollectionNavItem()
+		loadCollectionNavItemLinks()
 		
 		// show menu based on user group authorization
 		// const shownCollectionNavItemLinks = collectionNavItemLinks ?
@@ -61,10 +65,6 @@ class Sidenav extends Component {
 
 			this.setState({ selectedNavItem })
 		}
-
-		// get collection links from backend
-		setCollectionNavItem()
-		loadCollectionNavItemLinks()
 	}
 
 	componentDidMount() {
