@@ -38,11 +38,11 @@ class CollectionList extends Component {
 				</a>
 				{
 					collectionList.map((collection, i) => (
-						<Link key={i} to={collection.urlDesigner}>
+						<a key={i} href={collection.urlDesigner}>
 							<div className="collection-card">
 								{collection.name}
 							</div>
-						</Link>
+						</a>
 					))
 				}
 			</div>
