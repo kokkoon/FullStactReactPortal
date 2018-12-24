@@ -1,13 +1,10 @@
 .brand-logo {
-		margin-left: 55px;
-		position: relative;
-		left: 0;
-	}	
+	margin-left: 55px;
+	position: relative;
+	left: 0;
+	padding: 0 15px 0 15px !important;
+}
 
-/*@media screen and (max-width: 992px) {
-	.brand-logo {
-		margin-left: 55px;
-		position: relative;
-		left: 0;
-	}	
-}*/
+.nav-wrapper > ul > li > a.selected {
+	background-color: #D66367 !important;
+}

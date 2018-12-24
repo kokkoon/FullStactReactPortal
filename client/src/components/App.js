@@ -15,6 +15,7 @@ import DataInput from './DataInput'
 import FormDesigner from './FormDesigner'
 import CollectionPage from './CollectionPage'
 import CollectionList from './CollectionList'
+import ProfilePage from './ProfilePage'
 
 // comment unused components for later probable use
 // import SetupPage from './SetupPage'
@@ -41,6 +42,7 @@ class App extends Component {
           <Route exact path="/collection" component={CollectionPage} />
           <Route exact path="/collection-list" component={CollectionList} />
           <Route exact path="/form-designer" component={FormDesigner} />
+          <Route exact path="/profile" component={ProfilePage} />
           {/*<Route exact path="/setup" component={SetupPage} />
                     <Route exact path="/test/collection" component={Collection} />
                     <Route exact path="/dnd-form-designer" component={DNDFormDesigner} />*/}

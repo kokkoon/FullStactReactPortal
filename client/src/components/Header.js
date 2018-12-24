@@ -1,21 +1,32 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-
-import './Header.css'
+import M from 'materialize-css/dist/js/materialize.min.js'
 
 import Payments from './Payments'
 import Sidenav from './Sidenav'
+import UserMenu from './UserMenu'
 import * as ACT from '../actions'
 
+import './Header.css'
 
 class Header extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
-
+      selectedItem: ''
     }
+  }
+
+  handleClickDashboard = () => {
+    this.setSidenavUser()
+    this.setState({ selectedItem: 'dashboard' })
+  }
+
+  handleClickAdmin = () => {
+    this.setSidenavAdmin()
+    this.setState({ selectedItem: 'admin' })
   }
 
   setSidenavUser = () => {
@@ -29,24 +40,46 @@ class Header extends Component {
   }
 
   renderContent() {
+    const { selectedItem } = this.state
+
     switch (this.props.user.isLoggedIn) {
       case false:
         return <li><a href="/auth/google">Login with Google</a></li>
       case true:
-        return [
-          <li key="1"><Link to="/user" onClick={this.setSidenavAdmin}>Admin</Link></li>,
-          <li key="2"><Payments /></li>,
-          <li key="3" style={{ margin: '0 10px'}}>
-            Credits: {this.props.user.credits}
-          </li>,
-          <li key="4"><a href="/api/logout">Logout</a></li>
-        ];
+        return ( 
+          <ul className="right">
+            <li>
+              <Link 
+                className={selectedItem === 'dashboard' ? "selected" : ""} 
+                to="/dashboard" 
+                onClick={this.handleClickDashboard}>
+                Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link 
+                className={selectedItem === 'admin' ? "selected" : ""} 
+                to="/user" 
+                onClick={this.handleClickAdmin}>
+                Admin
+              </Link>
+            </li>
+          </ul>
+        )
       default:
         return <li><a href="/auth/google">Login With Google</a></li>
     }
   }
 
   render() {
+    const { selectedItem } = this.state
+    const dropdown_menu_item = [
+      <li className="non-hoverable"><Payments /></li>,
+      <li className="non-hoverable" style={{padding: '15px'}}>Credits: {this.props.user.credits}</li>,
+      <li><Link to="/profile">Profile</Link></li>,
+      <li><a href="/api/logout">Logout</a></li>
+    ]
+
     return (
       <nav>
         <Sidenav />
@@ -58,10 +91,12 @@ class Header extends Component {
           >
              FLOWNGIN
           </Link>
-          <ul className="right">
-             {this.renderContent()}
-          </ul>
-         </div>
+          <UserMenu
+            className="right"
+            item={dropdown_menu_item} 
+          />
+          {this.renderContent()}
+        </div>
       </nav>
     );
   }
