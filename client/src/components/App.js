@@ -16,9 +16,9 @@ import FormDesigner from './FormDesigner'
 import CollectionPage from './CollectionPage'
 import CollectionList from './CollectionList'
 import ProfilePage from './ProfilePage'
+import SidenavSetup from './SidenavSetup'
 
 // comment unused components for later probable use
-// import SetupPage from './SetupPage'
 // import Collection from './Collection'
 // import DNDFormDesigner from './DNDFormDesigner'
 
@@ -43,7 +43,8 @@ class App extends Component {
           <Route exact path="/collection-list" component={CollectionList} />
           <Route exact path="/form-designer" component={FormDesigner} />
           <Route exact path="/profile" component={ProfilePage} />
-          {/*<Route exact path="/setup" component={SetupPage} />
+          <Route exact path="/sidenav-setup" component={SidenavSetup} />
+          {/*
                     <Route exact path="/test/collection" component={Collection} />
                     <Route exact path="/dnd-form-designer" component={DNDFormDesigner} />*/}
         </div>

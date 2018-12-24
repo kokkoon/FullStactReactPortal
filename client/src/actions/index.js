@@ -79,3 +79,17 @@ export const unsetSidenavAdmin = () => {
 		dispatch({ type: TYPES.LOAD_ADMIN_SIDENAV_LINKS, defaultNavItem: undefined })
 	}
 }
+
+export const setSidenavFromConfig = (collections, groupLinks) => {
+	return (dispatch) => {
+		setCollectionNavItem()
+		dispatch({ type: TYPES.LOAD_COLLECTION_NAV_ITEM_LINKS, payload: collections })
+		dispatch({ type: TYPES.SET_SIDENAV_FROM_CONFIG, sidenavGroupLinks: groupLinks })
+	}
+}
+
+export const unsetSidenavFromConfig = () => {
+	return (dispatch) => {
+		dispatch({ type: TYPES.SET_SIDENAV_FROM_CONFIG, sidenav: undefined })
+	}
+}

@@ -86,7 +86,8 @@ class Sidenav extends Component {
 			collectionNavItem, 
 			// userGroupLinkAccess, 
 			// currentUserGroup,
-			collectionNavItemLinks
+			collectionNavItemLinks,
+			groupLinks
 		} = this.props;
 
 		const shownDefaultNavItemLinks = defaultNavItem.links
@@ -143,6 +144,47 @@ class Sidenav extends Component {
 			  		<li><div className="divider"></div></li>
 			  	}
 			  	{
+			  		groupLinks && 
+			  		groupLinks.map(groupLink => (
+			  			<Fragment>
+			  			{
+			  				groupLink.header.length > 0 &&
+			    			<li><a className="subheader">{groupLink.header}</a></li>
+			    		}
+			  			{
+			  				groupLink.links.map((item, i) => (
+			  					<div key={i} >
+						    		<div className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
+							    		<li>
+									    	<Link to={item.route}>
+									    		<i className="material-icons">{item.icon}</i>
+									    		{item.text}
+									    	</Link>
+									    </li>
+									  </div>
+								    {
+								    	item.sublink &&
+							    		item.sublink.length > 0 && 
+							    		item.sublink.map((subitem, idx) => (
+							    			<li key={idx} className="sublink">
+										    	<Link to={subitem.route}>
+										    		<i className="material-icons">{subitem.icon}</i>
+										    		{subitem.text}
+										    	</Link>
+										    </li>
+							    		))
+							    	}
+								  </div>
+			  				))
+			  			}
+			  			{
+			  				groupLink.dividerBottom &&
+			  				<li><div className="divider"></div></li>
+			  			}
+			  			</Fragment>
+			  		))
+			  	}
+			  	{
 			    	defaultNavItem.header.length > 0 &&
 			    	<li><a className="subheader">{defaultNavItem.header}</a></li>
 			    }
@@ -189,15 +231,15 @@ Sidenav.defaultProps = {
 	defaultNavItem: {
 		header: 'Setup',
 		links: [
-			{	name: 'dashboard',
-				route: '/dashboard',
-				icon: 'assignment',
-				text: 'Task list',
-			},
 			{	name: 'collection-list',
 				route: '/collection-list',
 				icon: 'apps',
 				text: 'Collections',
+			},
+			{	name: 'sidenav-setup',
+				route: '/sidenav-setup',
+				icon: 'settings',
+				text: 'Sidenav',
 			},
 		],
 		dividerBottom: false,
@@ -234,6 +276,7 @@ const mapStateToProps = (state) => {
     collectionNavItemLinks: state.user ? state.user.collectionNavItemLinks : [],
     collectionNavItem: state.user.collectionNavItem,
     defaultNavItem: state.user.defaultNavItem,
+    groupLinks: state.user.sidenavGroupLinks
   }
 }
 

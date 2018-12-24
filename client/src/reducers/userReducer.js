@@ -16,6 +16,9 @@ export default function(state = initialState, action) {
     case TYPES.SET_COLLECTION_NAV_ITEM:
     	const { collectionNavItem } = action
     	return { ...state, collectionNavItem }
+    case TYPES.SET_SIDENAV_FROM_CONFIG:
+      const { sidenavGroupLinks } = action
+      return { ...state, sidenavGroupLinks }
     default:
       return state;
   }
