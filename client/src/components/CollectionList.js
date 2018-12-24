@@ -31,18 +31,18 @@ class CollectionList extends Component {
 		return (
 			<div className="collection-list">
 			<h3>Collection List</h3>
-				<a href="/form-designer?id=new">
+				<Link to="/form-designer?id=new">
 					<div className="collection-card">
 						<span>New collection</span>
 					</div>
-				</a>
+				</Link>
 				{
 					collectionList.map((collection, i) => (
-						<a key={i} href={collection.urlDesigner}>
+						<Link key={i} to={collection.urlDesigner}>
 							<div className="collection-card">
 								{collection.name}
 							</div>
-						</a>
+						</Link>
 					))
 				}
 			</div>

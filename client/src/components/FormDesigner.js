@@ -93,17 +93,11 @@ class FormDesigner extends Component {
 				})
 			})
 			.catch(e => console.error(e))
+	}
 
+	componentDidMount() {
 		// materialize css initialization
-		document.addEventListener('DOMContentLoaded', function() {
-			// tooltip
-	    let tooltippedElems = document.querySelectorAll('.tooltipped')
-	    M.Tooltip.init(tooltippedElems)
-			
-			// dropdown select
-	    let selectElems = document.querySelectorAll('select')
-	    M.FormSelect.init(selectElems)
-	  });
+		M.AutoInit()
 	}
 
 	handleCheck = (i) => {

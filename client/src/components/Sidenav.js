@@ -68,13 +68,8 @@ class Sidenav extends Component {
 	}
 
 	componentDidMount() {
-		document.addEventListener('DOMContentLoaded', function() {
-			let sidenav = document.querySelectorAll('.sidenav')
-		  let modal = document.querySelectorAll('.modal')
-		  
-		  M.Sidenav.init(sidenav)
-		  M.Modal.init(modal)
-		})
+		// materialize css initialization
+		M.AutoInit()
 	}
 
 	handleClickNavItem(i) {
