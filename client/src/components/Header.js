@@ -31,7 +31,6 @@ class Header extends Component {
 
   setSidenavUser = () => {
     this.props.setCollectionNavItem()
-    this.props.loadCollectionNavItemLinks()
     this.props.unsetSidenavAdmin()
   }
 

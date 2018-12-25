@@ -30,12 +30,17 @@ export const fetchTasks = () => async dispatch => {
 
 export const setCollectionNavItem = () => {
 	return (dispatch) => {
-		const collectionNavItem = {
-			header: 'Collections',
-			dividerBottom: true,
-		}
+		axios.get(`${API_URL}/sidenav-links`)
+			.then(res => {
+				const collectionNavItem = {
+					header: 'Collections',
+					dividerBottom: true,
+					links: res.data.data
+				}
 
-		dispatch({ type: TYPES.SET_COLLECTION_NAV_ITEM, collectionNavItem })
+				dispatch({ type: TYPES.SET_COLLECTION_NAV_ITEM, collectionNavItem })
+			})
+			.catch(e => console.error(e))
 	}
 }
 
@@ -68,22 +73,25 @@ export const setSidenavAdmin = () => {
 			dividerBottom: false,
 		}
 
-		dispatch({ type: TYPES.SET_COLLECTION_NAV_ITEM, collectionNavItem: undefined })
-		dispatch({ type: TYPES.LOAD_COLLECTION_NAV_ITEM_LINKS, payload: undefined })
-		dispatch({ type: TYPES.LOAD_ADMIN_SIDENAV_LINKS, defaultNavItem })
+		dispatch({ type: TYPES.SET_ADMIN_SIDENAV_LINKS, defaultNavItem })
 	}
 }
 
 export const unsetSidenavAdmin = () => {
 	return (dispatch) => {
-		dispatch({ type: TYPES.LOAD_ADMIN_SIDENAV_LINKS, defaultNavItem: undefined })
+		dispatch({ type: TYPES.UNSET_ADMIN_SIDENAV_LINKS })
 	}
 }
 
 export const setSidenavFromConfig = (collections, groupLinks) => {
 	return (dispatch) => {
-		setCollectionNavItem()
-		dispatch({ type: TYPES.LOAD_COLLECTION_NAV_ITEM_LINKS, payload: collections })
+		const collectionNavItem = {
+			header: 'Collections',
+			dividerBottom: true,
+			links: [...collections]
+		}
+
+		dispatch({ type: TYPES.SET_COLLECTION_NAV_ITEM, collectionNavItem })
 		dispatch({ type: TYPES.SET_SIDENAV_FROM_CONFIG, sidenavGroupLinks: groupLinks })
 	}
 }

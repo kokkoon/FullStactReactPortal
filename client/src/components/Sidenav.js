@@ -32,7 +32,6 @@ class Sidenav extends Component {
 
 		// get collection links from backend
 		setCollectionNavItem()
-		loadCollectionNavItemLinks()
 		
 		// show menu based on user group authorization
 		// const shownCollectionNavItemLinks = collectionNavItemLinks ?
@@ -91,7 +90,8 @@ class Sidenav extends Component {
 		} = this.props;
 
 		const shownDefaultNavItemLinks = defaultNavItem.links
-		const shownCollectionNavItemLinks = user.isLoggedIn ? collectionNavItemLinks : []
+		const shownCollectionNavItemLinks = user.isLoggedIn && collectionNavItem ? collectionNavItem.links : []
+		// const shownCollectionNavItemLinks = user.isLoggedIn ? collectionNavItemLinks : []
 
 		// show menu based on user group authorization
 		// const shownDefaultNavItemLinks = 
@@ -110,7 +110,7 @@ class Sidenav extends Component {
 
 				<ul id="slide-out" className="sidenav">
 			    {
-			    	collectionNavItem && collectionNavItem.header.length > 0 &&
+			    	collectionNavItem && collectionNavItem.header && collectionNavItem.header.length > 0 &&
 			    	<li><a className="subheader">{collectionNavItem.header}</a></li>
 			    }
 			    {
