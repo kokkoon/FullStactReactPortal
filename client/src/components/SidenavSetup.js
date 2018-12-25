@@ -30,13 +30,13 @@ class SidenavSetup extends Component {
 
 	componentWillMount() {
 		// get form data from backend
-		axios.get(`${API_URL}/collection-list`)
+		axios.get(`${API_URL}/sidenav-links`)
 			.then(res => {
 				const collectionList =  res.data.data.map(collection => {
 					return { 
 						name: collection.name, 
-						url: collection.urlForm, 
-						icon: 'format_list_bulleted',
+						url: collection.route, 
+						icon: collection.icon,
 						showInSidenav: true 
 					}
 				})
