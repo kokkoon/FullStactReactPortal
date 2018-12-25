@@ -118,9 +118,9 @@ class SidenavSetup extends Component {
 	deleteLink = (index) => {
     const { Links } = this.state
 		
-		const newLinks = Links.slice().splice(index, 1)
+		Links.splice(index, 1)
 
-		this.setState({ Links: newLinks })
+		this.setState({ Links })
   }
 
   handleInputNewGroupLink = (event, inputType) => {
@@ -159,11 +159,10 @@ class SidenavSetup extends Component {
 	handleCreateNewGroupLink = () => {
 		const { groupLinks, newGroupLink } = this.state
 
-		const newGroupLinks = groupLinks.slice()
-		newGroupLinks.push(newGroupLink)
+		groupLinks.push(newGroupLink)
 
 		this.setState({ 
-			groupLinks: newGroupLinks,
+			groupLinks,
 			newGroupLink: {
 				header: '',
 				links: [],
@@ -174,39 +173,43 @@ class SidenavSetup extends Component {
 
 	deleteGroupLink = (index) => {
 		const { groupLinks } = this.state		
-		const newGroupLinks = groupLinks.slice().splice(index, 1)
+		
+		groupLinks.splice(index, 1)
 
-		this.setState({ groupLinks: newGroupLinks })
+		this.setState({ groupLinks })
 	}
 
 	handleApplySidenavConfig = () => {
-		let { collectionList, groupLinks } = this.state
+		const { collectionList, groupLinks } = this.state
 		const { setSidenavFromConfig } = this.props
 
-		const newCollectionList = collectionList.filter(collection => collection.showInSidenav)
-		.map(collection => {
-			return {
-				name: collection.name,
-				route: collection.url,
-				icon: collection.icon,
-				text: collection.name,
-			}
-		})
-
-		const newGroupLinks = groupLinks.map(groupLink => {
-			const links = 
-				groupLink.links.filter(link => link.showInSidenav)
-				.map(link => {
+		let newCollectionList = collectionList.slice()
+		newCollectionList = 
+			newCollectionList.filter(collection => collection.showInSidenav)
+				.map(collection => {
 					return {
-						name: link.name,
-						route: link.url,
-						icon: link.icon,
-						text: link.name,
+						name: collection.name,
+						route: collection.url,
+						icon: collection.icon,
+						text: collection.name,
 					}
 				})
 
-			groupLink.links = links
-			return groupLink
+		let newGroupLinks = groupLinks.slice()
+		newGroupLinks = newGroupLinks.map(groupLink => {
+		  const newLinks = groupLink.links.slice() 
+		  const newFilteredLinks = newLinks.filter(link => link.showInSidenav).map(link => {
+				return {
+					name: link.name,
+					route: link.url,
+					icon: link.icon,
+					text: link.name,
+				}
+			})
+
+			let newGroupLink = { ...groupLink, links: newFilteredLinks }
+
+			return newGroupLink
 		})
 
 		setSidenavFromConfig(newCollectionList, newGroupLinks)
@@ -225,7 +228,7 @@ class SidenavSetup extends Component {
 		// console.log('newLink = ', newLink)
 		// console.log('Links = ', Links)
 		// console.log('newGroupLink = ', newGroupLink)
-		console.log('groupLinks = ', groupLinks)
+		// console.log('groupLinks = ', groupLinks)
 
 		return (
 			<div className="sidenav-setup-page">
