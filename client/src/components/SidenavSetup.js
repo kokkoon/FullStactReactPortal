@@ -31,6 +31,8 @@ class SidenavSetup extends Component {
 
 	componentWillMount() {
 		// get form data from backend
+		this.props.loadSidenavConfig()
+
 		axios.get(`${API_URL}/sidenav-links`)
 			.then(res => {
 				const collectionList =  res.data.data.map(collection => {
@@ -179,6 +181,15 @@ class SidenavSetup extends Component {
 		this.setState({ groupLinks })
 	}
 
+	handleLoadConfig = (appName) => {
+		axios.get(`/api/sidenav-config?app_name=${appName}`)
+		.then(res => {
+			console.log('res = ', res)
+			this.setState({ groupLinks: res.data.data.groupLinks })
+		})
+		.catch(e => console.error(e))
+	}
+
 	handleApplySidenavConfig = () => {
 		const { collectionList, groupLinks } = this.state
 		const { setSidenavFromConfig } = this.props
@@ -224,6 +235,8 @@ class SidenavSetup extends Component {
 			newGroupLink,
 		} = this.state
 
+		const { sidenavConfig } = this.props
+
 		// console.log('collectionList = ', collectionList)
 		// console.log('newLink = ', newLink)
 		// console.log('Links = ', Links)
@@ -234,7 +247,7 @@ class SidenavSetup extends Component {
 			<div className="sidenav-setup-page">
 				<div className="row">
 					<div className="col s6">
-						<h3>Sidenav Setup Page</h3>
+						<h4>Sidenav Setup Page</h4>
 					</div>
 					<div className="col s6 btn-apply-container">
 						<a className="waves-effect waves-light btn"
@@ -242,10 +255,22 @@ class SidenavSetup extends Component {
 				    	Apply sidenav config
 				    </a>
 				  </div>
+				  <div className="col s12">
+						<h5>Load config from database</h5>
+						{
+							sidenavConfig && 
+							sidenavConfig.map(config => (
+								<a className="waves-effect waves-light btn"
+									 onClick={(e) => this.handleLoadConfig(config.appName)}>
+									 {config.appName}
+								</a>
+							))
+						}
+					</div>
 				</div>
 				<div className="row">
 					<div className="col s4">
-						<span>show or hide collections</span>
+						<h6>show or hide collections</h6>
 						{
 							collectionList.map((collection, index) => (
 								<div>
@@ -263,7 +288,7 @@ class SidenavSetup extends Component {
 						}
 					</div>
 					<div className="col s4">
-						<span>show or hide links</span>
+						<h6>show or hide links</h6>
 						{
 							Links.map((link, index) => (
 								<div>
@@ -286,7 +311,7 @@ class SidenavSetup extends Component {
 				</div>
 				<div className="row">
 					<div className="input-field col s12">
-						<span>add or remove links</span>
+						<h5>Add or remove links</h5>
 					</div>
 					<div className="input-field col s6">
 						<input id="new-link-name" type="text" value={newLink.name} onChange={(e) => this.handleInputNewLink(e, 'name')}/>
@@ -325,7 +350,7 @@ class SidenavSetup extends Component {
 			  </div>
 				<div className="row">
 					<div className="col s12">
-						<span>group links</span>
+						<h5>Group links</h5>
 						{
 							groupLinks.map((link, index) => (
 								<div>
@@ -382,10 +407,17 @@ class SidenavSetup extends Component {
 	}
 }
 
+const mapStateToProps = (state) => {
+	return {
+		sidenavConfig: state.user.sidenavConfig,
+	}
+}
+
 const mapDispatchToProps = (dispatch) => {
 	return {
+		loadSidenavConfig: () => dispatch(ACT.loadSidenavConfig()),
 		setSidenavFromConfig: (collections, groupLinks) => dispatch(ACT.setSidenavFromConfig(collections, groupLinks)),
 	}
 }
 
-export default connect(null, mapDispatchToProps)(SidenavSetup)
+export default connect(mapStateToProps, mapDispatchToProps)(SidenavSetup)

@@ -37,6 +37,10 @@ export default function(state = initialState, action) {
     case TYPES.SET_SIDENAV_FROM_CONFIG:
       const { sidenavGroupLinks } = action
       return { ...state, sidenavGroupLinks }
+      
+    case TYPES.LOAD_SIDENAV_CONFIG:
+      const { sidenavConfig } = action
+      return { ...state, sidenavConfig }
 
     default:
       return state;

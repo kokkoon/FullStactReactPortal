@@ -232,6 +232,53 @@ module.exports = (app) => {
   	})
   })
 
+  // store sidenav links configuration to database
+  app.post('/api/sidenav-links', (req, res) => {
+    const url = URL.parse(req.url, true)
+    const appName = url.query.app_name
+    const sidenavCollection = db.collection('sidenav') 
+    const sidenavRecord = {
+      appName,
+      groupLinks: req.body
+    }
+
+    sidenavCollection.insertOne(sidenavRecord, (err, result) => {
+      if (err) console.error(err)
+      console.log('inserted = ', result.insertedCount)
+      res.send({ 
+        message: 'success add sidenav config'
+      })
+    })
+  })
+
+  // get sidenav config based on app name from DB
+  app.get('/api/sidenav-config', (req, res) => {
+    const url = URL.parse(req.url, true)
+    const appName = url.query.app_name
+    const sidenavCollection = db.collection('sidenav') 
+
+    if (appName) {
+      sidenavCollection.findOne({appName}, (err, sidenav) => {
+        if (err) console.error(err)
+        if (sidenav != null) {
+          res.send({ data: sidenav })
+        }
+      })
+    } else {
+      console.log('get here yo')
+      sidenavCollection.find({}).toArray((err, result) => {
+        if (err) console.error(err)
+
+        if (result.length === 0) {
+          res.send({ message: 'no sidenav config record in database'})
+        } else if (result.length > 0) {
+          res.send({ data: result })
+        }
+      })
+    }
+
+  })
+
   // delete a document in a collection
   app.delete('/api/delete-document', (req, res) => {
     const url = URL.parse(req.url, true)

@@ -73,6 +73,8 @@ export const setSidenavAdmin = () => {
 			dividerBottom: false,
 		}
 
+		// set sidenav admin will automatically unset default user sidenav
+		// implemented directly in UserReducer.js
 		dispatch({ type: TYPES.SET_ADMIN_SIDENAV_LINKS, defaultNavItem })
 	}
 }
@@ -93,11 +95,30 @@ export const setSidenavFromConfig = (collections, groupLinks) => {
 
 		dispatch({ type: TYPES.SET_COLLECTION_NAV_ITEM, collectionNavItem })
 		dispatch({ type: TYPES.SET_SIDENAV_FROM_CONFIG, sidenavGroupLinks: groupLinks })
+
+		const joinedGroupLinks = [...groupLinks, collectionNavItem]
+		console.log('joinedGroupLinks = ', joinedGroupLinks)
+
+		axios.post(`${API_URL}/sidenav-links?app_name=default`, joinedGroupLinks)
+			.then(res => {
+				console.log('res = ', res)
+			})
+			.catch(e => console.error(e))
 	}
 }
 
 export const unsetSidenavFromConfig = () => {
 	return (dispatch) => {
 		dispatch({ type: TYPES.SET_SIDENAV_FROM_CONFIG, sidenav: undefined })
+	}
+}
+
+export const loadSidenavConfig = () => {
+	return (dispatch) => {
+		axios.get('/api/sidenav-config')
+		.then(res => {
+			dispatch({ type: TYPES.LOAD_SIDENAV_CONFIG, sidenavConfig: res.data.data })
+		})
+		.catch(e => console.error(e))
 	}
 }
