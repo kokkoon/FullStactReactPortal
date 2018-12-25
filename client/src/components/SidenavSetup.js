@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios'
+import M from 'materialize-css/dist/js/materialize.min.js'
 
 import API_URL from '../utils/api_url'
 import * as ACT from '../actions'
@@ -44,6 +45,10 @@ class SidenavSetup extends Component {
 				this.setState({ collectionList })
 			})
 			.catch(e => console.error(e))
+	}
+
+	componentDidMount() {
+		M.AutoInit()
 	}
 
 	handleCheck = (data, i) => {
