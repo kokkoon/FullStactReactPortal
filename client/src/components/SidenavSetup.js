@@ -13,6 +13,7 @@ class SidenavSetup extends Component {
 
 		this.state = {
 			appName: 'default',
+			isConfigLoadedFromDB: false,
 			collectionList: [],
 			Links: [],
 			newLink: {
@@ -185,7 +186,10 @@ class SidenavSetup extends Component {
 	handleLoadConfig = (appName) => {
 		axios.get(`/api/sidenav-config?app_name=${appName}`)
 		.then(res => {
-			this.setState({ groupLinks: res.data.data.groupLinks })
+			this.setState({ 
+				isConfigLoadedFromDB: true,
+				groupLinks: res.data.data.groupLinks
+			})
 		})
 		.catch(e => console.error(e))
 	}
@@ -241,21 +245,16 @@ class SidenavSetup extends Component {
 			return newGroupLink
 		})
 
-		console.log('internal newCollectionList = ', newCollectionList)
-		console.log('internal newGroupLinks = ', newGroupLinks)
-
 		return { newCollectionList, newGroupLinks }
 	}
 
 	handleApplySidenavConfig = () => {
-		const { collectionList, groupLinks } = this.state
+		const { collectionList, groupLinks, isConfigLoadedFromDB } = this.state
 		const { setSidenavFromConfig } = this.props
 		const { newCollectionList, newGroupLinks } = this.restructureConfig(collectionList, groupLinks)
 
-		console.log('newCollectionList = ', newCollectionList)
-		console.log('newGroupLinks = ', newGroupLinks)
-
-		setSidenavFromConfig(newCollectionList, newGroupLinks)
+		if (!isConfigLoadedFromDB) setSidenavFromConfig(newCollectionList, newGroupLinks)
+		else setSidenavFromConfig(newCollectionList, groupLinks)
 	}
 
 	handleChangeAppName = (e) => {
