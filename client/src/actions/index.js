@@ -100,11 +100,13 @@ export const setSidenavFromConfig = (collections, groupLinks) => {
 
 // save sidenav config in DB
 export const saveSidenavConfig = (config) => {	
-	axios.post(`${API_URL}/sidenav-links`, config)
-		.then(res => {
-			console.log('res = ', res)
-		})
-		.catch(e => console.error(e))
+	return (dispatch) => {
+		axios.post(`${API_URL}/sidenav-links`, config)
+			.then(res => {
+				console.log('res = ', res)
+			})
+			.catch(e => console.error(e))	
+	}
 }
 
 export const unsetSidenavFromConfig = () => {
