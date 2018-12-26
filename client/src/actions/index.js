@@ -95,16 +95,16 @@ export const setSidenavFromConfig = (collections, groupLinks) => {
 
 		dispatch({ type: TYPES.SET_COLLECTION_NAV_ITEM, collectionNavItem })
 		dispatch({ type: TYPES.SET_SIDENAV_FROM_CONFIG, sidenavGroupLinks: groupLinks })
-
-		const joinedGroupLinks = [...groupLinks, collectionNavItem]
-		console.log('joinedGroupLinks = ', joinedGroupLinks)
-
-		axios.post(`${API_URL}/sidenav-links?app_name=default`, joinedGroupLinks)
-			.then(res => {
-				console.log('res = ', res)
-			})
-			.catch(e => console.error(e))
 	}
+}
+
+// save sidenav config in DB
+export const saveSidenavConfig = (config) => {	
+	axios.post(`${API_URL}/sidenav-links`, config)
+		.then(res => {
+			console.log('res = ', res)
+		})
+		.catch(e => console.error(e))
 }
 
 export const unsetSidenavFromConfig = () => {

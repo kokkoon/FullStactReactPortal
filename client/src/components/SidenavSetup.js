@@ -12,6 +12,7 @@ class SidenavSetup extends Component {
 		super(props);
 
 		this.state = {
+			appName: 'default',
 			collectionList: [],
 			Links: [],
 			newLink: {
@@ -184,17 +185,34 @@ class SidenavSetup extends Component {
 	handleLoadConfig = (appName) => {
 		axios.get(`/api/sidenav-config?app_name=${appName}`)
 		.then(res => {
-			console.log('res = ', res)
 			this.setState({ groupLinks: res.data.data.groupLinks })
 		})
 		.catch(e => console.error(e))
 	}
 
-	handleApplySidenavConfig = () => {
-		const { collectionList, groupLinks } = this.state
-		const { setSidenavFromConfig } = this.props
+	handleSaveSidenavConfig = () => {
+		const { appName, collectionList, groupLinks } = this.state
+		const { saveSidenavConfig } = this.props
+		const { newCollectionList, newGroupLinks } = this.restructureConfig(collectionList, groupLinks)
+		
+		const collectionNavItem = {
+			header: 'Collections',
+			dividerBottom: true,
+			links: [...newCollectionList]
+		}
 
-		let newCollectionList = collectionList.slice()
+		const config = {
+			appName,
+			groupLinks: [...newGroupLinks, collectionNavItem]
+		}
+
+		console.log('config page = ', config)
+
+		saveSidenavConfig(config)
+	}
+
+	restructureConfig = (collectionList, groupLinks) => {
+		let newCollectionList = [...collectionList]
 		newCollectionList = 
 			newCollectionList.filter(collection => collection.showInSidenav)
 				.map(collection => {
@@ -206,9 +224,9 @@ class SidenavSetup extends Component {
 					}
 				})
 
-		let newGroupLinks = groupLinks.slice()
+		let newGroupLinks = [...groupLinks]
 		newGroupLinks = newGroupLinks.map(groupLink => {
-		  const newLinks = groupLink.links.slice() 
+		  const newLinks = [...groupLink.links] 
 		  const newFilteredLinks = newLinks.filter(link => link.showInSidenav).map(link => {
 				return {
 					name: link.name,
@@ -223,11 +241,30 @@ class SidenavSetup extends Component {
 			return newGroupLink
 		})
 
+		console.log('internal newCollectionList = ', newCollectionList)
+		console.log('internal newGroupLinks = ', newGroupLinks)
+
+		return { newCollectionList, newGroupLinks }
+	}
+
+	handleApplySidenavConfig = () => {
+		const { collectionList, groupLinks } = this.state
+		const { setSidenavFromConfig } = this.props
+		const { newCollectionList, newGroupLinks } = this.restructureConfig(collectionList, groupLinks)
+
+		console.log('newCollectionList = ', newCollectionList)
+		console.log('newGroupLinks = ', newGroupLinks)
+
 		setSidenavFromConfig(newCollectionList, newGroupLinks)
+	}
+
+	handleChangeAppName = (e) => {
+		this.setState({ appName: e.target.value })
 	}
 
 	render() {
 		const { 
+			appName,
 			collectionList, 
 			Links, 
 			newLink,
@@ -241,18 +278,26 @@ class SidenavSetup extends Component {
 		// console.log('newLink = ', newLink)
 		// console.log('Links = ', Links)
 		// console.log('newGroupLink = ', newGroupLink)
-		// console.log('groupLinks = ', groupLinks)
+		console.log('groupLinks = ', groupLinks)
 
 		return (
 			<div className="sidenav-setup-page">
 				<div className="row">
-					<div className="col s6">
+					<div className="col s12 center">
 						<h4>Sidenav Setup Page</h4>
 					</div>
+				  <div className="input-field col s6">
+						<input id="app-name" type="text" value={appName} onChange={this.handleChangeAppName}/>
+						<label htmlFor="new-link-name">App name</label>
+					</div>
 					<div className="col s6 btn-apply-container">
-						<a className="waves-effect waves-light btn"
+						<a className="waves-effect waves-light btn btn-apply"
 		      		 onClick={this.handleApplySidenavConfig}>
-				    	Apply sidenav config
+				    	Apply config
+				    </a>
+						<a className="waves-effect waves-light btn"
+		      		 onClick={this.handleSaveSidenavConfig}>
+				    	Save config
 				    </a>
 				  </div>
 				  <div className="col s12">
@@ -260,7 +305,7 @@ class SidenavSetup extends Component {
 						{
 							sidenavConfig && 
 							sidenavConfig.map(config => (
-								<a className="waves-effect waves-light btn"
+								<a className="waves-effect waves-light btn btn-config"
 									 onClick={(e) => this.handleLoadConfig(config.appName)}>
 									 {config.appName}
 								</a>
@@ -415,6 +460,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		saveSidenavConfig: (config) => dispatch(ACT.saveSidenavConfig(config)),
 		loadSidenavConfig: () => dispatch(ACT.loadSidenavConfig()),
 		setSidenavFromConfig: (collections, groupLinks) => dispatch(ACT.setSidenavFromConfig(collections, groupLinks)),
 	}
