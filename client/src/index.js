@@ -12,8 +12,13 @@ import reducers from './reducers';
 import axios from 'axios';
 window.axios = axios;
 
+// alternative setup redux-thunk with redux devtools in case facing error in the future
+// const storeEnhancers = (middleware) => 
+// 	compose(middleware,  
+// 					window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f)
+
 const storeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(reducers, storeEnhancers(applyMiddleware(reduxThunk)));
+const store = createStore(reducers, storeEnhancers(applyMiddleware(reduxThunk)))
 window.store = store
 
 ReactDOM.render(
