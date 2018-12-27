@@ -168,6 +168,11 @@ class SidenavSetup extends Component {
 	}
 
 	handlePreviewConfig = () => {
+		const newConfig = this.updateConfig()
+		this.setState({ config: newConfig })
+	}
+
+	updateConfig = () => {
 		const { JSONconfig, config, defaultConfig } = this.state
 		let newConfig = defaultConfig
 		let newJSONconfig
@@ -175,16 +180,18 @@ class SidenavSetup extends Component {
 			newConfig = { ...config, groupLinks: JSON.parse(JSONconfig) }
 		} catch (err) {
 			alert('JSON config is not valid\nError : ' + err)
-		} finally {
-			this.handleDefaultConfig()
-		}
-		this.setState({ config: newConfig })
+			// uncomment below code to apply default config after using trying to preview
+			// or save invalid JSON
+			// if (err) this.handleDefaultConfig()
+		} 
+
+		return newConfig
 	}
 
 	handleSaveApplyConfig = (JSONconfig) => {
-		const { config } = this.state
+		const config = this.updateConfig()
 		const { saveSidenavConfig, setSidenavFromConfig } = this.props
-
+		this.handlePreviewConfig()
 		saveSidenavConfig(config)
 		setSidenavFromConfig([], config.groupLinks)
 	}
