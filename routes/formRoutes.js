@@ -235,13 +235,24 @@ module.exports = (app) => {
   // store sidenav links configuration to database
   app.post('/api/sidenav-links', (req, res) => {
     const sidenavCollection = db.collection('sidenav')
+    const { appName, groupLinks } = req.body
 
-    sidenavCollection.insertOne(req.body, (err, result) => {
+    sidenavCollection.findOne({appName}, (err, config) => {
       if (err) console.error(err)
-      console.log('inserted = ', result.insertedCount)
-      res.send({ 
-        message: 'success add sidenav config'
-      })
+      if (config != null) {
+        sidenavCollection.updateOne({appName}, {$set: { groupLinks }})
+        res.send({ 
+          message: 'updated existing sidenav config'
+        })
+      } else {
+        sidenavCollection.insertOne(req.body, (err, result) => {
+          if (err) console.error(err)
+          console.log('inserted = ', result.insertedCount)
+          res.send({ 
+            message: 'success add sidenav config'
+          })
+        })
+      }
     })
   })
 
