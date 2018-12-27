@@ -9,7 +9,7 @@ class Dashboard extends Component {
 	componentWillMount() {
 		this.props.setCollectionNavItem()
 		this.props.loadCollectionNavItemLinks()
-    this.props.unsetSidenavAdmin()
+    this.props.setDefaultNavItem()
 	}
 
 	render() {
@@ -34,7 +34,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		unsetSidenavAdmin: () => dispatch(ACT.unsetSidenavAdmin()),
+		setDefaultNavItem: () => dispatch(ACT.setDefaultNavItem()),
 		setCollectionNavItem: () => dispatch(ACT.setCollectionNavItem()),
 		loadCollectionNavItemLinks: () => dispatch(ACT.loadCollectionNavItemLinks())
 	}

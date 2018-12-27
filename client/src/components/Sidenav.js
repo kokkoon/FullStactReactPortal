@@ -23,13 +23,17 @@ class Sidenav extends Component {
 		const { 
 			// userGroupLinkAccess, 
 			// currentUserGroup, 
+			setSidenavGroupLinks,
 			collectionNavItemLinks,
+			setDefaultNavItem,
 			setCollectionNavItem,
 			loadCollectionNavItemLinks
 		} = this.props
 
 		const shownCollectionNavItemLinks = collectionNavItemLinks
 
+		setDefaultNavItem()
+		// setSidenavGroupLinks([])
 		// get collection links from backend
 		setCollectionNavItem()
 		
@@ -89,7 +93,7 @@ class Sidenav extends Component {
 			groupLinks
 		} = this.props;
 
-		const shownDefaultNavItemLinks = defaultNavItem.links
+		const shownDefaultNavItemLinks = defaultNavItem ? defaultNavItem.links : []
 		const shownCollectionNavItemLinks = user.isLoggedIn && collectionNavItem ? collectionNavItem.links : []
 		// const shownCollectionNavItemLinks = user.isLoggedIn ? collectionNavItemLinks : []
 
@@ -103,6 +107,7 @@ class Sidenav extends Component {
 		// console.log('shownCollectionNavItemLinks = ', shownCollectionNavItemLinks)
 		
 		const offset = shownCollectionNavItemLinks ? shownCollectionNavItemLinks.length : 0
+		console.log('groupLinks = ', groupLinks)
 
 		return (
 			<Fragment>
@@ -158,7 +163,7 @@ class Sidenav extends Component {
 			  		<li><div className="divider"></div></li>
 			  	}
 			  	{
-			  		groupLinks && 
+			  		groupLinks &&
 			  		groupLinks.map(groupLink => (
 			  			<Fragment>
 			  			{
@@ -213,6 +218,8 @@ class Sidenav extends Component {
 			  		))
 			  	}
 			  	{
+			  		defaultNavItem &&
+			  		defaultNavItem.header &&
 			    	defaultNavItem.header.length > 0 &&
 			    	<li><a className="subheader">{defaultNavItem.header}</a></li>
 			    }
@@ -239,6 +246,7 @@ class Sidenav extends Component {
 			    	))
 			  	}
 			  	{
+			  		defaultNavItem &&
 			  		defaultNavItem.dividerBottom &&
 			  		<li><div className="divider"></div></li>
 			  	}
@@ -256,22 +264,22 @@ class Sidenav extends Component {
 }
 
 Sidenav.defaultProps = {
-	defaultNavItem: {
-		header: 'Setup',
-		links: [
-			{	name: 'collection-list',
-				route: '/collection-list',
-				icon: 'apps',
-				text: 'Collections',
-			},
-			{	name: 'sidenav-setup',
-				route: '/sidenav-setup',
-				icon: 'settings',
-				text: 'Sidenav',
-			},
-		],
-		dividerBottom: false,
-	},
+	// defaultNavItem: {
+	// 	header: 'Setup',
+	// 	links: [
+	// 		{	name: 'collection-list',
+	// 			route: '/collection-list',
+	// 			icon: 'apps',
+	// 			text: 'Collections',
+	// 		},
+	// 		{	name: 'sidenav-setup',
+	// 			route: '/sidenav-setup',
+	// 			icon: 'settings',
+	// 			text: 'Sidenav',
+	// 		},
+	// 	],
+	// 	dividerBottom: false,
+	// },
 
 	// options of current user group links authorization
 	// menu in sidenav will be filtered based on the specified menu name
@@ -304,13 +312,15 @@ const mapStateToProps = (state) => {
     collectionNavItemLinks: state.user ? state.user.collectionNavItemLinks : [],
     collectionNavItem: state.user.collectionNavItem,
     defaultNavItem: state.user.defaultNavItem,
-    groupLinks: state.user.sidenavGroupLinks
+    groupLinks: state.user.sidenavGroupLinks ? state.user.sidenavGroupLinks : [],
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		setDefaultNavItem: () => dispatch(ACT.setDefaultNavItem()),
 		setCollectionNavItem: () => dispatch(ACT.setCollectionNavItem()),
+		setSidenavGroupLinks: (groupLinks) => dispatch(ACT.setSidenavGroupLinks(groupLinks)),
 		loadCollectionNavItemLinks: () => dispatch(ACT.loadCollectionNavItemLinks())
 	}
 }

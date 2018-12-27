@@ -44,6 +44,30 @@ export const setCollectionNavItem = () => {
 	}
 }
 
+export const setDefaultNavItem = () => {
+	return (dispatch) => {
+		const defaultNavItem = {
+			header: 'Setup',
+			links: [
+				{	name: 'collection-list',
+					route: '/collection-list',
+					icon: 'apps',
+					text: 'Collections',
+				},
+				{	name: 'sidenav-setup',
+					route: '/sidenav-setup',
+					icon: 'settings',
+					text: 'Sidenav',
+				},
+			],
+			dividerBottom: false,
+		}
+
+		dispatch({ type: TYPES.SET_DEFAULT_NAV_ITEM , defaultNavItem })
+	}
+}
+
+
 export const loadCollectionNavItemLinks = () => {
 	return (dispatch) => {
 		axios.get(`${API_URL}/sidenav-links`)
@@ -79,22 +103,29 @@ export const setSidenavAdmin = () => {
 	}
 }
 
-export const unsetSidenavAdmin = () => {
+export const setSidenavFromConfig = (collections, sidenavGroupLinks) => {
 	return (dispatch) => {
-		dispatch({ type: TYPES.UNSET_ADMIN_SIDENAV_LINKS })
-	}
-}
+		let collectionNavItem = undefined
 
-export const setSidenavFromConfig = (collections, groupLinks) => {
-	return (dispatch) => {
-		const collectionNavItem = {
-			header: 'Collections',
-			dividerBottom: true,
-			links: [...collections]
+		if (collections.length > 0 ) {
+			collectionNavItem = {
+				header: 'Collections',
+				dividerBottom: true,
+				links: [...collections]
+			}
 		}
 
 		dispatch({ type: TYPES.SET_COLLECTION_NAV_ITEM, collectionNavItem })
-		dispatch({ type: TYPES.SET_SIDENAV_FROM_CONFIG, sidenavGroupLinks: groupLinks })
+		dispatch({ type: TYPES.SET_SIDENAV_GROUP_LINKS, sidenavGroupLinks })
+		dispatch({ type: TYPES.SET_DEFAULT_NAV_ITEM , defaultNavItem: undefined })
+
+	}
+}
+
+export const setSidenavGroupLinks = (sidenavGroupLinks) => {	
+	return (dispatch) => {
+		console.log('sidenavGroupLinks = ', sidenavGroupLinks)
+		dispatch({ type: TYPES.SET_SIDENAV_GROUP_LINKS, sidenavGroupLinks })
 	}
 }
 

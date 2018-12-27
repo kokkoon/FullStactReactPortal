@@ -31,7 +31,7 @@ class Header extends Component {
 
   setSidenavUser = () => {
     this.props.setCollectionNavItem()
-    this.props.unsetSidenavAdmin()
+    this.props.setDefaultNavItem()
   }
 
   setSidenavAdmin = () => {
@@ -107,8 +107,9 @@ function mapStateToProps({ user }) {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    setDefaultNavItem: () => dispatch(ACT.setDefaultNavItem()),
     setSidenavAdmin: () => dispatch(ACT.setSidenavAdmin()),
-    unsetSidenavAdmin: () => dispatch(ACT.unsetSidenavAdmin()),
+    // unsetSidenavAdmin: () => dispatch(ACT.unsetSidenavAdmin()),
     setCollectionNavItem: () => dispatch(ACT.setCollectionNavItem()),
     loadCollectionNavItemLinks: () => dispatch(ACT.loadCollectionNavItemLinks())
   }

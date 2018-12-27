@@ -19,6 +19,11 @@ export default function(state = initialState, action) {
         collectionNavItem: newCollectionNavItem
       }
 
+    case TYPES.SET_DEFAULT_NAV_ITEM: {
+      const { defaultNavItem } = action
+      return { ...state, defaultNavItem }
+    }
+
     case TYPES.SET_ADMIN_SIDENAV_LINKS:
     	const { defaultNavItem } = action
     	return { 
@@ -27,16 +32,21 @@ export default function(state = initialState, action) {
         defaultNavItem 
       }
 
-    case TYPES.UNSET_ADMIN_SIDENAV_LINKS:
-      return { ...state, defaultNavItem: undefined }
-
     case TYPES.SET_COLLECTION_NAV_ITEM:
     	const { collectionNavItem } = action
     	return { ...state, collectionNavItem }
 
     case TYPES.SET_SIDENAV_FROM_CONFIG:
+    {
       const { sidenavGroupLinks } = action
       return { ...state, sidenavGroupLinks }
+    }
+
+    case TYPES.SET_SIDENAV_GROUP_LINKS:
+    {
+      const { sidenavGroupLinks } = action
+      return { ...state, sidenavGroupLinks }
+    }
       
     case TYPES.LOAD_SIDENAV_CONFIG:
       const { sidenavConfig } = action
