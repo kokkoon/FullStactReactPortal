@@ -1,0 +1,26 @@
+.sidenav-setup-page {
+	margin: 20px 10vw 0 10vw;
+	text-align: left;
+}
+
+.btn-apply-container {
+	text-align: right;
+	padding-top: 35px !important;
+}
+
+.btn-delete {
+	width: 20px;
+	height: 30px;
+	margin-left: 5px;
+	margin-bottom: 5px;
+	padding: 0;
+}
+
+.btn-apply {
+	margin-right: 10px;
+}
+
+.btn-config {
+	margin-right: 10px;
+	margin-bottom: 10px;
+}

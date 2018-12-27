@@ -1,26 +1,48 @@
-.sidenav-setup-page {
-	margin: 20px 10vw 0 10vw;
+#sidenav-preview {
 	text-align: left;
+	list-style-type: none;
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+	width: 230px;
+	min-height: 85vh;
 }
 
-.btn-apply-container {
-	text-align: right;
-	padding-top: 35px !important;
+#sidenav-preview li > a, #sidenav-preview li > span {
+  color: rgba(0,0,0,0.87);
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  height: 48px;
+  line-height: 48px;
+  padding: 0 32px;
 }
 
-.btn-delete {
-	width: 20px;
-	height: 30px;
-	margin-left: 5px;
-	margin-bottom: 5px;
-	padding: 0;
+#sidenav-preview li > span.subheader {
+	border-bottom: solid 1px #e0e0e0
 }
 
-.btn-apply {
-	margin-right: 10px;
+#sidenav-preview li > a > i {
+  float: left;
+  height: 48px;
+  line-height: 48px;
+  margin: 0 24px 0 0;
+  width: 24px;
+  color: rgba(0,0,0,0.54);
 }
 
-.btn-config {
-	margin-right: 10px;
-	margin-bottom: 10px;
+.sidenav-setup textarea {
+	width: 100%;
+	margin-top: 10px;
+	padding: 10px;
+	background-color: #37474f;
+	color: #ffd54f;
+	font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
+}
+
+.btn-actions {
+	margin-top: 37px;
+}
+
+.btn-actions > span {
+	width: 100%;
+	margin-top: 8px;
 }

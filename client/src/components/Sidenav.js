@@ -118,10 +118,17 @@ class Sidenav extends Component {
 			    		<div key={i} >
 				    		<div className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
 					    		<li>
-							    	<Link to={item.route}>
-							    		<i className="material-icons">{item.icon}</i>
-							    		{item.text}
-							    	</Link>
+							    	{
+					    				item.isExternal ?
+									    	<a href={item.route}>
+									    		<i className="material-icons">{item.icon}</i>
+									    		{item.text}
+									    	</a>
+									    : <Link to={item.route}>
+									    		<i className="material-icons">{item.icon}</i>
+									    		{item.text}
+									    	</Link>
+					    			}
 							    </li>
 							  </div>
 						    {
@@ -129,10 +136,17 @@ class Sidenav extends Component {
 					    		item.sublink.length > 0 && 
 					    		item.sublink.map((subitem, idx) => (
 					    			<li key={idx} className="sublink">
-								    	<Link to={subitem.route}>
-								    		<i className="material-icons">{subitem.icon}</i>
-								    		{subitem.text}
-								    	</Link>
+								    	{
+						    				subitem.isExternal ?
+										    	<a href={subitem.route}>
+										    		<i className="material-icons">{subitem.icon}</i>
+										    		{subitem.text}
+										    	</a>
+										    : <Link to={subitem.route}>
+										    		<i className="material-icons">{subitem.icon}</i>
+										    		{subitem.text}
+										    	</Link>
+						    			}
 								    </li>
 					    		))
 					    	}
@@ -156,10 +170,17 @@ class Sidenav extends Component {
 			  					<div key={i} >
 						    		<div className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
 							    		<li>
-									    	<Link to={item.route}>
-									    		<i className="material-icons">{item.icon}</i>
-									    		{item.text}
-									    	</Link>
+									    	{
+							    				item.isExternal ?
+											    	<a href={item.route}>
+											    		<i className="material-icons">{item.icon}</i>
+											    		{item.text}
+											    	</a>
+											    : <Link to={item.route}>
+											    		<i className="material-icons">{item.icon}</i>
+											    		{item.text}
+											    	</Link>
+							    			}
 									    </li>
 									  </div>
 								    {
@@ -167,10 +188,17 @@ class Sidenav extends Component {
 							    		item.sublink.length > 0 && 
 							    		item.sublink.map((subitem, idx) => (
 							    			<li key={idx} className="sublink">
-										    	<Link to={subitem.route}>
-										    		<i className="material-icons">{subitem.icon}</i>
-										    		{subitem.text}
-										    	</Link>
+										    	{
+								    				subitem.isExternal ?
+												    	<a href={subitem.route}>
+												    		<i className="material-icons">{subitem.icon}</i>
+												    		{subitem.text}
+												    	</a>
+												    : <Link to={subitem.route}>
+												    		<i className="material-icons">{subitem.icon}</i>
+												    		{subitem.text}
+												    	</Link>
+								    			}
 										    </li>
 							    		))
 							    	}
