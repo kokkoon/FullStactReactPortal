@@ -98,6 +98,10 @@ class Sidenav extends Component {
 	}
 
 	handleClickNavItem(i) {
+		const elems = document.querySelectorAll('.sidenav');
+		const sidenavInstance = M.Sidenav.getInstance(elems[0])
+		sidenavInstance.close()
+
 		this.setState({
 			selectedNavItem: i,
 		})
