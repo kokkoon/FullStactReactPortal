@@ -94,7 +94,9 @@ class Sidenav extends Component {
 
 	componentDidMount() {
 		// materialize css initialization
-		M.AutoInit()
+		// M.AutoInit()
+		var elems = document.querySelectorAll('.sidenav');
+    var instances = M.Sidenav.init(elems);
 	}
 
 	handleClickNavItem(i) {
