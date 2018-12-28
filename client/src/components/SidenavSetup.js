@@ -12,132 +12,37 @@ class SidenavSetup extends Component {
 	constructor(props) {
 		super(props)
 
-		this.textJSONconfig = React.createRef()
 		this.state = {
+			appName: 'default',
 			JSONconfig: '',
-			defaultConfig: {
-				appName: 'default',
-				groupLinks: [
-					{
-	          "header": "Collections",
-	          "dividerBottom": true,
-	          "links": [
-	            {
-	                "name": "gogle",
-	                "route": "http://www.google.com",
-	                "icon": "format_list_bulleted",
-	                "text": "google",
-	                "isExternal": true
-	            },
-	            {
-	                "name": "Taskr",
-	                "route": "/collection?id=4",
-	                "icon": "format_list_bulleted",
-	                "text": "Taskr",
-	                "isExternal": false
-	            },
-	            {
-	                "name": "Ta",
-	                "route": "/collection?id=5",
-	                "icon": "format_list_bulleted",
-	                "text": "Ta"
-	            },
-	            {
-	                "name": "Vendor",
-	                "route": "/collection?id=6",
-	                "icon": "format_list_bulleted",
-	                "text": "Vendor"
-	            },
-	            {
-	                "name": "Cars",
-	                "route": "/collection?id=2",
-	                "icon": "format_list_bulleted",
-	                "text": "Cars",
-	                "sublink": [
-	                	{
-	                  	"name": "Cars",
-		                  "route": "http://www.cars.com",
-		                  "icon": "car",
-		                  "text": "Cars",
-		                  "isExternal": true
-	                	}
-	                ]
-	            },
-	            {
-	                "name": "Task",
-	                "route": "/collection?id=1",
-	                "icon": "format_list_bulleted",
-	                "text": "Task"
-	            }
-	          ]
-	      	}
-      	]
-    	},
-			config: {
-				appName: 'default',
-				groupLinks: [
-					{
-	          "header": "Collections",
-	          "dividerBottom": true,
-	          "links": [
-	            {
-	                "name": "gogle",
-	                "route": "http://www.google.com",
-	                "icon": "format_list_bulleted",
-	                "text": "google",
-	                "isExternal": true
-	            },
-	            {
-	                "name": "Taskr",
-	                "route": "/collection?id=4",
-	                "icon": "format_list_bulleted",
-	                "text": "Taskr",
-	                "isExternal": false
-	            },
-	            {
-	                "name": "Ta",
-	                "route": "/collection?id=5",
-	                "icon": "format_list_bulleted",
-	                "text": "Ta"
-	            },
-	            {
-	                "name": "Vendor",
-	                "route": "/collection?id=6",
-	                "icon": "format_list_bulleted",
-	                "text": "Vendor"
-	            },
-	            {
-	                "name": "Cars",
-	                "route": "/collection?id=2",
-	                "icon": "format_list_bulleted",
-	                "text": "Cars",
-	                "sublink": [
-	                	{
-	                  	"name": "Cars",
-		                  "route": "http://www.cars.com",
-		                  "icon": "car",
-		                  "text": "Cars",
-		                  "isExternal": true
-	                	}
-	                ]
-	            },
-	            {
-	                "name": "Task",
-	                "route": "/collection?id=1",
-	                "icon": "format_list_bulleted",
-	                "text": "Task"
-	            }
-	          ]
-	      	}
-      	]
-    	}
+			defaultConfig: {},
+			config: {}
 		}
+
+		this.textJSONconfig = React.createRef()
 	}
 
 	componentWillMount() {
-		this.setState({
-			JSONconfig: this.stringifyPrettyJSON(this.state.config.groupLinks)
-		})
+		const { loadSidenavConfig } = this.props
+		const { appName } = this.state
+
+		// load sidenav config based on app name
+		loadSidenavConfig(appName)
+	}
+
+	componentDidUpdate(prevProps) {
+		const { sidenavConfig } = this.props
+
+		if (sidenavConfig !== prevProps.sidenavConfig) {
+			console.log('sidenavConfig = ', sidenavConfig)
+			const JSONconfig = this.stringifyPrettyJSON(sidenavConfig.groupLinks)
+			console.log('JSONconfig didupdate = ', JSONconfig)
+			this.setState({ 
+				config: sidenavConfig, 
+				defaultConfig: sidenavConfig,
+				JSONconfig,
+			})
+		}
 	}
 
 	stringifyPrettyJSON = (object) => {
@@ -163,8 +68,12 @@ class SidenavSetup extends Component {
 	}
 
 	handleDefaultConfig = () => {
-		const JSONconfig = this.stringifyPrettyJSON(this.state.defaultConfig.groupLinks)
-		this.setState({ JSONconfig })
+		const { defaultConfig } = this.state
+		const JSONconfig = this.stringifyPrettyJSON(defaultConfig.groupLinks)
+		this.setState({ 
+			config: defaultConfig,
+			JSONconfig 
+		})
 	}
 
 	handlePreviewConfig = () => {
@@ -180,8 +89,8 @@ class SidenavSetup extends Component {
 			newConfig = { ...config, groupLinks: JSON.parse(JSONconfig) }
 		} catch (err) {
 			alert('JSON config is not valid\nError : ' + err)
-			// uncomment below code to apply default config after using trying to preview
-			// or save invalid JSON
+			// uncomment code below to apply default config if 
+			// user try to preview or save invalid JSON
 			// if (err) this.handleDefaultConfig()
 		} 
 
@@ -197,8 +106,8 @@ class SidenavSetup extends Component {
 	}
 
 	render() {
-		const { JSONconfig, config } = this.state
-		const { groupLinks } = config
+		const { JSONconfig, config, defaultConfig } = this.state
+		let groupLinks = config ? config.groupLinks : []
 
 		return (
 			<div className="row sidenav-setup">
@@ -292,7 +201,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		saveSidenavConfig: (config) => dispatch(ACT.saveSidenavConfig(config)),
-		loadSidenavConfig: () => dispatch(ACT.loadSidenavConfig()),
+		loadSidenavConfig: (appName) => dispatch(ACT.loadSidenavConfig(appName)),
 		setSidenavFromConfig: (collections, groupLinks) => dispatch(ACT.setSidenavFromConfig(collections, groupLinks)),
 	}
 }

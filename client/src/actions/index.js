@@ -146,9 +146,9 @@ export const unsetSidenavFromConfig = () => {
 	}
 }
 
-export const loadSidenavConfig = () => {
+export const loadSidenavConfig = (appName) => {
 	return (dispatch) => {
-		axios.get('/api/sidenav-config')
+		axios.get(`/api/sidenav-config?app_name=${appName}`)
 		.then(res => {
 			dispatch({ type: TYPES.LOAD_SIDENAV_CONFIG, sidenavConfig: res.data.data })
 		})
