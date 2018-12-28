@@ -19,6 +19,9 @@
 
 .json-form legend {
 	text-align: center;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 0 5px 0 5px;
 }
 
 .json-form fieldset {

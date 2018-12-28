@@ -54,7 +54,7 @@ class DataInput extends Component {
 
 		return (
 			<div className="form-input">
-				<h3>Input form</h3>
+				<h5>Input form</h5>
 				<div className="json-form">
 					<Form 
 						schema={formStructure}
