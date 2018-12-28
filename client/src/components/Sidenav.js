@@ -17,25 +17,23 @@ class Sidenav extends Component {
 	}
 
 	componentWillMount() {
-		const pathname = window.location.pathname.slice(1)
-		const query = window.location.search.slice(4)
-		let selectedNavItem
+		// const pathname = window.location.pathname.slice(1)
+		// const query = window.location.search.slice(4)
+		// let selectedNavItem
 		const { 
-			appName,
 			setApp,
+			loadSidenavConfig,
 			// userGroupLinkAccess, 
 			// currentUserGroup, 
-			sidenavConfig,
-			setSidenavFromConfig,
-			setSidenavGroupLinks,
-			collectionNavItemLinks,
-			setDefaultNavItem,
-			setCollectionNavItem,
-			loadCollectionNavItemLinks,
-			loadSidenavConfig,
+			// setSidenavFromConfig,
+			// setSidenavGroupLinks,
+			// collectionNavItemLinks,
+			// setDefaultNavItem,
+			// setCollectionNavItem,
+			// loadCollectionNavItemLinks,
 		} = this.props
 
-		const shownCollectionNavItemLinks = collectionNavItemLinks
+		// const shownCollectionNavItemLinks = collectionNavItemLinks
     
     setApp('default')
     loadSidenavConfig('default')
@@ -49,39 +47,38 @@ class Sidenav extends Component {
 		// 	collectionNavItemLinks.filter(item => 
 		// 		userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0) : []
 
-		const offset = collectionNavItemLinks ? shownCollectionNavItemLinks.length : 0
+		// const offset = collectionNavItemLinks ? shownCollectionNavItemLinks.length : 0
 
-		if (pathname.length > 0) {
-			switch (pathname) {
-				case 'dashboard':
-					selectedNavItem = offset
-					break
-				case 'data-input': 
-					selectedNavItem = offset + 1
-					break
-				case 'record': 
-					selectedNavItem = offset + 2
-					break
-				case 'user':
-					selectedNavItem = offset + 3
-					break
-				default:
-					selectedNavItem = offset
-			}
+		// if (pathname.length > 0) {
+		// 	switch (pathname) {
+		// 		case 'dashboard':
+		// 			selectedNavItem = offset
+		// 			break
+		// 		case 'data-input': 
+		// 			selectedNavItem = offset + 1
+		// 			break
+		// 		case 'record': 
+		// 			selectedNavItem = offset + 2
+		// 			break
+		// 		case 'user':
+		// 			selectedNavItem = offset + 3
+		// 			break
+		// 		default:
+		// 			selectedNavItem = offset
+		// 	}
 
-			if (pathname.indexOf('collection') >= 0) {
-				selectedNavItem = Number(query) - 1
-			}
+		// 	if (pathname.indexOf('collection') >= 0) {
+		// 		selectedNavItem = Number(query) - 1
+		// 	}
 
-			this.setState({ selectedNavItem })
-		}
+		// 	this.setState({ selectedNavItem })
+		// }
 	}
 
 	componentDidUpdate(prevProps) {
 		const { 
 			appName, 
 			sidenavConfig, 
-			loadSidenavConfig,
 			setSidenavFromConfig,
 		} = this.props
 
@@ -95,8 +92,8 @@ class Sidenav extends Component {
 	componentDidMount() {
 		// materialize css initialization
 		// M.AutoInit()
-		var elems = document.querySelectorAll('.sidenav');
-    var instances = M.Sidenav.init(elems);
+		let elems = document.querySelectorAll('.sidenav');
+    M.Sidenav.init(elems);
 	}
 
 	handleClickNavItem(i) {
@@ -112,17 +109,17 @@ class Sidenav extends Component {
 	render() {
 		const { selectedNavItem } = this.state
 		const { 
-			user,
-			defaultNavItem, 
-			collectionNavItem, 
+			// user,
+			// defaultNavItem, 
+			// collectionNavItem, 
 			// userGroupLinkAccess, 
 			// currentUserGroup,
-			collectionNavItemLinks,
+			// collectionNavItemLinks,
 			groupLinks
 		} = this.props;
 
-		const shownDefaultNavItemLinks = defaultNavItem ? defaultNavItem.links : []
-		const shownCollectionNavItemLinks = user.isLoggedIn && collectionNavItem ? collectionNavItem.links : []
+		// const shownDefaultNavItemLinks = defaultNavItem ? defaultNavItem.links : []
+		// const shownCollectionNavItemLinks = user.isLoggedIn && collectionNavItem ? collectionNavItem.links : []
 		// const shownCollectionNavItemLinks = user.isLoggedIn ? collectionNavItemLinks : []
 
 		// show menu based on user group authorization
@@ -132,10 +129,8 @@ class Sidenav extends Component {
 		
 			// collectionNavItem.links.filter(item => 
 				// userGroupLinkAccess[currentUserGroup].indexOf(item.name) >= 0)
-		// console.log('shownCollectionNavItemLinks = ', shownCollectionNavItemLinks)
 		
-		const offset = shownCollectionNavItemLinks ? shownCollectionNavItemLinks.length : 0
-		console.log('groupLinks = ', groupLinks)
+		// const offset = shownCollectionNavItemLinks ? shownCollectionNavItemLinks.length : 0
 
 		return (
 			<Fragment>
@@ -143,57 +138,57 @@ class Sidenav extends Component {
 
 				<ul id="slide-out" className="sidenav">
 			    {
-			    	collectionNavItem && collectionNavItem.header && collectionNavItem.header.length > 0 &&
-			    	<li><a className="subheader">{collectionNavItem.header}</a></li>
+			    	// collectionNavItem && collectionNavItem.header && collectionNavItem.header.length > 0 &&
+			    	// <li><a className="subheader">{collectionNavItem.header}</a></li>
 			    }
 			    {
-			    	shownCollectionNavItemLinks && shownCollectionNavItemLinks.map((item, i) => (
-			    		<div key={i} >
-				    		<div className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
-					    		<li>
-							    	{
-					    				item.isExternal ?
-									    	<a href={item.route}>
-									    		<i className="material-icons">{item.icon}</i>
-									    		{item.text}
-									    	</a>
-									    : <Link to={item.route}>
-									    		<i className="material-icons">{item.icon}</i>
-									    		{item.text}
-									    	</Link>
-					    			}
-							    </li>
-							  </div>
-						    {
-						    	item.sublink &&
-					    		item.sublink.length > 0 && 
-					    		item.sublink.map((subitem, idx) => (
-					    			<li key={idx} className="sublink">
-								    	{
-						    				subitem.isExternal ?
-										    	<a href={subitem.route}>
-										    		<i className="material-icons">{subitem.icon}</i>
-										    		{subitem.text}
-										    	</a>
-										    : <Link to={subitem.route}>
-										    		<i className="material-icons">{subitem.icon}</i>
-										    		{subitem.text}
-										    	</Link>
-						    			}
-								    </li>
-					    		))
-					    	}
-						  </div>
-			    	))
+			    	// shownCollectionNavItemLinks && shownCollectionNavItemLinks.map((item, i) => (
+			    	// 	<div key={i} >
+				    // 		<div className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
+					   //  		<li>
+							 //    	{
+					   //  				item.isExternal ?
+								// 	    	<a href={item.route}>
+								// 	    		<i className="material-icons">{item.icon}</i>
+								// 	    		{item.text}
+								// 	    	</a>
+								// 	    : <Link to={item.route}>
+								// 	    		<i className="material-icons">{item.icon}</i>
+								// 	    		{item.text}
+								// 	    	</Link>
+					   //  			}
+							 //    </li>
+							 //  </div>
+						  //   {
+						  //   	item.sublink &&
+					   //  		item.sublink.length > 0 && 
+					   //  		item.sublink.map((subitem, idx) => (
+					   //  			<li key={idx} className="sublink">
+								//     	{
+						  //   				subitem.isExternal ?
+								// 		    	<a href={subitem.route}>
+								// 		    		<i className="material-icons">{subitem.icon}</i>
+								// 		    		{subitem.text}
+								// 		    	</a>
+								// 		    : <Link to={subitem.route}>
+								// 		    		<i className="material-icons">{subitem.icon}</i>
+								// 		    		{subitem.text}
+								// 		    	</Link>
+						  //   			}
+								//     </li>
+					   //  		))
+					   //  	}
+						  // </div>
+			    	// ))
 			  	}
 			  	{
-			  		collectionNavItem && collectionNavItem.dividerBottom &&
-			  		<li><div className="divider"></div></li>
+			  		// collectionNavItem && collectionNavItem.dividerBottom &&
+			  		// <li><div className="divider"></div></li>
 			  	}
 			  	{
 			  		groupLinks &&
-			  		groupLinks.map(groupLink => (
-			  			<Fragment>
+			  		groupLinks.map((groupLink, index) => (
+			  			<div key={index}>
 			  			{
 			  				groupLink.header.length > 0 &&
 			    			<li><a className="subheader">{groupLink.header}</a></li>
@@ -242,41 +237,41 @@ class Sidenav extends Component {
 			  				groupLink.dividerBottom &&
 			  				<li><div className="divider"></div></li>
 			  			}
-			  			</Fragment>
+			  			</div>
 			  		))
 			  	}
 			  	{
-			  		defaultNavItem &&
-			  		defaultNavItem.header &&
-			    	defaultNavItem.header.length > 0 &&
-			    	<li><a className="subheader">{defaultNavItem.header}</a></li>
+			  		// defaultNavItem &&
+			  		// defaultNavItem.header &&
+			    // 	defaultNavItem.header.length > 0 &&
+			    // 	<li><a className="subheader">{defaultNavItem.header}</a></li>
 			    }
 			    {
-			    	shownDefaultNavItemLinks.map((item, i) => (
-			    		<div key={i} className={selectedNavItem === offset + i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, offset + i)}>
-				    		<li>
-						    	{
-						    		user.isLoggedIn && 
-						    		<Link to={item.route}>
-							    		<i className="material-icons">{item.icon}</i>
-							    		{item.text}
-							    	</Link>
-						    	}
-						    	{
-						    		!user.isLoggedIn && 
-						    		<a className="modal-trigger" href="#modal1">
-							    		<i className="material-icons">{item.icon}</i>
-							    		{item.text}
-							    	</a>
-						    	}
-						    </li>
-						  </div>
-			    	))
+			    	// shownDefaultNavItemLinks.map((item, i) => (
+			    	// 	<div key={i} className={selectedNavItem === offset + i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, offset + i)}>
+				    // 		<li>
+						  //   	{
+						  //   		user.isLoggedIn && 
+						  //   		<Link to={item.route}>
+							 //    		<i className="material-icons">{item.icon}</i>
+							 //    		{item.text}
+							 //    	</Link>
+						  //   	}
+						  //   	{
+						  //   		!user.isLoggedIn && 
+						  //   		<a className="modal-trigger" href="#modal1">
+							 //    		<i className="material-icons">{item.icon}</i>
+							 //    		{item.text}
+							 //    	</a>
+						  //   	}
+						  //   </li>
+						  // </div>
+			    	// ))
 			  	}
 			  	{
-			  		defaultNavItem &&
-			  		defaultNavItem.dividerBottom &&
-			  		<li><div className="divider"></div></li>
+			  		// defaultNavItem &&
+			  		// defaultNavItem.dividerBottom &&
+			  		// <li><div className="divider"></div></li>
 			  	}
 			  </ul>
 

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
 import './UserMenu.css'
@@ -11,13 +11,13 @@ class UserMenu extends Component {
 
 	render() {
 		return (
-			<a className={this.props.className + " user-menu-container dropdown-trigger"} 
+			<span className={this.props.className + " user-menu-container dropdown-trigger"} 
 				 data-target="dropdown-user-menu">
 		    <ul id="dropdown-user-menu" className="dropdown-content">
 		      {this.props.item}
 		    </ul>
 		  	{this.props.user.name}
-		  </a>
+		  </span>
 		)
 	}
 }

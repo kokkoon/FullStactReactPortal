@@ -373,13 +373,13 @@ class FormDesigner extends Component {
 						<div className="input-field inline collection-name-input">
 							<input id="collection_name" type="text" value={collectionName} onChange={(e) => this.handleInputChange('collection_name', e)}/>
 						</div>
-						<a className="waves-effect waves-light btn btn-check-collection-name tooltipped"
+						<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
 							 disabled={this.isEmptyString(collectionName)}
 							 data-position="right"
 							 data-tooltip="Check collection name"
 	        		 onClick={this.handleCheckCollectionName}>
 				    	Check
-				    </a>
+				    </span>
 			    </div>
 			    <div className="col s12">
 						<span className="document-fields-label">Document fields</span>
@@ -419,7 +419,7 @@ class FormDesigner extends Component {
 									    	field.action.map((action, index2) => {
 									    		if (action.name === 'edit') {
 								    				return (
-								    			    <a key={index2}
+								    			    <span key={index2}
 								    			    	 className={action.enable 
 								    			    							? "waves-effect waves-light btn btn-action blue lighten-2 tooltipped"
 								    			    							: "waves-effect waves-light btn btn-action blue lighten-2 disabled"}
@@ -428,11 +428,11 @@ class FormDesigner extends Component {
 								    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
 								    			    >
 								    			    	<i className="material-icons">{action.name}</i>
-								    			    </a>
+								    			    </span>
 								    			  )
 							    			  } else if (action.name === 'delete') {
 							    			  	return (
-								    			    <a key={index2}
+								    			    <span key={index2}
 								    			    	 className={action.enable 
 								    			    							? "waves-effect waves-light btn btn-action red lighten-2 tooltipped"
 								    			    							: "waves-effect waves-light btn btn-action red lighten-2 disabled"}
@@ -441,7 +441,7 @@ class FormDesigner extends Component {
 								    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
 								    			    >
 								    			    	<i className="material-icons">{action.name}</i>
-								    			    </a>
+								    			    </span>
 								    			  )
 							    			  }
 							    			  return <div key={index2}/>
@@ -455,11 +455,11 @@ class FormDesigner extends Component {
 		        </table>
 	        </div>
 	        <div className="col s12">
-	        	<a className="waves-effect waves-light btn btn-submit right" 
+	        	<span className="waves-effect waves-light btn btn-submit right" 
 		        	 disabled={isEmpty(formStructure.properties) || isEmpty(collectionName) || !isCollectionNameOK} 
 	        		 onClick={this.handleCreateCollection}>
 				    	{formId ? 'Update Collection' : 'Create collection'}
-				    </a>
+				    </span>
 	        </div>
 				</div>
 
@@ -488,12 +488,12 @@ class FormDesigner extends Component {
 						</div>
 					</div>
 					<div className="row btn-add-container">
-		        <a className="waves-effect waves-light btn" 
+		        <span className="waves-effect waves-light btn" 
 		        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || ( isFieldNameExisted && isNewField )} 
 		        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
 		        >
 				    	{isNewField ? 'Add' : 'Update'}
-				    </a>
+				    </span>
 				  </div>
         </div>
       </div>

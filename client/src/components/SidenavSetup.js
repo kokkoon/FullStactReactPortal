@@ -1,10 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import axios from 'axios'
-// import M from 'materialize-css/dist/js/materialize.min.js'
 
-import API_URL from '../utils/api_url'
 import * as ACT from '../actions'
 import './SidenavSetup.css'
 
@@ -29,10 +26,6 @@ class SidenavSetup extends Component {
 		// load sidenav config based on app name
 		loadSidenavConfig(appName)
 	}
-
-	// componentDidMount() {
-	// 	M.AutoInit()
-	// }
 
 	componentDidUpdate(prevProps) {
 		const { appName, sidenavConfig, loadSidenavConfig } = this.props
@@ -91,7 +84,6 @@ class SidenavSetup extends Component {
 	updateConfig = () => {
 		const { JSONconfig, config, defaultConfig } = this.state
 		let newConfig = defaultConfig
-		let newJSONconfig
 		try {
 			newConfig = { ...config, groupLinks: JSON.parse(JSONconfig) }
 		} catch (err) {
@@ -113,7 +105,7 @@ class SidenavSetup extends Component {
 	}
 
 	render() {
-		const { JSONconfig, config, defaultConfig } = this.state
+		const { JSONconfig, config } = this.state
 		let groupLinks = config ? config.groupLinks : []
 
 		return (
@@ -122,8 +114,8 @@ class SidenavSetup extends Component {
 					<ul id="sidenav-preview">
 			  	{
 			  		groupLinks && 
-			  		groupLinks.map(groupLink => (
-			  			<Fragment>
+			  		groupLinks.map((groupLink, index) => (
+			  			<div key={index}>
 			  			{
 			  				groupLink.header.length > 0 &&
 			    			<li><span className="subheader">{groupLink.header}</span></li>
@@ -172,13 +164,13 @@ class SidenavSetup extends Component {
 			  				groupLink.dividerBottom &&
 			  				<li><div className="divider"></div></li>
 			  			}
-			  			</Fragment>
+			  			</div>
 			  		))
 			  	}
 			  	</ul>
 				</div>
 				<div className="col s7">
-					<div class="input-field col s12">
+					<div className="input-field col s12">
 	          <span className="left"><strong>Sidenav JSON config</strong></span>
 	          <textarea 
 	          	id="textarea-sidenav-json-config" 

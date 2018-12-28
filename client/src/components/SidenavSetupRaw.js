@@ -288,24 +288,24 @@ class SidenavSetupRaw extends Component {
 						<label htmlFor="new-link-name">App name</label>
 					</div>
 					<div className="col s6 btn-apply-container">
-						<a className="waves-effect waves-light btn btn-apply"
+						<span className="waves-effect waves-light btn btn-apply"
 		      		 onClick={this.handleApplySidenavConfig}>
 				    	Apply config
-				    </a>
-						<a className="waves-effect waves-light btn"
+				    </span>
+						<span className="waves-effect waves-light btn"
 		      		 onClick={this.handleSaveSidenavConfig}>
 				    	Save config
-				    </a>
+				    </span>
 				  </div>
 				  <div className="col s12">
 						<h5>Load config from database</h5>
 						{
 							sidenavConfig && 
 							sidenavConfig.map(config => (
-								<a className="waves-effect waves-light btn btn-config"
+								<span className="waves-effect waves-light btn btn-config"
 									 onClick={(e) => this.handleLoadConfig(config.appName)}>
 									 {config.appName}
-								</a>
+								</span>
 							))
 						}
 					</div>
@@ -315,7 +315,7 @@ class SidenavSetupRaw extends Component {
 						<h6>show or hide collections</h6>
 						{
 							collectionList.map((collection, index) => (
-								<div>
+								<div key={index}>
 									<label>
 						        <input 
 						        	type="checkbox" 
@@ -333,7 +333,7 @@ class SidenavSetupRaw extends Component {
 						<h6>show or hide links</h6>
 						{
 							Links.map((link, index) => (
-								<div>
+								<div key={index}>
 									<label>
 						        <input 
 						        	type="checkbox" 
@@ -343,9 +343,9 @@ class SidenavSetupRaw extends Component {
 						        />
 						        <span>{link.name}</span>
 						      </label>
-                  <a className="btn red btn-delete" onClick={e => this.deleteLink(index)}>
+                  <span className="btn red btn-delete" onClick={e => this.deleteLink(index)}>
                   	<i className="tiny material-icons">delete</i>
-                  </a>
+                  </span>
 					      </div>
 							))
 						}
@@ -384,10 +384,10 @@ class SidenavSetupRaw extends Component {
 			      </label>
 			    </div>
 				  <div className="input-field col s3">
-						<a className="waves-effect waves-light btn"
+						<span className="waves-effect waves-light btn"
 		      		 onClick={this.handleAddNewLink}>
 				    	Add
-				    </a>
+				    </span>
 				  </div>
 			  </div>
 				<div className="row">
@@ -397,9 +397,9 @@ class SidenavSetupRaw extends Component {
 							groupLinks.map((link, index) => (
 								<div>
 									<span>{link.header}</span>
-                  <a className="btn red btn-delete" onClick={e => this.deleteGroupLink(index)}>
+                  <span className="btn red btn-delete" onClick={e => this.deleteGroupLink(index)}>
                   	<i className="tiny material-icons">delete</i>
-                  </a>
+                  </span>
 					      </div>
 							))
 						}
@@ -423,7 +423,7 @@ class SidenavSetupRaw extends Component {
 					<p>choose links</p>
 					{
 						[...collectionList, ...Links].map((link, index) => (
-							<div>
+							<div key={index}>
 									<label>
 						        <input 
 						        	type="checkbox" 
@@ -438,10 +438,10 @@ class SidenavSetupRaw extends Component {
 					}
 			    </div>
 					<div className="input-field col s2">
-						<a className="waves-effect waves-light btn"
+						<span className="waves-effect waves-light btn"
 		      		 onClick={this.handleCreateNewGroupLink}>
 				    	Create
-				    </a>
+				    </span>
 			    </div>
 				</div>
 			</div>

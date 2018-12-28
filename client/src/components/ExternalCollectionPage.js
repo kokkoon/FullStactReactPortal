@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { isEmpty } from 'lodash'
 
-import API_URL from '../utils/api_url'
-import './CollectionPage.css'
+// import API_URL from '../utils/api_url'
+import './ExternalCollectionPage.css'
 
-class CollectionPage extends Component {
+class ExternalCollectionPage extends Component {
 	constructor(props) {
     super(props)
 
@@ -19,69 +19,65 @@ class CollectionPage extends Component {
   }
 
 	componentWillMount() {
-		const id = window.location.search.slice(4)
-
-    axios.get(`${API_URL}/form/?id=${id}`)
-      .then(res => {
-        const collectionName = res.data.data.title
-        const rawColumn = res.data.column
-        const column = rawColumn.filter(c => c.showInTable).map(c => c.fieldName)
-
-        this.setState({ 
-          collectionName,
-          column 
-        })
-      })
-      .catch(err => console.log(err))
-
-    axios.get(`${API_URL}/record/?id=${id}`)
-      .then(res => {
-        this.setState({ 
-          record: res.data.data
-        })
-      })
-      .catch(err => console.log(err))
-  }
-
-  componentDidUpdate() {
-		const id = window.location.search.slice(4)
-
-    if (id !== this.state.id) {
-      axios.get(`${API_URL}/form/?id=${id}`)
-      .then(res => {
-        const collectionName = res.data.data.title
-        const rawColumn = res.data.column
-        const column = rawColumn.filter(c => c.showInTable).map(c => c.fieldName)
-
-        this.setState({ 
-          collectionName,
-          column 
-        })
-      })
-      .catch(err => console.log(err))
-
-      axios.get(`${API_URL}/record/?id=${id}`)
-      .then(res => {
-        this.setState({ record: res.data.data })
-      })
-      .catch(err => console.log(err))
-
-      this.setState({ id })
+		// const id = window.location.search.slice(4)
+    const authorization = {
+      authorization: 'Bearer tSTsMNItVWUsFQJRJF2MtUsQ2K2O2FsIP2HtSVsLtUsP2EsItPsRPtR2etUsK2gtVUsJ2bsMtTsKtWsFtSsItWxqDsMIORRtTsNJtRsOtV'
     }
+    
+    axios.get(`https://app.taskngin.com/api/v1/tasks?from=2018-11-01`, { headers: authorization })
+      .then(res => {
+        console.log('res = ', res)
+      })
+      .catch(err => console.log(err))
+
+    // axios.get(`${API_URL}/record/?id=${id}`)
+    //   .then(res => {
+    //     this.setState({ 
+    //       record: res.data.data
+    //     })
+    //   })
+    //   .catch(err => console.log(err))
   }
+
+  // componentDidUpdate() {
+		// const id = window.location.search.slice(4)
+
+  //   if (id !== this.state.id) {
+  //     axios.get(`${API_URL}/form/?id=${id}`)
+  //     .then(res => {
+  //       const collectionName = res.data.data.title
+  //       const rawColumn = res.data.column
+  //       const column = rawColumn.filter(c => c.showInTable).map(c => c.fieldName)
+
+  //       this.setState({ 
+  //         collectionName,
+  //         column 
+  //       })
+  //     })
+  //     .catch(err => console.log(err))
+
+  //     axios.get(`${API_URL}/record/?id=${id}`)
+  //     .then(res => {
+  //       this.setState({ record: res.data.data })
+  //     })
+  //     .catch(err => console.log(err))
+
+  //     this.setState({ id })
+  //   }
+  // }
 
   deleteRecord = (index) => {
-    const { record } = this.state
-    // TODO: change formInstanceId to recordId from backend
-    const formId = record[index].formId
-    const recordId = record[index].formInstanceId
+    // const { record } = this.state
+    // // TODO: change formInstanceId to recordId from backend
+    // const formId = record[index].formId
+    // const recordId = record[index].formInstanceId
 
-    axios.delete(`${API_URL}/record?form_id=${formId}&record_id=${recordId}`)
-      .then(res => {
-        record.splice(index, 1)
-        this.setState({ record })
-      })
-      .catch(e => console.error(e))
+    // axios.delete(`${API_URL}/record?form_id=${formId}&record_id=${recordId}`)
+    //   .then(res => {
+    //     record.splice(index, 1)
+    //     this.setState({ record })
+    //   })
+    //   .catch(e => console.error(e))
   }
 
   render() {
@@ -153,4 +149,4 @@ class CollectionPage extends Component {
   }
 }
 
-export default CollectionPage;
+export default ExternalCollectionPage;

@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import M from 'materialize-css/dist/js/materialize.min.js'
+// import M from 'materialize-css/dist/js/materialize.min.js'
 
 import Payments from './Payments'
 import Sidenav from './Sidenav'
@@ -30,14 +30,18 @@ class Header extends Component {
   }
 
   setSidenavUser = () => {
+    // use code below to render config from frontend
     // this.props.setCollectionNavItem()
     // this.props.setDefaultNavItem()
+
     this.props.setApp('default')
     this.props.loadSidenavConfig('default')
   }
 
   setSidenavAdmin = () => {
+    // use code below to render config from frontend
     // this.props.setSidenavAdmin()
+
     this.props.setApp('admin')
     this.props.loadSidenavConfig('admin')
   }
@@ -47,7 +51,7 @@ class Header extends Component {
 
     switch (this.props.user.isLoggedIn) {
       case false:
-        return <li><a href="/auth/google">Login with Google</a></li>
+        return <ul className="right"><li><a href="/auth/google">Login with Google</a></li></ul>
       case true:
         return ( 
           <ul className="right">
@@ -70,17 +74,17 @@ class Header extends Component {
           </ul>
         )
       default:
-        return <li><a href="/auth/google">Login With Google</a></li>
+        return <ul className="right"><li><a href="/auth/google">Login With Google</a></li></ul>
     }
   }
 
   render() {
-    const { selectedItem } = this.state
+    const { isLoggedIn } = this.props.user
     const dropdown_menu_item = [
-      <li className="non-hoverable"><Payments /></li>,
-      <li className="non-hoverable" style={{padding: '15px'}}>Credits: {this.props.user.credits}</li>,
-      <li><Link to="/profile">Profile</Link></li>,
-      <li><a href="/api/logout">Logout</a></li>
+      <li key="1" className="non-hoverable"><Payments /></li>,
+      <li key="2" className="non-hoverable" style={{padding: '15px'}}>Credits: {this.props.user.credits}</li>,
+      <li key="3"><Link to="/profile">Profile</Link></li>,
+      <li key="4"><a href="/api/logout">Logout</a></li>
     ]
 
     return (
@@ -94,10 +98,13 @@ class Header extends Component {
           >
              FLOWNGIN
           </Link>
-          <UserMenu
-            className="right"
-            item={dropdown_menu_item} 
-          />
+          {
+            isLoggedIn &&
+            <UserMenu
+              className="right"
+              item={dropdown_menu_item} 
+            />
+          }
           {this.renderContent()}
         </div>
       </nav>
@@ -113,10 +120,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setApp: (appName) => dispatch(ACT.setApp(appName)),
     loadSidenavConfig: (appName) => dispatch(ACT.loadSidenavConfig(appName)),
-    setDefaultNavItem: () => dispatch(ACT.setDefaultNavItem()),
-    setSidenavAdmin: () => dispatch(ACT.setSidenavAdmin()),
-    setCollectionNavItem: () => dispatch(ACT.setCollectionNavItem()),
-    loadCollectionNavItemLinks: () => dispatch(ACT.loadCollectionNavItemLinks()),
+    // setDefaultNavItem: () => dispatch(ACT.setDefaultNavItem()),
+    // setSidenavAdmin: () => dispatch(ACT.setSidenavAdmin()),
+    // setCollectionNavItem: () => dispatch(ACT.setCollectionNavItem()),
   }
 }
 
