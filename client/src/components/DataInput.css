@@ -1,4 +1,32 @@
 .form-input {
+	text-align: center;
 	margin-left: 10vw;
 	margin-right: 10vw;
+}
+
+.json-form {
+	text-align: left;
+}
+
+.json-form label {
+	text-align: left;
+	font-weight: bold;
+}
+
+.json-form p {
+	position: relative;
+}
+
+.json-form legend {
+	text-align: center;
+}
+
+.json-form fieldset {
+	padding: 20px;
+}
+
+.json-form button {
+	position: absolute;
+	right: 3px;
+	width: 150px;
 }

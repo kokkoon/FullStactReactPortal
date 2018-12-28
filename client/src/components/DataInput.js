@@ -47,16 +47,20 @@ class DataInput extends Component {
 			.catch(err => console.log(err))
 	}
 
+	
+
 	render() {
 		const { formStructure } = this.state
 
 		return (
-			<div className="center form-input">
+			<div className="form-input">
 				<h3>Input form</h3>
-				<Form 
-					schema={formStructure}
-        	onSubmit={this.onSubmit.bind(this)}
-        	onError={this.log("errors")} />
+				<div className="json-form">
+					<Form 
+						schema={formStructure}
+	        	onSubmit={this.onSubmit.bind(this)}
+	        	onError={this.log("errors")} />
+	      </div>
 			</div>
 		)
 	}
