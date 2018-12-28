@@ -9,48 +9,56 @@ export default function(state = initialState, action) {
     case TYPES.FETCH_USER:
       return { ...state, ...action.payload }
 
-    case TYPES.LOAD_COLLECTION_NAV_ITEM_LINKS:
+    case TYPES.SET_APP: {
+      const { appName } = action
+      return { ...state, appName }
+    }
+
+    case TYPES.LOAD_COLLECTION_NAV_ITEM_LINKS: {
       const newCollectionNavItem = { 
         ...state.collectionNavItem, 
         links: action.payload 
       }
+
       return { 
         ...state, 
         collectionNavItem: newCollectionNavItem
       }
+    }
 
     case TYPES.SET_DEFAULT_NAV_ITEM: {
       const { defaultNavItem } = action
       return { ...state, defaultNavItem }
     }
 
-    case TYPES.SET_ADMIN_SIDENAV_LINKS:
+    case TYPES.SET_ADMIN_SIDENAV_LINKS: {
     	const { defaultNavItem } = action
     	return { 
         ...state, 
         collectionNavItem: undefined, 
         defaultNavItem 
       }
+    }
 
-    case TYPES.SET_COLLECTION_NAV_ITEM:
+    case TYPES.SET_COLLECTION_NAV_ITEM : {
     	const { collectionNavItem } = action
     	return { ...state, collectionNavItem }
+    }
 
-    case TYPES.SET_SIDENAV_FROM_CONFIG:
-    {
+    case TYPES.SET_SIDENAV_FROM_CONFIG : {
       const { sidenavGroupLinks } = action
       return { ...state, sidenavGroupLinks }
     }
 
-    case TYPES.SET_SIDENAV_GROUP_LINKS:
-    {
+    case TYPES.SET_SIDENAV_GROUP_LINKS : {
       const { sidenavGroupLinks } = action
       return { ...state, sidenavGroupLinks }
     }
       
-    case TYPES.LOAD_SIDENAV_CONFIG:
+    case TYPES.LOAD_SIDENAV_CONFIG: {
       const { sidenavConfig } = action
       return { ...state, sidenavConfig }
+    }
 
     default:
       return state;

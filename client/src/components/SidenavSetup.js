@@ -13,7 +13,7 @@ class SidenavSetup extends Component {
 		super(props)
 
 		this.state = {
-			appName: 'default',
+			appName: props.appName,
 			JSONconfig: '',
 			defaultConfig: {},
 			config: {}
@@ -30,18 +30,25 @@ class SidenavSetup extends Component {
 		loadSidenavConfig(appName)
 	}
 
+	componentDidMount() {
+		M.AutoInit()
+	}
+
 	componentDidUpdate(prevProps) {
-		const { sidenavConfig } = this.props
+		const { appName, sidenavConfig, loadSidenavConfig } = this.props
 
 		if (sidenavConfig !== prevProps.sidenavConfig) {
-			console.log('sidenavConfig = ', sidenavConfig)
 			const JSONconfig = this.stringifyPrettyJSON(sidenavConfig.groupLinks)
-			console.log('JSONconfig didupdate = ', JSONconfig)
+
 			this.setState({ 
 				config: sidenavConfig, 
 				defaultConfig: sidenavConfig,
 				JSONconfig,
 			})
+		}
+
+		if (appName !== prevProps.appName) {
+			loadSidenavConfig(appName)
 		}
 	}
 
@@ -195,6 +202,7 @@ class SidenavSetup extends Component {
 const mapStateToProps = (state) => {
 	return {
 		sidenavConfig: state.user.sidenavConfig,
+		appName: state.user.appName,
 	}
 }
 

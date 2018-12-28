@@ -25,7 +25,8 @@ import SidenavSetupRaw from './SidenavSetupRaw'
 
 class App extends Component {
   componentWillMount(){
-    this.props.fetchUser();
+    this.props.fetchUser()
+    this.props.setApp('default')
   }
 
   render() {

@@ -155,3 +155,9 @@ export const loadSidenavConfig = (appName) => {
 		.catch(e => console.error(e))
 	}
 }
+
+export const setApp = (appName) => {
+	return (dispatch) => {
+		dispatch({ type: TYPES.SET_APP, appName })
+	}
+}
