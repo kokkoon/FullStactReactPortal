@@ -182,7 +182,6 @@ class SidenavSetup extends Component {
 	          <span className="left"><strong>Sidenav JSON config</strong></span>
 	          <textarea 
 	          	id="textarea-sidenav-json-config" 
-	          	className="materialize-textarea"
 	          	value={JSONconfig}
 	          	onChange={this.handleChangeJSONconfig}
 	          	ref={this.textJSONconfig}
