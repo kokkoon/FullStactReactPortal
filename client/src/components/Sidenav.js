@@ -21,21 +21,28 @@ class Sidenav extends Component {
 		const query = window.location.search.slice(4)
 		let selectedNavItem
 		const { 
+			appName,
+			setApp,
 			// userGroupLinkAccess, 
 			// currentUserGroup, 
+			sidenavConfig,
+			setSidenavFromConfig,
 			setSidenavGroupLinks,
 			collectionNavItemLinks,
 			setDefaultNavItem,
 			setCollectionNavItem,
-			loadCollectionNavItemLinks
+			loadCollectionNavItemLinks,
+			loadSidenavConfig,
 		} = this.props
 
 		const shownCollectionNavItemLinks = collectionNavItemLinks
-
-		setDefaultNavItem()
+    
+    setApp('default')
+    loadSidenavConfig('default')
+		// setDefaultNavItem()
 		// setSidenavGroupLinks([])
 		// get collection links from backend
-		setCollectionNavItem()
+		// setCollectionNavItem()
 		
 		// show menu based on user group authorization
 		// const shownCollectionNavItemLinks = collectionNavItemLinks ?
@@ -67,6 +74,21 @@ class Sidenav extends Component {
 			}
 
 			this.setState({ selectedNavItem })
+		}
+	}
+
+	componentDidUpdate(prevProps) {
+		const { 
+			appName, 
+			sidenavConfig, 
+			loadSidenavConfig,
+			setSidenavFromConfig,
+		} = this.props
+
+		if (appName !== prevProps.appName || sidenavConfig !== prevProps.sidenavConfig) {
+			if (sidenavConfig !== prevProps.sidenavConfig && sidenavConfig) {
+					setSidenavFromConfig([], sidenavConfig.groupLinks)
+			}
 		}
 	}
 
@@ -309,15 +331,20 @@ Sidenav.defaultProps = {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
+  	appName: state.user.appName,
     collectionNavItemLinks: state.user ? state.user.collectionNavItemLinks : [],
     collectionNavItem: state.user.collectionNavItem,
     defaultNavItem: state.user.defaultNavItem,
     groupLinks: state.user.sidenavGroupLinks ? state.user.sidenavGroupLinks : [],
+    sidenavConfig: state.user.sidenavConfig,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		setApp: (appName) => dispatch(ACT.setApp(appName)),
+		loadSidenavConfig: (appName) => dispatch(ACT.loadSidenavConfig(appName)),
+		setSidenavFromConfig: (collections, groupLinks) => dispatch(ACT.setSidenavFromConfig(collections, groupLinks)),
 		setDefaultNavItem: () => dispatch(ACT.setDefaultNavItem()),
 		setCollectionNavItem: () => dispatch(ACT.setCollectionNavItem()),
 		setSidenavGroupLinks: (groupLinks) => dispatch(ACT.setSidenavGroupLinks(groupLinks)),

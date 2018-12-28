@@ -267,6 +267,8 @@ module.exports = (app) => {
         if (err) console.error(err)
         if (sidenav != null) {
           res.send({ data: sidenav })
+        } else {
+          res.send({ data: {}, message: `config for ${appName} is not found in database` })
         }
       })
     } else {

@@ -30,14 +30,16 @@ class Header extends Component {
   }
 
   setSidenavUser = () => {
-    this.props.setCollectionNavItem()
-    this.props.setDefaultNavItem()
+    // this.props.setCollectionNavItem()
+    // this.props.setDefaultNavItem()
     this.props.setApp('default')
+    this.props.loadSidenavConfig('default')
   }
 
   setSidenavAdmin = () => {
-    this.props.setSidenavAdmin()
+    // this.props.setSidenavAdmin()
     this.props.setApp('admin')
+    this.props.loadSidenavConfig('admin')
   }
 
   renderContent() {
@@ -110,10 +112,11 @@ function mapStateToProps({ user }) {
 const mapDispatchToProps = (dispatch) => {
   return {
     setApp: (appName) => dispatch(ACT.setApp(appName)),
+    loadSidenavConfig: (appName) => dispatch(ACT.loadSidenavConfig(appName)),
     setDefaultNavItem: () => dispatch(ACT.setDefaultNavItem()),
     setSidenavAdmin: () => dispatch(ACT.setSidenavAdmin()),
     setCollectionNavItem: () => dispatch(ACT.setCollectionNavItem()),
-    loadCollectionNavItemLinks: () => dispatch(ACT.loadCollectionNavItemLinks())
+    loadCollectionNavItemLinks: () => dispatch(ACT.loadCollectionNavItemLinks()),
   }
 }
 

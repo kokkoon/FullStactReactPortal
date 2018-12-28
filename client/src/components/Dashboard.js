@@ -6,11 +6,6 @@ import TaskList from './tasks/TaskList'
 import * as ACT from '../actions'
 
 class Dashboard extends Component {
-	componentWillMount() {
-		this.props.setCollectionNavItem()
-		this.props.loadCollectionNavItemLinks()
-    this.props.setDefaultNavItem()
-	}
 
 	render() {
 	  return (

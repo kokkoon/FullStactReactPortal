@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import axios from 'axios'
-import M from 'materialize-css/dist/js/materialize.min.js'
+// import M from 'materialize-css/dist/js/materialize.min.js'
 
 import API_URL from '../utils/api_url'
 import * as ACT from '../actions'
@@ -30,9 +30,9 @@ class SidenavSetup extends Component {
 		loadSidenavConfig(appName)
 	}
 
-	componentDidMount() {
-		M.AutoInit()
-	}
+	// componentDidMount() {
+	// 	M.AutoInit()
+	// }
 
 	componentDidUpdate(prevProps) {
 		const { appName, sidenavConfig, loadSidenavConfig } = this.props
