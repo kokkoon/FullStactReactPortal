@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { isEmpty } from 'lodash'
 
@@ -11,7 +11,7 @@ class ExternalCollectionPage extends Component {
     super(props)
 
     this.state = {
-      id: undefined,
+      // id: undefined,
       collectionName: 'External Content',
       column: ['name', 'subject', 'description', 'created', 'status', 'workflow'],
     	record: null
@@ -42,7 +42,7 @@ class ExternalCollectionPage extends Component {
 
   render() {
     const { collectionName, column, record } = this.state
-		const id = window.location.search.slice(4)
+		// const id = window.location.search.slice(4)
 
     return (
       <div className="collection-page center">
