@@ -42,11 +42,11 @@
 	font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
 }
 
-.btn-actions {
+.sidenav-setup .btn-actions {
 	margin-top: 37px;
 }
 
-.btn-actions > span {
+.sidenav-setup .btn-actions > span {
 	width: 100%;
 	margin-top: 8px;
 }

@@ -380,7 +380,7 @@ class FormDesigner extends Component {
 						    <span className="waves-effect waves-light btn">
 						    	Edit View
 						    </span>
-						    <Link className="waves-effect waves-light btn" to="/edit-form">
+						    <Link className="waves-effect waves-light btn" to={`/design-form?id=${formId}`}>
 						    	Edit Form
 						    </Link>
 				    	</Fragment>

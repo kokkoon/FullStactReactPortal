@@ -184,6 +184,7 @@ module.exports = (app) => {
         if (form.formStructure !== null) {
   				res.send({
             formId: formId,
+            collectionName: form.collectionName,
             column: form.tableColumns, 
             data: form.formStructure
           })
