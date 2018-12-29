@@ -1,4 +1,5 @@
 const bodyParser = require('body-parser')
+const request = require('request')
 const lodash = require('lodash')
 const cors = require('cors')
 const cuid = require('cuid')
@@ -283,6 +284,19 @@ module.exports = (app) => {
       })
     }
 
+  })
+
+  app.get('/api/external-content', (req, res) => {
+     const authorization = {
+      authorization: 'Bearer tSTsMNItVWUsFQJRJF2MtUsQ2K2O2FsIP2HtSVsLtUsP2EsItPsRPtR2etUsK2gtVUsJ2bsMtTsKtWsFtSsItWxqDsMIORRtTsNJtRsOtV'
+    }
+
+    request('https://app.taskngin.com/api/v1/tasks?from=2018-11-01', { headers: authorization }, (error, response, body) => {
+      if (error) console.error(error)
+      if (response.statusCode === 200) {
+        res.send({data: JSON.parse(body)})
+      }
+    })
   })
 
   // delete a document in a collection

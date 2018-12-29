@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { isEmpty } from 'lodash'
 
-// import API_URL from '../utils/api_url'
+import API_URL from '../utils/api_url'
 import './ExternalCollectionPage.css'
 
 class ExternalCollectionPage extends Component {
@@ -12,61 +12,21 @@ class ExternalCollectionPage extends Component {
 
     this.state = {
       id: undefined,
-      collectionName: '',
-      column: [],
+      collectionName: 'External Content',
+      column: ['name', 'subject', 'description', 'created', 'status', 'workflow'],
     	record: null
     }
   }
 
 	componentWillMount() {
-		// const id = window.location.search.slice(4)
-    const authorization = {
-      authorization: 'Bearer tSTsMNItVWUsFQJRJF2MtUsQ2K2O2FsIP2HtSVsLtUsP2EsItPsRPtR2etUsK2gtVUsJ2bsMtTsKtWsFtSsItWxqDsMIORRtTsNJtRsOtV'
-    }
-    
-    axios.get(`https://app.taskngin.com/api/v1/tasks?from=2018-11-01`, { headers: authorization })
+    axios.get(`${API_URL}/external-content`)
       .then(res => {
-        console.log('res = ', res)
+        this.setState({ record: res.data.data.tasks })
       })
       .catch(err => console.log(err))
-
-    // axios.get(`${API_URL}/record/?id=${id}`)
-    //   .then(res => {
-    //     this.setState({ 
-    //       record: res.data.data
-    //     })
-    //   })
-    //   .catch(err => console.log(err))
   }
 
-  // componentDidUpdate() {
-		// const id = window.location.search.slice(4)
-
-  //   if (id !== this.state.id) {
-  //     axios.get(`${API_URL}/form/?id=${id}`)
-  //     .then(res => {
-  //       const collectionName = res.data.data.title
-  //       const rawColumn = res.data.column
-  //       const column = rawColumn.filter(c => c.showInTable).map(c => c.fieldName)
-
-  //       this.setState({ 
-  //         collectionName,
-  //         column 
-  //       })
-  //     })
-  //     .catch(err => console.log(err))
-
-  //     axios.get(`${API_URL}/record/?id=${id}`)
-  //     .then(res => {
-  //       this.setState({ record: res.data.data })
-  //     })
-  //     .catch(err => console.log(err))
-
-  //     this.setState({ id })
-  //   }
-  // }
-
-  deleteRecord = (index) => {
+  // deleteRecord = (index) => {
     // const { record } = this.state
     // // TODO: change formInstanceId to recordId from backend
     // const formId = record[index].formId
@@ -78,7 +38,7 @@ class ExternalCollectionPage extends Component {
     //     this.setState({ record })
     //   })
     //   .catch(e => console.error(e))
-  }
+  // }
 
   render() {
     const { collectionName, column, record } = this.state
@@ -88,9 +48,9 @@ class ExternalCollectionPage extends Component {
       <div className="collection-page center">
         <div className="row">
         	<h5 className="collection-title">/ {collectionName}</h5>
-          <span className="button-new">
-            <Link className="waves-effect waves-light btn" to={`/data-input?id=${id}`}>New</Link>
-          </span>
+          {/*<span className="button-new">
+                      <Link className="waves-effect waves-light btn" to={`/data-input?id=${id}`}>New</Link>
+                    </span>*/}
         </div>
         <div className="row">
         { 
@@ -112,7 +72,9 @@ class ExternalCollectionPage extends Component {
                       record.map((r,i) => (
                         <tr key={i}>
                           {
-                            Object.keys(r).filter(k => column.indexOf(k) >= 0).map((k, i_2) => (
+                            Object.keys(r).filter(k => column.indexOf(k) >= 0) // filter data based on column
+                            .sort((a, b) => (column.indexOf(a) - column.indexOf(b))) // sort data based on column order
+                            .map((k, i_2) => (
                               <td key={i_2}>{r[k]}</td>
                             ))
                           }
@@ -122,25 +84,25 @@ class ExternalCollectionPage extends Component {
                   </tbody>
                 </table>
             </div>
-            <div className="col s1 delete-button-container">
-              <table className="table-delete-button">
-                <thead><tr><th></th></tr></thead>
-                <tbody>
-                  { 
-                    record && record.map((r, i) => (
-                      <tr key={i}>
-                        <td className="cell-delete-btn-container">
-                          <span className="waves-effect waves-light btn-floating red" 
-                             onClick={e => this.deleteRecord(i)}>
-                            <i className="small material-icons">delete</i>
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  }
-                </tbody>
-              </table>
-            </div>
+            {/*<div className="col s1 delete-button-container">
+                          <table className="table-delete-button">
+                            <thead><tr><th></th></tr></thead>
+                            <tbody>
+                              { 
+                                record && record.map((r, i) => (
+                                  <tr key={i}>
+                                    <td className="cell-delete-btn-container">
+                                      <span className="waves-effect waves-light btn-floating red" 
+                                         onClick={e => this.deleteRecord(i)}>
+                                        <i className="small material-icons">delete</i>
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))
+                              }
+                            </tbody>
+                          </table>
+                        </div>*/}
           </Fragment>
         }
         </div>
@@ -149,4 +111,4 @@ class ExternalCollectionPage extends Component {
   }
 }
 
-export default ExternalCollectionPage;
+export default ExternalCollectionPage
