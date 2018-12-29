@@ -1,5 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import { isEmpty } from 'lodash'
@@ -368,7 +369,26 @@ class FormDesigner extends Component {
 			<div className="form-designer">
 				<h4 className="center">{formId ? 'Update Collection' : 'Create New Collection'}</h4>
 				<div className="row">
-					<div className="col s12">
+					<div className="col s12 btn-form">
+					{
+						formId ?
+						(
+							<Fragment>
+								<span className="waves-effect waves-light btn">
+						    	Events
+						    </span>
+						    <span className="waves-effect waves-light btn">
+						    	Edit View
+						    </span>
+						    <Link className="waves-effect waves-light btn" to="/edit-form">
+						    	Edit Form
+						    </Link>
+				    	</Fragment>
+				    )
+				    : (<span />)
+					}
+					</div>
+					<div className="col s12 first-row-container">
 						<span className="collection-name-label"> Collection name : </span>
 						<div className="input-field inline collection-name-input">
 							<input id="collection_name" type="text" value={collectionName} onChange={(e) => this.handleInputChange('collection_name', e)}/>
@@ -380,6 +400,13 @@ class FormDesigner extends Component {
 	        		 onClick={this.handleCheckCollectionName}>
 				    	Check
 				    </span>
+				    {
+				    	formId ? 
+					      (<span />)
+						  : (<span className="waves-effect waves-light btn btn-collection-templates">
+						    	Collection Templates
+						    </span>)
+				    }
 			    </div>
 			    <div className="col s12">
 						<span className="document-fields-label">Document fields</span>

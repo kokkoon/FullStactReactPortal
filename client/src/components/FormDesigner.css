@@ -3,6 +3,15 @@
 	text-align: left;
 }
 
+.btn-form {
+	text-align: right;
+}
+
+.btn-form > span, .btn-form > a {
+	margin-left: 10px;
+	width: 110px;
+}
+
 .collection-name-input {
 	width: 270px !important;
 }
@@ -22,6 +31,17 @@
 .btn-check-collection-name {
 	margin-left: 10px;
 	margin-bottom: 5px;
+}
+
+.first-row-container {
+	position: relative;
+}
+
+.btn-collection-templates {
+	margin-bottom: 5px;
+	position: absolute;
+	top: 11px;
+	right: 8px;
 }
 
 .document-fields-label {
