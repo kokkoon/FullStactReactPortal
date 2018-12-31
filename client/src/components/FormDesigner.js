@@ -325,8 +325,7 @@ class FormDesigner extends Component {
 			})
 			.catch(err => console.log(err))
 
-		// if create new collection, set back to initial state
-		// after user click create button
+		// reset to initial state after new collection created
 		if (formId === undefined) {
 			this.setState({ 
 				formId: undefined,

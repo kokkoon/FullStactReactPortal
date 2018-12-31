@@ -172,6 +172,33 @@ module.exports = (app) => {
   	}) 
   })
 
+  app.patch('/api/update-form-schema', (req, res) => {
+    const formCollection = db.collection('form')
+    const url = URL.parse(req.url, true)
+    const id = url.query.id
+    const schema = req.body 
+    // need to save UIschema to DB also
+    console.log('formId = ', id)
+    console.log('req.body = ', req.body)
+
+    const updateFields = {
+      $set: { 
+        formStructure: schema.JSON,
+        uiSchema: schema.UI
+      }
+    }
+
+    formCollection.updateOne({id}, updateFields, (err, obj) => {
+      if (err) console.error(err)
+        console.log('result = ', obj.result)
+      if (obj.result.n === 1) {
+        res.send({ message: 'schema updated'})
+      } else {
+        res.send({ message: 'fail to update schema'})
+      }
+    })
+  })
+
   // get form schema to be rendered in jsonschema-form
   app.get('/api/form', (req, res) => {
   	const formCollection = db.collection('form')

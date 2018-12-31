@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios'
+import queryString from 'query-string'
+import M from 'materialize-css/dist/js/materialize.min.js'
 // import { Link } from 'react-router-dom'
 import Form from 'react-jsonschema-form'
 
@@ -15,10 +17,10 @@ class DesignForm extends Component {
 		this.state = {
 			collectionName: '',
 			stringUIschema: '',
-			defaultUISchema: {},
+			defaultUIschema: {},
 			uiSchema: {},
 			stringJSONschema: '',
-			defaultJSONSchema: { title: 'Form', type: "object", properties: {} },
+			defaultJSONschema: { title: 'Form', type: "object", properties: {} },
 			JSONSchema: { title: 'Form', type: "object", properties: {} }
 		}
 
@@ -32,37 +34,33 @@ class DesignForm extends Component {
 
 		axios.get(`${API_URL}/form?id=${formId}`)
 		.then(res => {
-			const stringJSONschema = this.stringifyPrettyJSON(res.data.data)
+			const schema = res.data.data
+			const stringJSONschema = this.stringifyPrettyJSON(schema)
+			
+			const uiSchema = Object.keys(schema.properties).reduce((obj, key) => {
+				return {...obj, [key] : { ['ui:widget']: 'text' }}
+			}, {})
+			
+			const stringUIschema = this.stringifyPrettyJSON(uiSchema)
 
 			this.setState({
 				collectionName: res.data.collectionName,
-				JSONSchema: res.data.data,
-				defaultJSONSchema: res.data.data,
-				stringJSONschema
+				JSONSchema: schema,
+				defaultJSONschema: schema,
+				uiSchema,
+				defaultUIschema: uiSchema,
+				stringJSONschema,
+				stringUIschema
 			})
 		})
 		.catch(e => console.error(e))
 	}
 
-	log = (type) => console.log.bind(console, type)
-
-	componentDidUpdate(prevProps) {
-		// const { appName, sidenavConfig, loadSidenavConfig } = this.props
-
-		// if (sidenavConfig !== prevProps.sidenavConfig) {
-		// 	const JSONconfig = this.stringifyPrettyJSON(sidenavConfig.groupLinks)
-
-		// 	this.setState({ 
-		// 		config: sidenavConfig, 
-		// 		defaultConfig: sidenavConfig,
-		// 		JSONconfig,
-		// 	})
-		// }
-
-		// if (appName !== prevProps.appName) {
-		// 	loadSidenavConfig(appName)
-		// }
+	componentDidMount() {
+		M.AutoInit()
 	}
+
+	log = (type) => console.log.bind(console, type)
 
 	stringifyPrettyJSON = (object) => {
 		return JSON.stringify(object, undefined, 2)/*.replace(/": /g, '"\t:  ')*/
@@ -90,15 +88,13 @@ class DesignForm extends Component {
 	}
 
 	handleDefaultSchema = () => {
-		const { defaultJSONSchema, defaultUISchema } = this.state
-		const stringJSONschema = this.stringifyPrettyJSON(defaultJSONSchema)
-		const stringUIschema = this.stringifyPrettyJSON(defaultUISchema)
+		const { defaultJSONschema, defaultUIschema } = this.state
+		const stringJSONschema = this.stringifyPrettyJSON(defaultJSONschema)
+		const stringUIschema = this.stringifyPrettyJSON(defaultUIschema)
 		
-		console.log('stringJSONschema = ', stringJSONschema)
-
 		this.setState({
-			JSONSchema: defaultJSONSchema,
-			uiSchema: defaultUISchema,
+			JSONSchema: defaultJSONschema,
+			uiSchema: defaultUIschema,
 			stringUIschema,
 			stringJSONschema
 		})
@@ -114,33 +110,40 @@ class DesignForm extends Component {
 
 	updateSchema = () => {
 		const { 
-			stringJSONSchema,
-			stringUISchema,
-			defaultJSONSchema, 
-			defaultUISchema 
+			stringJSONschema,
+			stringUIschema,
+			defaultJSONschema, 
+			defaultUIschema 
 		} = this.state
-		let newSchema = { JSON: defaultJSONSchema, UI: defaultUISchema }
+		let newSchema = { JSON: defaultJSONschema, UI: defaultUIschema }
 		try {
 			newSchema = { 
-				JSON: JSON.parse(stringJSONSchema), 
-				// UI: JSON.parse(stringUISchema) 
+				JSON: JSON.parse(stringJSONschema), 
+				UI: JSON.parse(stringUIschema)
 			}
 		} catch (err) {
 			alert('JSON schema is not valid\nError : ' + err)
 			// uncomment code below to apply default config if 
 			// user try to preview or save invalid JSON
-			// if (err) this.handleDefaultConfig()
+			// if (err) this.handleDefaultSchema()
 		} 
-
+		
 		return newSchema
 	}
 
 	handleSaveApplySchema = () => {
-		// const config = this.updateConfig()
-		// const { saveSidenavConfig, setSidenavFromConfig } = this.props
-		// this.handlePreviewConfig()
-		// saveSidenavConfig(config)
-		// setSidenavFromConfig([], config.groupLinks)
+		const schema = this.updateSchema()
+		this.handlePreviewSchema()
+
+		this.saveFormSchema(schema)
+	}
+
+	saveFormSchema(schema) {
+		const id = queryString.parse(this.props.location.search).id
+		axios.patch(`${API_URL}/update-form-schema?id=${id}`, schema)
+		.then(res => 
+			M.toast({ html: res.data.message }))
+		.catch(err => console.error(err))
 	}
 
 	render() {
@@ -151,11 +154,6 @@ class DesignForm extends Component {
 			uiSchema,
 			JSONSchema 
 		} = this.state
-
-		console.log('stringUIschema = ', stringUIschema)
-		console.log('stringJSONschema = ', stringJSONschema)
-		console.log('uiSchema = ', uiSchema)
-		console.log('JSONSchema = ', JSONSchema)
 
 	  return (
 			<div className="row design-form-page">

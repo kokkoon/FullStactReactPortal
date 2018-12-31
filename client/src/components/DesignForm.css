@@ -14,3 +14,45 @@
 	width: 100%;
 	margin-top: 8px;
 }
+
+.design-form-page textarea {
+	width: 100%;
+	height: 60vh;
+	resize: none;
+	overflow-y: auto;
+	margin-top: 10px;
+	padding: 10px;
+	background-color: #37474f;
+	color: #ffd54f;
+	font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
+}
+
+.design-form-page .form-preview .json-form {
+	text-align: left;
+}
+
+.design-form-page .form-preview .json-form label {
+	text-align: left;
+	font-weight: bold;
+}
+
+.design-form-page .form-preview .json-form p {
+	position: relative;
+}
+
+.design-form-page .form-preview .json-form legend {
+	text-align: center;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 0 5px 0 5px;
+}
+
+.design-form-page .form-preview .json-form fieldset {
+	padding: 20px;
+}
+
+.design-form-page .form-preview .json-form button {
+	position: absolute;
+	right: 3px;
+	width: 150px;
+}
