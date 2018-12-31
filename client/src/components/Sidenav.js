@@ -92,8 +92,11 @@ class Sidenav extends Component {
 	componentDidMount() {
 		// materialize css initialization
 		// M.AutoInit()
-		let elems = document.querySelectorAll('.sidenav');
-    M.Sidenav.init(elems);
+		let sidenav = document.querySelectorAll('.sidenav');
+    M.Sidenav.init(sidenav);
+
+    let modal = document.querySelectorAll('.modal');
+    M.Modal.init(modal);
 	}
 
 	handleClickNavItem(i) {
@@ -109,7 +112,7 @@ class Sidenav extends Component {
 	render() {
 		const { selectedNavItem } = this.state
 		const { 
-			// user,
+			user,
 			// defaultNavItem, 
 			// collectionNavItem, 
 			// userGroupLinkAccess, 
@@ -199,15 +202,20 @@ class Sidenav extends Component {
 						    		<div className={selectedNavItem === i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, i)}>
 							    		<li>
 									    	{
-							    				item.isExternal ?
-											    	<a href={item.route}>
+									    		user.isLoggedIn ?
+								    				item.isExternal ?
+												    	<a href={item.route}>
+												    		<i className="material-icons">{item.icon}</i>
+												    		{item.text}
+												    	</a>
+												    : <Link to={item.route}>
+												    		<i className="material-icons">{item.icon}</i>
+												    		{item.text}
+												    	</Link>
+												  : <a className="modal-trigger" href="#modal1">
 											    		<i className="material-icons">{item.icon}</i>
 											    		{item.text}
 											    	</a>
-											    : <Link to={item.route}>
-											    		<i className="material-icons">{item.icon}</i>
-											    		{item.text}
-											    	</Link>
 							    			}
 									    </li>
 									  </div>
@@ -215,17 +223,22 @@ class Sidenav extends Component {
 								    	item.sublink &&
 							    		item.sublink.length > 0 && 
 							    		item.sublink.map((subitem, idx) => (
-							    			<li key={idx} className="sublink">
+							    			<li key={idx} className="sublink" onClick={this.handleClickNavItem.bind(this,i)}>
 										    	{
-								    				subitem.isExternal ?
-												    	<a href={subitem.route}>
+										    		user.isLoggedIn ?
+									    				subitem.isExternal ?
+													    	<a href={subitem.route}>
+													    		<i className="material-icons">{subitem.icon}</i>
+													    		{subitem.text}
+													    	</a>
+													    : <Link to={subitem.route}>
+													    		<i className="material-icons">{subitem.icon}</i>
+													    		{subitem.text}
+													    	</Link>
+													  : <a className="modal-trigger" href="#modal1">
 												    		<i className="material-icons">{subitem.icon}</i>
 												    		{subitem.text}
 												    	</a>
-												    : <Link to={subitem.route}>
-												    		<i className="material-icons">{subitem.icon}</i>
-												    		{subitem.text}
-												    	</Link>
 								    			}
 										    </li>
 							    		))
@@ -250,20 +263,20 @@ class Sidenav extends Component {
 			    	// shownDefaultNavItemLinks.map((item, i) => (
 			    	// 	<div key={i} className={selectedNavItem === offset + i ? 'active' : ''} onClick={this.handleClickNavItem.bind(this, offset + i)}>
 				    // 		<li>
-						  //   	{
-						  //   		user.isLoggedIn && 
-						  //   		<Link to={item.route}>
-							 //    		<i className="material-icons">{item.icon}</i>
-							 //    		{item.text}
-							 //    	</Link>
-						  //   	}
-						  //   	{
-						  //   		!user.isLoggedIn && 
-						  //   		<a className="modal-trigger" href="#modal1">
-							 //    		<i className="material-icons">{item.icon}</i>
-							 //    		{item.text}
-							 //    	</a>
-						  //   	}
+						    	// {
+						    	// 	user.isLoggedIn && 
+						    	// 	<Link to={item.route}>
+							    // 		<i className="material-icons">{item.icon}</i>
+							    // 		{item.text}
+							    // 	</Link>
+						    	// }
+						    	// {
+						    	// 	!user.isLoggedIn && 
+						    	// 	<a className="modal-trigger" href="#modal1">
+							    // 		<i className="material-icons">{item.icon}</i>
+							    // 		{item.text}
+							    // 	</a>
+						    	// }
 						  //   </li>
 						  // </div>
 			    	// ))
