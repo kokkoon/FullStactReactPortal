@@ -212,7 +212,7 @@ class Sidenav extends Component {
 												    		<i className="material-icons">{item.icon}</i>
 												    		{item.text}
 												    	</Link>
-												  : <a className="modal-trigger" href="#modal1">
+												  : <a className="modal-trigger" href="#modal-login-message">
 											    		<i className="material-icons">{item.icon}</i>
 											    		{item.text}
 											    	</a>
@@ -235,7 +235,7 @@ class Sidenav extends Component {
 													    		<i className="material-icons">{subitem.icon}</i>
 													    		{subitem.text}
 													    	</Link>
-													  : <a className="modal-trigger" href="#modal1">
+													  : <a className="modal-trigger" href="#modal-login-message">
 												    		<i className="material-icons">{subitem.icon}</i>
 												    		{subitem.text}
 												    	</a>
@@ -272,7 +272,7 @@ class Sidenav extends Component {
 						    	// }
 						    	// {
 						    	// 	!user.isLoggedIn && 
-						    	// 	<a className="modal-trigger" href="#modal1">
+						    	// 	<a className="modal-trigger" href="#modal-login-message">
 							    // 		<i className="material-icons">{item.icon}</i>
 							    // 		{item.text}
 							    // 	</a>
@@ -288,7 +288,7 @@ class Sidenav extends Component {
 			  	}
 			  </ul>
 
-			  <div id="modal1" className="modal">
+			  <div id="modal-login-message" className="modal">
 			  	<div className="modal-content">
 						<i className="large material-icons">info</i>
 			      <h5>Please login to access the page</h5>
