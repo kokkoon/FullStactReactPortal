@@ -1,0 +1,58 @@
+#modal-edit-record {
+	top: 3% !important;
+	max-height: 94%;
+}
+
+#modal-edit-record .modal-content .title {
+	margin-bottom: 20px;
+}
+
+#modal-edit-record .json-form {
+	text-align: left;
+}
+
+#modal-edit-record .json-form label {
+	text-align: left;
+	font-weight: bold;
+}
+
+#modal-edit-record .json-form p {
+	position: relative;
+}
+
+#modal-edit-record .json-form legend {
+	text-align: center;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 0 5px 0 5px;
+}
+
+#modal-edit-record .json-form fieldset {
+	padding: 20px;
+}
+
+#modal-edit-record .json-form .btn-action-container {
+	position: relative;
+}
+
+#modal-edit-record .json-form .btn-approve {
+	position: relative;
+	margin-top: 10px;
+	margin-right: 10px;
+	/*left: 0;*/
+	width: 100px;
+}
+
+#modal-edit-record .json-form .btn-reject {
+	position: relative;
+	margin-top: 10px;
+	margin-right: 10px;
+	/*left: 0;*/
+	width: 100px;
+}
+
+#modal-edit-record .json-form .btn-submit {
+	position: absolute;
+	right: 3px;
+	width: 150px;
+}

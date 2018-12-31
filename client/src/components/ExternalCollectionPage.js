@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react'
+import Form from 'react-jsonschema-form'
 // import { Link } from 'react-router-dom'
+import M from 'materialize-css/dist/js/materialize.min.js'
 import axios from 'axios'
 import { isEmpty } from 'lodash'
 
@@ -13,17 +15,41 @@ class ExternalCollectionPage extends Component {
     this.state = {
       // id: undefined,
       collectionName: 'External Content',
-      column: ['name', 'subject', 'description', 'created', 'status', 'workflow'],
-    	record: null
+      column: ['name', 'subject', 'description', 'created', 'status', 'workflow', 'action'],
+    	record: null,
+      formSchema: { title: '', type: "object", properties: {} },
+      uiSchema: {},
     }
   }
 
 	componentWillMount() {
     axios.get(`${API_URL}/external-content`)
       .then(res => {
-        this.setState({ record: res.data.data.tasks })
+        const record = res.data.data.tasks
+        // map keys in returned data to form schema properties
+        let properties = Object.keys(record[0]).reduce((obj, key) => {
+          return {...obj, [key] : {type: 'string', title: key, default: '' }}
+        }, {})
+        // add comment field in the form schema
+        properties.comment = {type: 'string', title: 'comment'}
+
+        const schema = {...this.state.formSchema, properties}
+
+        this.setState({ 
+          record,
+          formSchema: schema
+        })
       })
       .catch(err => console.log(err))
+  }
+
+  componentDidMount() {
+    // materialize css initialization
+    M.AutoInit()
+
+    // alternative modal initialization in case error happens in future
+    // let modal = document.querySelectorAll('.modal');
+    // M.Modal.init(modal);
   }
 
   // deleteRecord = (index) => {
@@ -40,8 +66,66 @@ class ExternalCollectionPage extends Component {
     //   .catch(e => console.error(e))
   // }
 
+  handleEditRecord = (index) => {
+    const { formSchema, record } = this.state
+    const selectedRecord = record[index]
+    const properties = formSchema.properties
+
+    // add default value to show fields value in the form based on selected record
+    const newProperties = Object.keys(properties).reduce((obj, key) => {
+      if (key !== 'comment') {
+        return {...obj, [key]: {...properties[key], default: selectedRecord[key] }}
+      } else {
+        return {...obj, [key]: {...properties[key] }}
+      }
+    }, {})
+
+    // set UI schema for those fields to read-only
+    const uiSchema = Object.keys(properties).reduce((obj, key) => {
+      if (key !== 'comment') {
+        return {...obj, [key] : { ["ui:readonly"]: true }}
+      } else {
+        return obj
+      }
+    }, {})
+
+    this.setState({
+      formSchema: {...formSchema, properties: newProperties},
+      uiSchema
+    })
+  }
+
+  onApprove = () => {
+    const { formSchema } = this.state
+    const id = formSchema.properties.id.default
+
+    axios.patch(`${API_URL}/external-content?task_id=${id}`, {outcome: 'Approve'})
+      .then(res => console.log('res = ', res))
+      .catch(e => console.error(e))
+  }
+
+  onReject = () => {
+    const { formSchema } = this.state
+    const id = formSchema.properties.id.default
+
+    axios.patch(`${API_URL}/external-content?task_id=${id}`, {outcome: 'Reject'})
+      .then(res => console.log('res = ', res))
+      .catch(e => console.error(e))
+  }
+
+  onSubmit = (formData) => {
+    console.log('formData = ', formData)
+  }
+
   render() {
-    const { collectionName, column, record } = this.state
+    const { 
+      collectionName, 
+      column, 
+      record,
+      formSchema, 
+      uiSchema,
+      formData
+    } = this.state
 		// const id = window.location.search.slice(4)
 
     return (
@@ -78,6 +162,11 @@ class ExternalCollectionPage extends Component {
                               <td key={i_2}>{r[k]}</td>
                             ))
                           }
+                          <td>
+                            <a className="modal-trigger" href="#modal-edit-record" onClick={e => this.handleEditRecord(i)}>
+                              ...
+                            </a> 
+                          </td>
                         </tr>
                       )) 
                     }
@@ -105,6 +194,26 @@ class ExternalCollectionPage extends Component {
                         </div>*/}
           </Fragment>
         }
+        </div>
+        <div id="modal-edit-record" className="modal">
+          <div className="modal-content">
+            <h5 className="title"><strong>Action on record</strong></h5>
+            <div className="row">
+              <div className="json-form">
+                <Form 
+                  uiSchema={uiSchema}
+                  schema={formSchema}
+                  onSubmit={this.onSubmit.bind(this)}
+                >
+                  <div className="btn-action-container">
+                    <button className="btn btn-approve" type="button" onClick={this.onApprove}>Approve</button>
+                    <button className="btn btn-reject" type="button" onClick={this.onReject}>Reject</button>
+                    <button className="btn btn-submit" type="submit">Submit</button>
+                  </div>
+                </Form>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
