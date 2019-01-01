@@ -125,12 +125,11 @@ module.exports = (app) => {
             tableColumns
     			}
 
-  		  	formCollection.deleteOne({id: formId})
-    			formCollection.insertOne(form, (err, obj) => {
-  		  		if (err) console.error(err)
-  		  		// console.log('added new form = ', obj.result.n)
-  		  		res.send({ message: `${collectionName} schema updated`})
-  		  	})
+          formCollection.updateOne({id: formId}, {$set: form}, (err, obj) => {
+            if (err) console.error(err)
+            // console.log('added new form = ', obj.result.n)
+            res.send({ message: `${collectionName} schema updated`})
+          })
     		} else {
           const newId = Number(lastId) + 1
     			const form = {
