@@ -177,7 +177,7 @@ module.exports = (app) => {
     const url = URL.parse(req.url, true)
     const id = url.query.id
     const schema = req.body 
-    // need to save UIschema to DB also
+    // TODO: need to cater for UIschema in DB also
     const updateFields = {
       $set: { 
         formStructure: schema.JSON,
@@ -355,6 +355,91 @@ module.exports = (app) => {
       }
     )
 
+  })
+
+  // retrieve external open API first endpoint to be used
+  // every time a document is saved/modified
+  // save the API data to corresponding form collection
+  app.post('/api/retrieve-external-workflow', (req, res) => {
+    const formCollection = db.collection('form')
+
+    const { openApiUrl, formId } = req.body
+
+    request(openApiUrl, (error, response, body) => {
+      if (error) console.error(error)
+      const openApiData = JSON.parse(body)
+
+      // extract the api url, http method, and parameters (in query and body)
+      const firstPath = Object.keys(openApiData.paths)[0]
+      const apiUrl = `https://${openApiData.host}${openApiData.basePath}${firstPath}`
+      const apiMethod = Object.keys(openApiData.paths[firstPath])[0]
+      const api = openApiData.paths[firstPath][apiMethod]
+      const apiQuery = `?${api.parameters[1].name}=${api.parameters[1].default}`
+      const apiCompleteUrl = apiUrl + apiQuery
+      const apiBodySchema = api.parameters[0].schema.properties
+
+      const apiBodyProperties = Object.keys(apiBodySchema).reduce((obj, key) => {
+        return {
+          ...obj, 
+          [key] : Object.keys(apiBodySchema[key].properties).reduce((obj2, key2) => {
+                    return {...obj2, [key2] : ''}
+                  }, {})
+        }
+      }, {})
+
+      const actionAPI = { actionAPI: { url: apiCompleteUrl, method: apiMethod, body: apiBodyProperties }}
+
+      formCollection.updateOne({id: formId}, {$set: actionAPI}, (err, obj) => {
+        if (err) console.error(err)
+        res.send({ message: `API saved in form${formId} database`, api: extractedApi })
+      })
+    })
+  })
+
+  // update the body of api call
+  app.post('/api/update-external-api-body', (req, res) => {
+    const formCollection = db.collection('form')
+    const url = URL.parse(req.url, true)
+    const formId = url.query.form_id
+    const { body } = req.body
+
+    formCollection.updateOne({id: formId}, {$set: {'actionAPI.body': body}}, (err, obj) => {
+      if (err) console.error(err)
+      res.send({ message: `API body saved in form${formId} database` })
+    })
+  })
+
+  // call external api upon saving a document
+  app.get('/api/call-external-api', (req, res) => {
+    const formCollection = db.collection('form')
+    const url = URL.parse(req.url, true)
+    const formId = url.query.form_id
+
+    formCollection.findOne({id: formId}, (err, form) => {
+      if (err) console.error(err)
+
+      if (form != null) {
+        if (form.actionAPI) {
+          const { url, method, body } = form.actionAPI
+
+          const requestOptions = {
+            method, 
+            uri: url, 
+            body: JSON.stringify(body), 
+          }
+          
+          request(requestOptions, (error, response, body) => {
+            if (error) console.error(error)
+
+            res.send({ message: 'action API called', data: JSON.parse(body) })
+          })
+        } else {
+          res.send({ message: 'action API not found in database'})
+        }
+      } else {
+        res.send({ message: 'form not found in database'})
+      }
+    })
   })
 
   // delete a document in a collection
