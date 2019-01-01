@@ -54,6 +54,7 @@ module.exports = (app) => {
   	}
   })
 
+  // delete record from a form collection
   app.delete('/api/record', (req, res) => {
     const url = URL.parse(req.url, true)
     const formId = url.query.form_id
@@ -101,7 +102,6 @@ module.exports = (app) => {
   app.post('/api/create-form', (req, res) => {
   	const formCollection = db.collection('form')
   	const url = URL.parse(req.url, true)
-    let lastId
   	const formId = url.query.id
   	const formStructure = req.body.formStructure
     const collectionName = req.body.collectionName.toLowerCase()
@@ -111,7 +111,8 @@ module.exports = (app) => {
       if (err) console.error(err)
 
       if (result.length > 0 ) {
-        lastId = result[result.length - 1].id
+        const resultIds = result.map(r => r.id).sort((a, b) => a - b)
+        const lastId = resultIds[resultIds.length - 1]
 
     		if (Number(formId) <= lastId && Number(formId) > 0) {
     			const form = {
@@ -178,9 +179,6 @@ module.exports = (app) => {
     const id = url.query.id
     const schema = req.body 
     // need to save UIschema to DB also
-    console.log('formId = ', id)
-    console.log('req.body = ', req.body)
-
     const updateFields = {
       $set: { 
         formStructure: schema.JSON,
@@ -190,7 +188,7 @@ module.exports = (app) => {
 
     formCollection.updateOne({id}, updateFields, (err, obj) => {
       if (err) console.error(err)
-        console.log('result = ', obj.result)
+        
       if (obj.result.n === 1) {
         res.send({ message: 'schema updated'})
       } else {
@@ -276,7 +274,7 @@ module.exports = (app) => {
       } else {
         sidenavCollection.insertOne(req.body, (err, result) => {
           if (err) console.error(err)
-          console.log('inserted = ', result.insertedCount)
+          // console.log('inserted = ', result.insertedCount)
           res.send({ 
             message: 'success add sidenav config'
           })
