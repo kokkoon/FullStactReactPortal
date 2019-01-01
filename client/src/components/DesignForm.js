@@ -38,7 +38,11 @@ class DesignForm extends Component {
 			const stringJSONschema = this.stringifyPrettyJSON(schema)
 			
 			const uiSchema = Object.keys(schema.properties).reduce((obj, key) => {
-				return {...obj, [key] : { ['ui:widget']: 'text' }}
+				if (schema.properties[key].type !== 'boolean') {
+					return {...obj, [key] : { ['ui:widget']: 'text' }}
+				} else {
+					return {...obj, [key] : {}}
+				}
 			}, {})
 			
 			const stringUIschema = this.stringifyPrettyJSON(uiSchema)
@@ -162,7 +166,7 @@ class DesignForm extends Component {
 				</div>
 				<div className="col s4">
 					<div id="form-preview">
-			  		<div className="json-form">
+			  		<div className="design-form-page-json-form">
 							<Form 
 								uiSchema={uiSchema}
 								schema={JSONSchema}

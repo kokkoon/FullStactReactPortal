@@ -27,31 +27,32 @@
 	font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
 }
 
-.design-form-page .form-preview .json-form {
+.design-form-page-json-form {
+	text-align: left;
+	max-width: 100%;
+	overflow-x: auto;
+}
+
+.design-form-page-json-form label {
 	text-align: left;
 }
 
-.design-form-page .form-preview .json-form label {
-	text-align: left;
-	font-weight: bold;
-}
-
-.design-form-page .form-preview .json-form p {
+.design-form-page-json-form p {
 	position: relative;
 }
 
-.design-form-page .form-preview .json-form legend {
+.design-form-page-json-form legend {
 	text-align: center;
 	font-size: 20px;
 	font-weight: bold;
 	padding: 0 5px 0 5px;
 }
 
-.design-form-page .form-preview .json-form fieldset {
+.design-form-page-json-form fieldset {
 	padding: 20px;
 }
 
-.design-form-page .form-preview .json-form button {
+.design-form-page-json-form button {
 	position: absolute;
 	right: 3px;
 	width: 150px;
