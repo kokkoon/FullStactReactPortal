@@ -357,6 +357,25 @@ module.exports = (app) => {
 
   })
 
+  // ping the connection to open api url
+  app.get('/api/ping-open-api', (req, res) => {
+    const url = URL.parse(req.url, true)
+    const openApiUrl = url.query.url
+
+    request(openApiUrl, (error, response, body) => {
+      if (error) {
+        console.error(error)
+        res.send({ success: 0, message: 'URL error'})
+      }
+
+      if (response.statusCode >= 400) {
+        res.send({ success: 0, message: 'Fail to connect to URL'})
+      } else if (response.statusCode === 200) {
+        res.send({ success: 1, message: 'Success connect to URL'})
+      }
+    })
+  })
+
   // retrieve external open API first endpoint to be used
   // every time a document is saved/modified
   // save the API data to corresponding form collection
