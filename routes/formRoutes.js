@@ -424,7 +424,7 @@ module.exports = (app) => {
         ]
       }, [])
 
-      res.send({ apiParameters })
+      res.send({ apiBody: apiBodyProperties, apiParameters })
     })
   })
 
@@ -434,7 +434,7 @@ module.exports = (app) => {
   app.post('/api/save-external-workflow', (req, res) => {
     const formCollection = db.collection('form')
 
-    const { openApiUrl, formId, parameters } = req.body
+    const { openApiUrl, formId, apiBody } = req.body
 
     request(openApiUrl, (error, response, body) => {
       if (error) console.error(error)
@@ -450,11 +450,12 @@ module.exports = (app) => {
       const apiCompleteUrl = apiUrl + apiQuery
       const apiBodySchema = api.parameters[0].schema.properties
 
+      // save parameters input from user inside api schema to DB
       const apiBodyProperties = Object.keys(apiBodySchema).reduce((obj, key) => {
         return {
           ...obj, 
           [key] : Object.keys(apiBodySchema[key].properties).reduce((obj2, key2) => {
-                    return {...obj2, [key2] : parameters[key][key2]}
+                    return {...obj2, [key2] : apiBody[key][key2]}
                   }, {})
         }
       }, {})
