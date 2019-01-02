@@ -377,7 +377,7 @@ module.exports = (app) => {
   })
 
   // retrieve open api parameters
-  app.post('/api/retrieve-external-workflow-parameters', (req, res) => {
+  app.get('/api/retrieve-external-workflow-parameters', (req, res) => {
     const url = URL.parse(req.url, true)
     const openApiUrl = url.query.url
 
