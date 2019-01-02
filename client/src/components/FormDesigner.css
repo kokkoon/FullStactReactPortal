@@ -111,6 +111,7 @@
 }
 
 #modal-form-event .event-container .url-container .textarea-url {
+	height: 110px;
 	resize: vertical;
 }
 
