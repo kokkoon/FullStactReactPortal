@@ -210,7 +210,8 @@ module.exports = (app) => {
             formId: formId,
             collectionName: form.collectionName,
             column: form.tableColumns, 
-            data: form.formStructure
+            data: form.formStructure,
+            actionAPI: form.actionAPI
           })
     		}
       }
@@ -400,8 +401,7 @@ module.exports = (app) => {
         return {
           ...obj, 
           [key] : Object.keys(apiBodySchema[key].properties).reduce((obj2, key2) => {
-                    return {...obj2, [key2] : ''}
-                    // return {...obj2, [key2] : apiBodySchema[key].properties[key2].type}
+                    return { ...obj2, [key2] : '' }
                   }, {})
         }
       }, {})
@@ -417,7 +417,6 @@ module.exports = (app) => {
                 ...arr2,
                 {
                   name: key2,
-                  // type: apiBodyProperties[key][key2]
                   type: apiBodySchema[key].properties[key2].type
                 }
               ]
@@ -435,6 +434,9 @@ module.exports = (app) => {
   // save the API data to corresponding form collection
   app.post('/api/save-external-workflow', (req, res) => {
     const formCollection = db.collection('form')
+    // TODO: handle start and modify action type differently
+    // const url = URL.parse(req.url, true)
+    // const actionType = url.query.action_type
 
     const { openApiUrl, formId, apiBody } = req.body
 
@@ -462,7 +464,34 @@ module.exports = (app) => {
         }
       }, {})
 
-      const actionAPI = { actionAPI: { url: apiCompleteUrl, method: apiMethod, parameters: apiBodyProperties }}
+      // adjust api parameters data to fit rendering purpose in frontend
+      const apiParameters = Object.keys(apiBodyProperties).reduce((arr, key) => {
+        return [
+          ...arr, 
+          { 
+            name: key,
+            properties: Object.keys(apiBodyProperties[key]).reduce((arr2, key2) => {
+              return [
+                ...arr2,
+                {
+                  name: key2,
+                  type: apiBodySchema[key].properties[key2].type
+                }
+              ]
+            }, []) 
+          }
+        ]
+      }, [])
+
+      const actionAPI = { 
+        actionAPI: { 
+          openApiUrl,
+          url: apiCompleteUrl, 
+          method: apiMethod, 
+          body: apiBodyProperties,
+          parameters: apiParameters
+        }
+      }
 
       formCollection.updateOne({id: formId}, {$set: actionAPI}, (err, obj) => {
         if (err) console.error(err)
