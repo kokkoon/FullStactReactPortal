@@ -72,3 +72,66 @@
 .btn-add-container > a {
 	width: 150px;
 }
+
+#modal-form-event {
+	max-height: 90vh !important;
+	top: 5% !important;
+	width: 800px;
+}
+
+#modal-form-event .modal-content {
+	padding: 24px 50px 24px 50px;
+}
+
+#modal-form-event .title {
+	margin-top: 0;
+	margin-bottom: 20px;
+}
+
+#modal-form-event .bordered-container {
+	border: solid 1px #9B9B9B;
+	border-radius: 5px;
+}
+
+#modal-form-event .event-container {
+	padding: 10px;
+}
+
+#modal-form-event .event-container .url-container {
+	padding: 10px;
+	margin-top: 10px;
+}
+
+#modal-form-event .event-container .url-container .connected-label {
+	color: green;
+}
+
+#modal-form-event .event-container .url-container .error-label {
+	color: red;
+}
+
+#modal-form-event .event-container .url-container .textarea-url {
+	resize: vertical;
+}
+
+#modal-form-event .event-container .url-container .btn-connect-container {
+	text-align: right;
+}
+
+#modal-form-event .event-container .parameters-container {
+	padding: 10px;
+	margin-top: 5px;
+}
+
+#modal-form-event .btn-footer-modal .btn {
+	width: 100px;
+	margin-left: 10px;
+}
+
+.border-bottom {
+	border-bottom: solid 1px #9B9B9B;
+}
+
+.zero-padding {
+	padding: 0 !important;
+}

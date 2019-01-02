@@ -29,6 +29,12 @@ class FormDesigner extends Component {
 			isFieldNameExisted: false,
 			// see fields data structure at the bottom of the code
 			fields: [],
+			isEventStartedSwitchOn: false,
+			isEventModifiedSwitchOn: false,
+			isURLExtWorkflowConnected: undefined,
+			apiUrlText: '',
+			apiBody: undefined, // apiParameters is set on handleConnectAPIURL method
+			apiParameters: undefined // apiParameters is set on handleConnectAPIURL method
 		}
 	}
 
@@ -345,6 +351,85 @@ class FormDesigner extends Component {
 		}
 	}
 
+	handleClickEventHandler = () => {
+		const elem = document.getElementById('modal-form-event')
+		const modal = M.Modal.getInstance(elem)
+		modal.open()
+	}
+
+	handleEventStartedSwitch = () => {
+		const { isEventStartedSwitchOn } = this.state
+		this.setState({ isEventStartedSwitchOn: !isEventStartedSwitchOn})
+	}
+
+	handleEventModifiedSwitch = () => {
+		const { isEventModifiedSwitchOn } = this.state
+		this.setState({ isEventModifiedSwitchOn: !isEventModifiedSwitchOn})
+	}
+
+	handleConnectApiURL = () => {
+		const { isURLExtWorkflowConnected, apiUrlText } = this.state
+
+		axios.get(`${API_URL}/ping-open-api?url=${apiUrlText}`)
+		.then(res => {
+			M.toast({ html: res.data.message })
+
+			// if API URL valid, retrieve the API parameters
+			if (res.data.success) {
+				axios.get(`${API_URL}/retrieve-external-workflow-parameters?url=${apiUrlText}`)
+				.then(res2 => {
+					const { apiBody, apiParameters } = res2.data
+					this.setState({ apiBody, apiParameters })
+				})
+				.catch(e2 => console.error(e2))
+			}
+
+			this.setState({
+				isURLExtWorkflowConnected: res.data.success
+			})
+		})
+		.catch(e => console.error(e))
+	}
+
+	handleApiUrlText = (event) => {
+		this.setState({ apiUrlText: event.target.value })
+	}
+
+	handleCloseModal = () => {
+		const elem = document.getElementById('modal-form-event')
+		const modal = M.Modal.getInstance(elem)
+		modal.close()
+	}
+
+	handleSaveEvents = () => {
+		const { formId, apiUrlText: openApiUrl, apiBody } = this.state
+
+		const data = { formId, openApiUrl, apiBody }
+
+		axios.post(`${API_URL}/save-external-workflow`, data )
+		.then(res => {
+			console.log('res = ', res)
+			M.toast({ html: res.data.message })
+		})
+		.catch(e => console.error(e))
+	}
+
+	handleInputProperties = (parameter, property) => {
+		const { apiBody } = this.state
+		const value = document.getElementById(`input-${parameter}-${property}`).value
+		console.log('value = ', value)
+
+		const newApiBody = { 
+			...apiBody,
+			[parameter] : { 
+				...apiBody[parameter], 
+				[property] : value
+			}
+		}
+
+		this.setState({ apiBody: newApiBody })
+	}
+
 	render() {
 		const {
 			formId,
@@ -352,7 +437,12 @@ class FormDesigner extends Component {
 			isNewField, 
 			fields,
 			isFieldNameExisted,
-			isCollectionNameOK
+			isCollectionNameOK,
+			isEventStartedSwitchOn,
+			isEventModifiedSwitchOn,
+			isURLExtWorkflowConnected,
+			apiUrlText, 
+			apiParameters
 		} = this.state
 
 		const {
@@ -364,6 +454,8 @@ class FormDesigner extends Component {
 
 		const { documentFieldsTableHeader } = this.props
 
+		console.log('apiBody = ', this.state.apiBody)
+
 		return (
 			<div className="form-designer">
 				<h4 className="center">{formId ? 'Update Collection' : 'Create New Collection'}</h4>
@@ -373,7 +465,7 @@ class FormDesigner extends Component {
 						formId ?
 						(
 							<Fragment>
-								<span className="waves-effect waves-light btn">
+								<span className="waves-effect waves-light btn" onClick={this.handleClickEventHandler}>
 						    	Events
 						    </span>
 						    <span className="waves-effect waves-light btn">
@@ -521,6 +613,111 @@ class FormDesigner extends Component {
 				    	{isNewField ? 'Add' : 'Update'}
 				    </span>
 				  </div>
+        </div>
+
+        <div id="modal-form-event" className="modal">
+          <div className="modal-content">
+            <h5 className="title center"><strong>Event handler</strong></h5>
+            <div className="row bordered-container event-container">
+          		<div className="col s10 zero-padding">
+            		<span>
+            			Starts when documents are created
+            		</span>
+            	</div>
+            	<div className="col s2 right zero-padding">
+	              <div className="switch">
+							    <label>
+							      <input type="checkbox" onChange={this.handleEventStartedSwitch}/>
+							      <span className="lever"></span>
+							    </label>
+							  </div>
+							</div>
+							{
+								isEventStartedSwitchOn &&
+								<Fragment>
+									<div className="col s12 bordered-container url-container">
+										<div className="col s1">
+											<span>URL</span>
+										</div>
+										<div className="col s11 zero-padding">
+											<textarea className="textarea-url" value={apiUrlText} onChange={this.handleApiUrlText}>
+											</textarea>
+										</div>
+										<div className="col s9">
+										{ 
+											isURLExtWorkflowConnected &&
+											<span className="connected-label">
+												[Connected]
+											</span>
+										}
+										{
+											isURLExtWorkflowConnected === false &&
+											<span className="error-label">
+												[Error]
+											</span>
+										}
+										</div>
+										<div className="col s3 zero-padding btn-connect-container">
+											<span className={this.isEmptyString(apiUrlText) ? 'btn disabled' : 'waves-effect waves-light btn'} onClick={this.handleConnectApiURL}>
+												Connect
+											</span>
+										</div>
+									</div>
+									{
+										isURLExtWorkflowConnected &&
+										<div className="col s12 bordered-container parameters-container">
+											<div className="col s12 zero-padding border-bottom">
+												<span>ExtWorkflow</span>
+											</div>
+											{
+												apiParameters && 
+												apiParameters.length > 0 &&
+												apiParameters.map((parameter, paramIdx) => (
+													<div key={paramIdx} className="col s12">
+														<p>{parameter.name}</p>
+														{
+															parameter.properties.map((property, propIdx) => (
+																<div key={propIdx} className="col s12">
+																	<div className="col s4">
+																		<span className="col s12">{property.name}</span>
+																		<span className="col s12">{property.type}</span>
+																	</div>
+																	<div className="col s8">
+																		<input 
+																			id={`input-${parameter.name}-${property.name}`}
+																			onChange={e => this.handleInputProperties(parameter.name, property.name)} />
+																	</div>
+																</div>
+															))
+														}
+													</div>
+												))
+											}
+										</div>
+									}
+								</Fragment>
+							}
+            </div>
+            <div className="row bordered-container event-container">
+          		<div className="col s10 zero-padding">
+	          		<span>
+	          			Starts when documents are modified
+	          		</span>
+	          	</div>
+          		<div className="col s2 right zero-padding">
+	              <div className="switch">
+							    <label>
+							      <input type="checkbox" onChange={this.handleEventModifiedSwitch}/>
+							      <span className="lever"></span>
+							    </label>
+							  </div>
+							</div>
+            </div>
+            <div className="row right btn-footer-modal">
+            	<span className="waves-effect waves-light btn" onClick={this.handleCloseModal}>Cancel</span>
+            	<span className="waves-effect waves-light btn" onClick={this.handleSaveEvents}>Save</span>
+            </div>
+          </div>
         </div>
       </div>
 		)
