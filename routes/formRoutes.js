@@ -429,12 +429,12 @@ module.exports = (app) => {
   })
 
   // retrieve external open API first endpoint to be used
-  // every time a document is saved/modified
+  // every time a document is saved/modified, then
   // save the API data to corresponding form collection
   app.post('/api/save-external-workflow', (req, res) => {
     const formCollection = db.collection('form')
 
-    const { openApiUrl, formId } = req.body
+    const { openApiUrl, formId, parameters } = req.body
 
     request(openApiUrl, (error, response, body) => {
       if (error) console.error(error)
@@ -454,12 +454,12 @@ module.exports = (app) => {
         return {
           ...obj, 
           [key] : Object.keys(apiBodySchema[key].properties).reduce((obj2, key2) => {
-                    return {...obj2, [key2] : apiBodySchema[key].properties[key2].type}
+                    return {...obj2, [key2] : parameters[key][key2]}
                   }, {})
         }
       }, {})
 
-      const actionAPI = { actionAPI: { url: apiCompleteUrl, method: apiMethod, body: apiBodyProperties }}
+      const actionAPI = { actionAPI: { url: apiCompleteUrl, method: apiMethod, parameters: apiBodyProperties }}
 
       formCollection.updateOne({id: formId}, {$set: actionAPI}, (err, obj) => {
         if (err) console.error(err)
@@ -468,14 +468,14 @@ module.exports = (app) => {
     })
   })
 
-  // update the body of api call
+  // update the parameters of external api call
   app.post('/api/update-external-api-body', (req, res) => {
     const formCollection = db.collection('form')
     const url = URL.parse(req.url, true)
     const formId = url.query.form_id
-    const { body } = req.body
+    const { parameters } = req.body
 
-    formCollection.updateOne({id: formId}, {$set: {'actionAPI.body': body}}, (err, obj) => {
+    formCollection.updateOne({id: formId}, {$set: {'actionAPI.parameters': parameters}}, (err, obj) => {
       if (err) console.error(err)
       res.send({ message: `API body saved in form${formId} database` })
     })
