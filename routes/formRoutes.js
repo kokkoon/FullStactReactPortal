@@ -365,18 +365,19 @@ module.exports = (app) => {
     request(openApiUrl, (error, response, body) => {
       if (error) {
         console.error(error)
-        res.send({ success: 0, message: 'URL error'})
+        res.send({ success: false, message: 'URL error'})
       }
 
       if (response.statusCode >= 400) {
-        res.send({ success: 0, message: 'Fail to connect to URL'})
+        res.send({ success: false, message: 'Fail to connect to URL'})
       } else if (response.statusCode === 200) {
-        res.send({ success: 1, message: 'Success connect to URL'})
+        res.send({ success: true, message: 'Success connect to URL'})
       }
     })
   })
 
-  // retrieve open api parameters
+  // retrieve external open API first endpoint
+  // then retrieve the parameters
   app.get('/api/retrieve-external-workflow-parameters', (req, res) => {
     const url = URL.parse(req.url, true)
     const openApiUrl = url.query.url
