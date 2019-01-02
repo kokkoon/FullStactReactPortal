@@ -27,7 +27,7 @@ module.exports = (app) => {
   		if (err) console.error(err)
   		// console.log('inserted = ', result.insertedCount)
   		res.send({ 
-        result: 1,
+        success: true,
   			message: 'success add data',
   			data: { formInstanceId } 
   		})
@@ -500,21 +500,21 @@ module.exports = (app) => {
     })
   })
 
-  // update the parameters of external api call
+  // update the body contents of external api call
   app.post('/api/update-external-api-body', (req, res) => {
     const formCollection = db.collection('form')
     const url = URL.parse(req.url, true)
     const formId = url.query.form_id
-    const { parameters } = req.body
+    const { body } = req.body
 
-    formCollection.updateOne({id: formId}, {$set: {'actionAPI.parameters': parameters}}, (err, obj) => {
+    formCollection.updateOne({id: formId}, {$set: {'actionAPI.body': body}}, (err, obj) => {
       if (err) console.error(err)
       res.send({ message: `API body saved in form${formId} database` })
     })
   })
 
-  // call external api upon saving a document
-  app.get('/api/call-external-api', (req, res) => {
+  // call external api upon creating/updating a form document
+  app.get('/api/call-events-api', (req, res) => {
     const formCollection = db.collection('form')
     const url = URL.parse(req.url, true)
     const formId = url.query.form_id

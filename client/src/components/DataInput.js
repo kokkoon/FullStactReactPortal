@@ -36,12 +36,16 @@ class DataInput extends Component {
 
 		axios.post(`${API_URL}/record?id=${formId}`, formData.formData)
 			.then(res => {
-				if (res.data.result) {
-					M.toast({
-						html: 'Data submitted'
+				if (res.data.success) {
+					M.toast({ html: 'Data submitted' })
+
+					// call event api after saving data to database
+					axios.get(`${API_URL}/call-events-api?form_id=${formId}`)
+					.then(res2 => {
+						// redirect to collection page						
+						window.location = `/collection?id=${formId}`
 					})
-					
-					window.location = `/collection?id=${formId}`
+					.catch(e2 => console.error(e2))
 				}
 			})
 			.catch(err => console.log(err))
