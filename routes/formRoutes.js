@@ -376,13 +376,10 @@ module.exports = (app) => {
     })
   })
 
-  // retrieve external open API first endpoint to be used
-  // every time a document is saved/modified
-  // save the API data to corresponding form collection
-  app.post('/api/retrieve-external-workflow', (req, res) => {
-    const formCollection = db.collection('form')
-
-    const { openApiUrl, formId } = req.body
+  // retrieve open api parameters
+  app.post('/api/retrieve-external-workflow-parameters', (req, res) => {
+    const url = URL.parse(req.url, true)
+    const openApiUrl = url.query.url
 
     request(openApiUrl, (error, response, body) => {
       if (error) console.error(error)
@@ -426,11 +423,46 @@ module.exports = (app) => {
         ]
       }, [])
 
+      res.send({ apiParameters })
+    })
+  })
+
+  // retrieve external open API first endpoint to be used
+  // every time a document is saved/modified
+  // save the API data to corresponding form collection
+  app.post('/api/save-external-workflow', (req, res) => {
+    const formCollection = db.collection('form')
+
+    const { openApiUrl, formId } = req.body
+
+    request(openApiUrl, (error, response, body) => {
+      if (error) console.error(error)
+
+      const openApiData = JSON.parse(body)
+
+      // extract the api url, http method, and parameters (in query and body)
+      const firstPath = Object.keys(openApiData.paths)[0]
+      const apiUrl = `https://${openApiData.host}${openApiData.basePath}${firstPath}`
+      const apiMethod = Object.keys(openApiData.paths[firstPath])[0]
+      const api = openApiData.paths[firstPath][apiMethod]
+      const apiQuery = `?${api.parameters[1].name}=${api.parameters[1].default}`
+      const apiCompleteUrl = apiUrl + apiQuery
+      const apiBodySchema = api.parameters[0].schema.properties
+
+      const apiBodyProperties = Object.keys(apiBodySchema).reduce((obj, key) => {
+        return {
+          ...obj, 
+          [key] : Object.keys(apiBodySchema[key].properties).reduce((obj2, key2) => {
+                    return {...obj2, [key2] : apiBodySchema[key].properties[key2].type}
+                  }, {})
+        }
+      }, {})
+
       const actionAPI = { actionAPI: { url: apiCompleteUrl, method: apiMethod, body: apiBodyProperties }}
 
       formCollection.updateOne({id: formId}, {$set: actionAPI}, (err, obj) => {
         if (err) console.error(err)
-        res.send({ message: `API saved in form${formId} database`, api: actionAPI.actionAPI, apiParameters })
+        res.send({ message: `API saved in form${formId} database`, api: actionAPI.actionAPI })
       })
     })
   })
