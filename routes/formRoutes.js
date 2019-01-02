@@ -211,7 +211,8 @@ module.exports = (app) => {
             collectionName: form.collectionName,
             column: form.tableColumns, 
             data: form.formStructure,
-            actionAPI: form.actionAPI
+            createdActionAPI: form.createdActionAPI,
+            modifiedActionAPI: form.modifiedActionAPI
           })
     		}
       }
@@ -435,8 +436,8 @@ module.exports = (app) => {
   app.post('/api/save-external-workflow', (req, res) => {
     const formCollection = db.collection('form')
     // TODO: handle start and modify action type differently
-    // const url = URL.parse(req.url, true)
-    // const actionType = url.query.action_type
+    const url = URL.parse(req.url, true)
+    const actionType = url.query.action_type
 
     const { openApiUrl, formId, apiBody } = req.body
 
@@ -483,8 +484,11 @@ module.exports = (app) => {
         ]
       }, [])
 
-      const actionAPI = { 
-        actionAPI: { 
+      let actionAPI = {}
+
+      
+      actionAPI = { 
+        [`${actionType}ActionAPI`]: { 
           openApiUrl,
           url: apiCompleteUrl, 
           method: apiMethod, 
@@ -493,9 +497,10 @@ module.exports = (app) => {
         }
       }
 
+
       formCollection.updateOne({id: formId}, {$set: actionAPI}, (err, obj) => {
         if (err) console.error(err)
-        res.send({ message: `API saved in form${formId} database`, api: actionAPI.actionAPI })
+        res.send({ message: `API saved in form${formId} database`, [`${actionType}ActionAPI`]: actionAPI[`${actionType}ActionAPI`] })
       })
     })
   })
@@ -518,13 +523,14 @@ module.exports = (app) => {
     const formCollection = db.collection('form')
     const url = URL.parse(req.url, true)
     const formId = url.query.form_id
+    const actionType = url.query.action_type
 
     formCollection.findOne({id: formId}, (err, form) => {
       if (err) console.error(err)
 
       if (form != null) {
-        if (form.actionAPI) {
-          const { url, method, body } = form.actionAPI
+        if (form[`${actionType}ActionAPI`]) {
+          const { url, method, body } = form[`${actionType}ActionAPI`]
 
           const requestOptions = {
             method, 
@@ -535,10 +541,10 @@ module.exports = (app) => {
           request(requestOptions, (error, response, body) => {
             if (error) console.error(error)
 
-            res.send({ message: 'action API called', data: JSON.parse(body) })
+            res.send({ message: `${actionType} action API called`, data: JSON.parse(body) })
           })
         } else {
-          res.send({ message: `action API not found in form${formId} database`})
+          res.send({ message: `${actionType} action API not found in form${formId} database`})
         }
       } else {
         res.send({ message: `form${formId} not found in database`})

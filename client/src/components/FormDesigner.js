@@ -29,12 +29,16 @@ class FormDesigner extends Component {
 			isFieldNameExisted: false,
 			// see fields data structure at the bottom of the code
 			fields: [],
-			isEventStartedSwitchOn: false,
+			isEventCreatedSwitchOn: false,
 			isEventModifiedSwitchOn: false,
 			isURLExtWorkflowConnected: undefined,
 			apiUrlText: '',
-			apiBody: undefined, // apiParameters is set on handleConnectAPIURL method
-			apiParameters: undefined // apiParameters is set on handleConnectAPIURL method
+			apiBody: undefined, // apiBody is set on handleConnectAPIURL method
+			apiParameters: undefined, // apiParameters is set on handleConnectAPIURL method
+			isModifiedURLExtWorkflowConnected: undefined,
+			modifiedApiUrlText: '',
+			modifiedApiBody: undefined,
+			modifiedApiParameters: undefined
 		}
 	}
 
@@ -45,7 +49,7 @@ class FormDesigner extends Component {
 		axios.get(`${API_URL}/form?id=${id}`)
 			.then(res => {
 				let { input } = this.state
-				const { formId, actionAPI } = res.data
+				const { formId, createdActionAPI, modifiedActionAPI } = res.data
 				const formStructure = res.data.data
 				const { properties } = formStructure
 				let fields = res.data.column
@@ -92,21 +96,36 @@ class FormDesigner extends Component {
 
 				input.collectionName = formStructure.title
 
+				// load action API data to frontend
 				let {
-					isEventStartedSwitchOn, 
+					isEventCreatedSwitchOn, 
 					isURLExtWorkflowConnected, 
 					apiUrlText,
 					apiBody,
-					apiParameters
+					apiParameters,
+					isEventModifiedSwitchOn, 
+					isModifiedURLExtWorkflowConnected, 
+					modifiedApiUrlText,
+					modifiedApiBody,
+					modifiedApiParameters
 				} = this.state
 
-				if (actionAPI) {
-					document.getElementById('start-api-switch').checked = true
-					isEventStartedSwitchOn = true
+				if (createdActionAPI) {
+					document.getElementById('created-api-switch').checked = true
+					isEventCreatedSwitchOn = true
 					isURLExtWorkflowConnected = true
-					apiUrlText = actionAPI.openApiUrl
-					apiBody = actionAPI.body
-					apiParameters = actionAPI.parameters
+					apiUrlText = createdActionAPI.openApiUrl
+					apiBody = createdActionAPI.body
+					apiParameters = createdActionAPI.parameters
+				}
+
+				if (modifiedActionAPI) {
+					document.getElementById('modified-api-switch').checked = true
+					isEventModifiedSwitchOn = true
+					isModifiedURLExtWorkflowConnected = true
+					modifiedApiUrlText = modifiedActionAPI.openApiUrl
+					modifiedApiBody = modifiedActionAPI.body
+					modifiedApiParameters = modifiedActionAPI.parameters
 				}
 
 				this.setState({
@@ -114,11 +133,16 @@ class FormDesigner extends Component {
 					formStructure,
 					fields,
 					input,
-					isEventStartedSwitchOn,
+					isEventCreatedSwitchOn,
 					isURLExtWorkflowConnected,
 					apiUrlText,
 					apiBody,
-					apiParameters
+					apiParameters,
+					isEventModifiedSwitchOn,
+					isModifiedURLExtWorkflowConnected,
+					modifiedApiUrlText,
+					modifiedApiBody,
+					modifiedApiParameters
 				})
 			})
 			.catch(e => console.error(e))
@@ -379,9 +403,9 @@ class FormDesigner extends Component {
 		modal.open()
 	}
 
-	handleEventStartedSwitch = () => {
-		const { isEventStartedSwitchOn } = this.state
-		this.setState({ isEventStartedSwitchOn: !isEventStartedSwitchOn})
+	handleEventCreatedSwitch = () => {
+		const { isEventCreatedSwitchOn } = this.state
+		this.setState({ isEventCreatedSwitchOn: !isEventCreatedSwitchOn})
 	}
 
 	handleEventModifiedSwitch = () => {
@@ -413,8 +437,36 @@ class FormDesigner extends Component {
 		.catch(e => console.error(e))
 	}
 
+	handleConnectModifiedApiURL = () => {
+		const { isModifiedURLExtWorkflowConnected, modifiedApiUrlText } = this.state
+
+		axios.get(`${API_URL}/ping-open-api?url=${modifiedApiUrlText}`)
+		.then(res => {
+			M.toast({ html: res.data.message })
+
+			// if API URL valid, retrieve the API parameters
+			if (res.data.success) {
+				axios.get(`${API_URL}/retrieve-external-workflow-parameters?url=${modifiedApiUrlText}`)
+				.then(res2 => {
+					const { apiBody: modifiedApiBody, apiParameters: modifiedApiParameters } = res2.data
+					this.setState({ modifiedApiBody, modifiedApiParameters })
+				})
+				.catch(e2 => console.error(e2))
+			}
+
+			this.setState({
+				isModifiedURLExtWorkflowConnected: res.data.success
+			})
+		})
+		.catch(e => console.error(e))
+	}
+
 	handleApiUrlText = (event) => {
 		this.setState({ apiUrlText: event.target.value })
+	}
+
+	handleModifiedApiUrlText = (event) => {
+		this.setState({ modifiedApiUrlText: event.target.value })
 	}
 
 	handleCloseModal = () => {
@@ -423,14 +475,25 @@ class FormDesigner extends Component {
 		modal.close()
 	}
 
-	handleSaveEvents = () => {
+	handleSaveCreatedEventAPI = () => {
 		const { formId, apiUrlText: openApiUrl, apiBody } = this.state
 
 		const data = { formId, openApiUrl, apiBody }
 
-		axios.post(`${API_URL}/save-external-workflow`, data )
+		axios.post(`${API_URL}/save-external-workflow?action_type=created`, data )
 		.then(res => {
-			console.log('res = ', res)
+			M.toast({ html: res.data.message })
+		})
+		.catch(e => console.error(e))
+	}
+
+	handleSaveModifiedEventAPI = () => {
+		const { formId, modifiedApiUrlText: openApiUrl, modifiedApiBody: apiBody } = this.state
+
+		const data = { formId, openApiUrl, apiBody }
+
+		axios.post(`${API_URL}/save-external-workflow?action_type=modified`, data )
+		.then(res => {
 			M.toast({ html: res.data.message })
 		})
 		.catch(e => console.error(e))
@@ -439,7 +502,6 @@ class FormDesigner extends Component {
 	handleInputProperties = (parameter, property) => {
 		const { apiBody } = this.state
 		const value = document.getElementById(`input-${parameter}-${property}`).value
-		console.log('value = ', value)
 
 		const newApiBody = { 
 			...apiBody,
@@ -452,6 +514,21 @@ class FormDesigner extends Component {
 		this.setState({ apiBody: newApiBody })
 	}
 
+	handleInputModifiedProperties = (parameter, property) => {
+		const { modifiedApiBody } = this.state
+		const value = document.getElementById(`input-modified-${parameter}-${property}`).value
+
+		const newApiBody = { 
+			...modifiedApiBody,
+			[parameter] : { 
+				...modifiedApiBody[parameter], 
+				[property] : value
+			}
+		}
+
+		this.setState({ modifiedApiBody: newApiBody })
+	}
+
 	render() {
 		const {
 			formId,
@@ -460,11 +537,16 @@ class FormDesigner extends Component {
 			fields,
 			isFieldNameExisted,
 			isCollectionNameOK,
-			isEventStartedSwitchOn,
+			isEventCreatedSwitchOn,
 			isEventModifiedSwitchOn,
 			isURLExtWorkflowConnected,
 			apiUrlText, 
-			apiParameters
+			apiBody,
+			apiParameters,
+			isModifiedURLExtWorkflowConnected,
+			modifiedApiUrlText,
+			modifiedApiBody,
+			modifiedApiParameters
 		} = this.state
 
 		const {
@@ -647,13 +729,13 @@ class FormDesigner extends Component {
             	<div className="col s2 right zero-padding">
 	              <div className="switch">
 							    <label>
-							      <input id="start-api-switch" type="checkbox" onChange={this.handleEventStartedSwitch}/>
+							      <input id="created-api-switch" type="checkbox" onChange={this.handleEventCreatedSwitch}/>
 							      <span className="lever"></span>
 							    </label>
 							  </div>
 							</div>
 							{
-								isEventStartedSwitchOn &&
+								isEventCreatedSwitchOn &&
 								<Fragment>
 									<div className="col s12 bordered-container url-container">
 										<div className="col s1">
@@ -705,6 +787,7 @@ class FormDesigner extends Component {
 																	<div className="col s8">
 																		<input 
 																			id={`input-${parameter.name}-${property.name}`}
+																			value={apiBody[parameter.name][property.name]}
 																			onChange={e => this.handleInputProperties(parameter.name, property.name)} />
 																	</div>
 																</div>
@@ -715,6 +798,14 @@ class FormDesigner extends Component {
 											}
 										</div>
 									}
+            			<span 
+            				className={isURLExtWorkflowConnected ? 
+            					"waves-effect waves-light btn btn-save-api right" 
+            					: "btn btn-save-api disabled right"} 
+            				onClick={this.handleSaveCreatedEventAPI}
+            			>
+            				Save
+            			</span>
 								</Fragment>
 							}
             </div>
@@ -727,15 +818,90 @@ class FormDesigner extends Component {
           		<div className="col s2 right zero-padding">
 	              <div className="switch">
 							    <label>
-							      <input type="checkbox" onChange={this.handleEventModifiedSwitch}/>
+							      <input id="modified-api-switch" type="checkbox" onChange={this.handleEventModifiedSwitch}/>
 							      <span className="lever"></span>
 							    </label>
 							  </div>
 							</div>
+							{
+								isEventModifiedSwitchOn &&
+								<Fragment>
+									<div className="col s12 bordered-container url-container">
+										<div className="col s1">
+											<span>URL</span>
+										</div>
+										<div className="col s11 zero-padding">
+											<textarea className="textarea-url" value={modifiedApiUrlText} onChange={this.handleModifiedApiUrlText}>
+											</textarea>
+										</div>
+										<div className="col s9">
+										{ 
+											isModifiedURLExtWorkflowConnected &&
+											<span className="connected-label">
+												[Connected]
+											</span>
+										}
+										{
+											isModifiedURLExtWorkflowConnected === false &&
+											<span className="error-label">
+												[Error]
+											</span>
+										}
+										</div>
+										<div className="col s3 zero-padding btn-connect-container">
+											<span className={this.isEmptyString(modifiedApiUrlText) ? 'btn disabled' : 'waves-effect waves-light btn'} onClick={this.handleConnectModifiedApiURL}>
+												Connect
+											</span>
+										</div>
+									</div>
+									{
+										isModifiedURLExtWorkflowConnected &&
+										<div className="col s12 bordered-container parameters-container">
+											<div className="col s12 zero-padding border-bottom">
+												<span>ExtWorkflow</span>
+											</div>
+											{
+												modifiedApiParameters && 
+												modifiedApiParameters.length > 0 &&
+												modifiedApiParameters.map((parameter, paramIdx) => (
+													<div key={paramIdx} className="col s12">
+														<p className="parameter-name">{parameter.name}</p>
+														{
+															parameter.properties.map((property, propIdx) => (
+																<div key={propIdx} className="col s12">
+																	<div className="col s4">
+																		<span className="col s12 property-name">{property.name}</span>
+																		<span className="col s12 property-type">{property.type}</span>
+																	</div>
+																	<div className="col s8">
+																		<input 
+																			id={`input-modified-${parameter.name}-${property.name}`}
+																			value={modifiedApiBody[parameter.name][property.name]}
+																			onChange={e => this.handleInputModifiedProperties(parameter.name, property.name)} />
+																	</div>
+																</div>
+															))
+														}
+													</div>
+												))
+											}
+										</div>
+									}
+            			<span 
+            				className={isModifiedURLExtWorkflowConnected ? 
+            					"waves-effect waves-light btn btn-save-api right" 
+            					: "btn btn-save-api disabled right"} 
+            				onClick={this.handleSaveModifiedEventAPI}
+            			>
+            				Save
+            			</span>
+								</Fragment>
+							}
             </div>
             <div className="row right btn-footer-modal">
-            	<span className="waves-effect waves-light btn" onClick={this.handleCloseModal}>Cancel</span>
-            	<span className={isURLExtWorkflowConnected ? "waves-effect waves-light btn" : "btn disabled"} onClick={this.handleSaveEvents}>Save</span>
+            <span className="waves-effect waves-light btn" onClick={this.handleCloseModal}>OK</span>
+            	{/*<span className="waves-effect waves-light btn" onClick={this.handleCloseModal}>Cancel</span>
+            	            	<span className={isURLExtWorkflowConnected ? "waves-effect waves-light btn" : "btn disabled"} onClick={this.handleSaveCreatedEventAPI}>Save</span>*/}
             </div>
           </div>
         </div>

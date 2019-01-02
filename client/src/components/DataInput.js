@@ -40,7 +40,7 @@ class DataInput extends Component {
 					M.toast({ html: 'Data submitted' })
 
 					// call event api after saving data to database
-					axios.get(`${API_URL}/call-events-api?form_id=${formId}`)
+					axios.get(`${API_URL}/call-events-api?form_id=${formId}&action_type=created`)
 					.then(res2 => {
 						// redirect to collection page						
 						window.location = `/collection?id=${formId}`

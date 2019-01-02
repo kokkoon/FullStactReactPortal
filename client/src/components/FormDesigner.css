@@ -132,6 +132,11 @@
 	font-size: 12px;
 }
 
+#modal-form-event .event-container .btn-save-api {
+	margin-top: 10px;
+	width: 90px;
+}
+
 #modal-form-event .btn-footer-modal .btn {
 	width: 100px;
 	margin-left: 10px;
