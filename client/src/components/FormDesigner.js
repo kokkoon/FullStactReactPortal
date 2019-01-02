@@ -104,10 +104,9 @@ class FormDesigner extends Component {
 					document.getElementById('start-api-switch').checked = true
 					isEventStartedSwitchOn = true
 					isURLExtWorkflowConnected = true
-					apiUrlText = actionAPI.openAPIUrl
+					apiUrlText = actionAPI.openApiUrl
 					apiBody = actionAPI.body
 					apiParameters = actionAPI.parameters
-
 				}
 
 				this.setState({
