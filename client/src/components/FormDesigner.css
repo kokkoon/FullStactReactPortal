@@ -123,6 +123,14 @@
 	margin-top: 5px;
 }
 
+#modal-form-event .event-container .parameters-container .property-name {
+	/*font-weight: bold;*/
+}
+
+#modal-form-event .event-container .parameters-container .property-type {
+	font-size: 12px;
+}
+
 #modal-form-event .btn-footer-modal .btn {
 	width: 100px;
 	margin-left: 10px;

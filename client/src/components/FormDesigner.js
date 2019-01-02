@@ -45,7 +45,7 @@ class FormDesigner extends Component {
 		axios.get(`${API_URL}/form?id=${id}`)
 			.then(res => {
 				let { input } = this.state
-				const { formId } = res.data
+				const { formId, actionAPI } = res.data
 				const formStructure = res.data.data
 				const { properties } = formStructure
 				let fields = res.data.column
@@ -92,11 +92,34 @@ class FormDesigner extends Component {
 
 				input.collectionName = formStructure.title
 
+				let {
+					isEventStartedSwitchOn, 
+					isURLExtWorkflowConnected, 
+					apiUrlText,
+					apiBody,
+					apiParameters
+				} = this.state
+
+				if (actionAPI) {
+					document.getElementById('start-api-switch').checked = true
+					isEventStartedSwitchOn = true
+					isURLExtWorkflowConnected = true
+					apiUrlText = actionAPI.openAPIUrl
+					apiBody = actionAPI.body
+					apiParameters = actionAPI.parameters
+
+				}
+
 				this.setState({
 					formId,
 					formStructure,
 					fields,
-					input
+					input,
+					isEventStartedSwitchOn,
+					isURLExtWorkflowConnected,
+					apiUrlText,
+					apiBody,
+					apiParameters
 				})
 			})
 			.catch(e => console.error(e))
@@ -454,8 +477,6 @@ class FormDesigner extends Component {
 
 		const { documentFieldsTableHeader } = this.props
 
-		console.log('apiBody = ', this.state.apiBody)
-
 		return (
 			<div className="form-designer">
 				<h4 className="center">{formId ? 'Update Collection' : 'Create New Collection'}</h4>
@@ -627,7 +648,7 @@ class FormDesigner extends Component {
             	<div className="col s2 right zero-padding">
 	              <div className="switch">
 							    <label>
-							      <input type="checkbox" onChange={this.handleEventStartedSwitch}/>
+							      <input id="start-api-switch" type="checkbox" onChange={this.handleEventStartedSwitch}/>
 							      <span className="lever"></span>
 							    </label>
 							  </div>
@@ -674,13 +695,13 @@ class FormDesigner extends Component {
 												apiParameters.length > 0 &&
 												apiParameters.map((parameter, paramIdx) => (
 													<div key={paramIdx} className="col s12">
-														<p>{parameter.name}</p>
+														<p className="parameter-name">{parameter.name}</p>
 														{
 															parameter.properties.map((property, propIdx) => (
 																<div key={propIdx} className="col s12">
 																	<div className="col s4">
-																		<span className="col s12">{property.name}</span>
-																		<span className="col s12">{property.type}</span>
+																		<span className="col s12 property-name">{property.name}</span>
+																		<span className="col s12 property-type">{property.type}</span>
 																	</div>
 																	<div className="col s8">
 																		<input 
@@ -715,7 +736,7 @@ class FormDesigner extends Component {
             </div>
             <div className="row right btn-footer-modal">
             	<span className="waves-effect waves-light btn" onClick={this.handleCloseModal}>Cancel</span>
-            	<span className="waves-effect waves-light btn" onClick={this.handleSaveEvents}>Save</span>
+            	<span className={isURLExtWorkflowConnected ? "waves-effect waves-light btn" : "btn disabled"} onClick={this.handleSaveEvents}>Save</span>
             </div>
           </div>
         </div>
