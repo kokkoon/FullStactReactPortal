@@ -400,7 +400,8 @@ module.exports = (app) => {
         return {
           ...obj, 
           [key] : Object.keys(apiBodySchema[key].properties).reduce((obj2, key2) => {
-                    return {...obj2, [key2] : apiBodySchema[key].properties[key2].type}
+                    return {...obj2, [key2] : ''}
+                    // return {...obj2, [key2] : apiBodySchema[key].properties[key2].type}
                   }, {})
         }
       }, {})
@@ -416,7 +417,8 @@ module.exports = (app) => {
                 ...arr2,
                 {
                   name: key2,
-                  type: apiBodyProperties[key][key2]
+                  // type: apiBodyProperties[key][key2]
+                  type: apiBodySchema[key].properties[key2].type
                 }
               ]
             }, []) 
