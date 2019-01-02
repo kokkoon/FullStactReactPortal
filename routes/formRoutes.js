@@ -386,6 +386,7 @@ module.exports = (app) => {
 
     request(openApiUrl, (error, response, body) => {
       if (error) console.error(error)
+      
       const openApiData = JSON.parse(body)
 
       // extract the api url, http method, and parameters (in query and body)
@@ -401,16 +402,35 @@ module.exports = (app) => {
         return {
           ...obj, 
           [key] : Object.keys(apiBodySchema[key].properties).reduce((obj2, key2) => {
-                    return {...obj2, [key2] : ''}
+                    return {...obj2, [key2] : apiBodySchema[key].properties[key2].type}
                   }, {})
         }
       }, {})
+
+      // adjust api parameters data to fit rendering purpose in frontend
+      const apiParameters = Object.keys(apiBodyProperties).reduce((arr, key) => {
+        return [
+          ...arr, 
+          { 
+            name: key,
+            properties: Object.keys(apiBodyProperties[key]).reduce((arr2, key2) => {
+              return [
+                ...arr2,
+                {
+                  name: key2,
+                  type: apiBodyProperties[key][key2]
+                }
+              ]
+            }, []) 
+          }
+        ]
+      }, [])
 
       const actionAPI = { actionAPI: { url: apiCompleteUrl, method: apiMethod, body: apiBodyProperties }}
 
       formCollection.updateOne({id: formId}, {$set: actionAPI}, (err, obj) => {
         if (err) console.error(err)
-        res.send({ message: `API saved in form${formId} database`, api: extractedApi })
+        res.send({ message: `API saved in form${formId} database`, api: actionAPI.actionAPI, apiParameters })
       })
     })
   })
