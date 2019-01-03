@@ -352,7 +352,7 @@ module.exports = (app) => {
 
           res.send({ result })
         } else {
-          res.send({ result: 'request not valid'})
+          res.send({ result: 'request is not valid'})
         }
       }
     )

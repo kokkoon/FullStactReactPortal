@@ -37,14 +37,12 @@
 }
 
 #modal-edit-record .json-form .btn-approve {
-	/*position: relative;*/
 	margin-top: 10px;
 	margin-left: 10px;
 	width: 100px;
 }
 
 #modal-edit-record .json-form .btn-reject {
-	/*position: relative;*/
 	margin-top: 10px;
 	margin-left: 10px;
 	width: 100px;
@@ -53,5 +51,14 @@
 #modal-edit-record .json-form .btn-submit {
 	position: absolute;
 	right: 3px;
+	width: 150px;
+}
+
+#modal-post-action-message {
+	top: 35% !important;
+}
+
+#modal-post-action-message .btn-close {
+	margin-top: 20px;
 	width: 150px;
 }

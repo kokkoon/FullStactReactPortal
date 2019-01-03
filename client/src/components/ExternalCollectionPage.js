@@ -18,6 +18,7 @@ class ExternalCollectionPage extends Component {
     	record: null,
       formSchema: { title: '', type: "object", properties: {} },
       uiSchema: {},
+      actionMessage: ''
     }
   }
 
@@ -85,7 +86,20 @@ class ExternalCollectionPage extends Component {
     const id = formSchema.properties.id.default
 
     axios.patch(`${API_URL}/external-content?task_id=${id}`, {outcome: 'Approve'})
-      .then(res => console.log('res = ', res))
+      .then(res => {
+        const { result } = res.data
+        let actionMessage
+
+        this.openModalPostActionMessage()
+
+        if (result.error) {
+          actionMessage = `Fail to approve task\n${result.error}`
+        } else {
+          actionMessage = 'The task has been approved'
+        }
+
+        this.setState({ actionMessage })
+      })
       .catch(e => console.error(e))
   }
 
@@ -94,8 +108,37 @@ class ExternalCollectionPage extends Component {
     const id = formSchema.properties.id.default
 
     axios.patch(`${API_URL}/external-content?task_id=${id}`, {outcome: 'Reject'})
-      .then(res => console.log('res = ', res))
+      .then(res => {
+        const { result } = res.data
+        let actionMessage
+
+        this.openModalPostActionMessage()
+
+        if (result.error) {
+          actionMessage = `Fail to reject task\n${result.error}`
+        } else {
+          actionMessage = 'The task has been rejected'
+        }
+
+        this.setState({ actionMessage })
+      })
       .catch(e => console.error(e))
+  }
+
+  openModalPostActionMessage = (message) => {
+    const elem = document.getElementById('modal-post-action-message')
+    const modal = M.Modal.getInstance(elem)
+    modal.open()
+  }
+
+  handleClickClose = () => {
+    const elem1 = document.getElementById('modal-post-action-message')
+    const elem2 = document.getElementById('modal-edit-record')
+    M.Modal.getInstance(elem1).close()
+    M.Modal.getInstance(elem2).close()
+    
+    // reload table with new data
+    this.componentWillMount()
   }
 
   render() {
@@ -105,9 +148,9 @@ class ExternalCollectionPage extends Component {
       record,
       formSchema, 
       uiSchema,
-      formData
+      formData,
+      actionMessage
     } = this.state
-		// const id = window.location.search.slice(4)
 
     return (
       <div className="collection-page center">
@@ -170,6 +213,14 @@ class ExternalCollectionPage extends Component {
                 </Form>
               </div>
             </div>
+          </div>
+        </div>
+        <div id="modal-post-action-message" className="modal">
+          <div className="modal-content">
+            <h5 className="title"><strong>{actionMessage}</strong></h5>
+            <span className="waves-effect waves-light btn btn-close" onClick={this.handleClickClose}>
+              Close
+            </span>
           </div>
         </div>
       </div>
