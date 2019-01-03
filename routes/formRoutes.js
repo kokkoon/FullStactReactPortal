@@ -391,6 +391,7 @@ module.exports = (app) => {
 
       // extract the api url, http method, and parameters (in query and body)
       const firstPath = Object.keys(openApiData.paths)[0]
+      const openApiTitle = openApiData.info.title
       const apiUrl = `https://${openApiData.host}${openApiData.basePath}${firstPath}`
       const apiMethod = Object.keys(openApiData.paths[firstPath])[0]
       const api = openApiData.paths[firstPath][apiMethod]
@@ -426,7 +427,7 @@ module.exports = (app) => {
         ]
       }, [])
 
-      res.send({ apiBody: apiBodyProperties, apiParameters })
+      res.send({ openApiTitle, apiBody: apiBodyProperties, apiParameters })
     })
   })
 
@@ -439,7 +440,7 @@ module.exports = (app) => {
     const url = URL.parse(req.url, true)
     const actionType = url.query.action_type
 
-    const { openApiUrl, formId, apiBody } = req.body
+    const { openApiTitle, openApiUrl, formId, apiBody } = req.body
 
     request(openApiUrl, (error, response, body) => {
       if (error) console.error(error)
@@ -489,6 +490,7 @@ module.exports = (app) => {
       
       actionAPI = { 
         [`${actionType}ActionAPI`]: { 
+          openApiTitle,
           openApiUrl,
           url: apiCompleteUrl, 
           method: apiMethod, 
@@ -496,7 +498,6 @@ module.exports = (app) => {
           parameters: apiParameters
         }
       }
-
 
       formCollection.updateOne({id: formId}, {$set: actionAPI}, (err, obj) => {
         if (err) console.error(err)
@@ -519,7 +520,7 @@ module.exports = (app) => {
   })
 
   // call external api upon creating/updating a form document
-  app.get('/api/call-events-api', (req, res) => {
+  app.post('/api/call-events-api', (req, res) => {
     const formCollection = db.collection('form')
     const url = URL.parse(req.url, true)
     const formId = url.query.form_id
@@ -531,18 +532,45 @@ module.exports = (app) => {
       if (form != null) {
         if (form[`${actionType}ActionAPI`]) {
           const { url, method, body } = form[`${actionType}ActionAPI`]
+          const formData = req.body
+          
+          const newBody = Object.keys(body).reduce((obj, parameter) => {
+            return {
+              ...obj,
+              [parameter] : Object.keys(body[parameter]).reduce((obj2, property) => {
+                // pattern to check double angle brackets string 
+                // to be replaced by form input value
+                const pattern = /^<<\w+>>$/
+                const value = body[parameter][property]
+
+                // if the value of the property is string with pattern: <<field_name>>
+                // replace the pattern with form input value
+                if (pattern.test(value)) {
+                  const fieldName = value.slice(2, value.length - 2)
+
+                  return {
+                    ...obj2,
+                    [property] : formData[fieldName]
+                  }
+                } else { // if the value is normal string use the value                  
+                  return {
+                    ...obj2, 
+                    [property] : value
+                  }
+                }
+              }, {})
+            }
+          }, {})
 
           const requestOptions = {
             method, 
             uri: url, 
-            body: JSON.stringify(body), 
+            body: JSON.stringify(newBody)
           }
           
-          request(requestOptions, (error, response, body) => {
+          request(requestOptions, (error, response, responseBody) => {
             if (error) console.error(error)
-
-            // res.send({ message: `${actionType} action API called`, data: JSON.parse(body) })
-            res.send({ message: `${actionType} action API called`, data: body })
+            res.send({ message: `${actionType} action API called`, data: responseBody })
           })
         } else {
           res.send({ message: `${actionType} action API not found in form${formId} database`})

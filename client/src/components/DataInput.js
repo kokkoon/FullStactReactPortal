@@ -30,17 +30,18 @@ class DataInput extends Component {
 	 
 	log = (type) => console.log.bind(console, type)
 
-	onSubmit = (formData) => {
+	onSubmit = (form) => {
 		const { location } = this.props
 		const formId = location.search.slice(4)
+		const { formData } = form
 
-		axios.post(`${API_URL}/record?id=${formId}`, formData.formData)
+		axios.post(`${API_URL}/record?id=${formId}`, formData)
 			.then(res => {
 				if (res.data.success) {
 					M.toast({ html: 'Data submitted' })
 
 					// call event api after saving data to database
-					axios.get(`${API_URL}/call-events-api?form_id=${formId}&action_type=created`)
+					axios.post(`${API_URL}/call-events-api?form_id=${formId}&action_type=created`, formData)
 					.then(res2 => {
 						// redirect to collection page						
 						window.location = `/collection?id=${formId}`
