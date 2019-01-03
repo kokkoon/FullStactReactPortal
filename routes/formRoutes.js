@@ -541,7 +541,8 @@ module.exports = (app) => {
           request(requestOptions, (error, response, body) => {
             if (error) console.error(error)
 
-            res.send({ message: `${actionType} action API called`, data: JSON.parse(body) })
+            // res.send({ message: `${actionType} action API called`, data: JSON.parse(body) })
+            res.send({ message: `${actionType} action API called`, data: body })
           })
         } else {
           res.send({ message: `${actionType} action API not found in form${formId} database`})
