@@ -13,7 +13,6 @@ class ExternalCollectionPage extends Component {
     super(props)
 
     this.state = {
-      // id: undefined,
       collectionName: 'External Content',
       column: ['name', 'subject', 'description', 'created', 'status', 'workflow', 'action'],
     	record: null,
@@ -51,20 +50,6 @@ class ExternalCollectionPage extends Component {
     // let modal = document.querySelectorAll('.modal');
     // M.Modal.init(modal);
   }
-
-  // deleteRecord = (index) => {
-    // const { record } = this.state
-    // // TODO: change formInstanceId to recordId from backend
-    // const formId = record[index].formId
-    // const recordId = record[index].formInstanceId
-
-    // axios.delete(`${API_URL}/record?form_id=${formId}&record_id=${recordId}`)
-    //   .then(res => {
-    //     record.splice(index, 1)
-    //     this.setState({ record })
-    //   })
-    //   .catch(e => console.error(e))
-  // }
 
   handleEditRecord = (index) => {
     const { formSchema, record } = this.state
@@ -113,10 +98,6 @@ class ExternalCollectionPage extends Component {
       .catch(e => console.error(e))
   }
 
-  onSubmit = (formData) => {
-    console.log('formData = ', formData)
-  }
-
   render() {
     const { 
       collectionName, 
@@ -132,9 +113,6 @@ class ExternalCollectionPage extends Component {
       <div className="collection-page center">
         <div className="row">
         	<h5 className="collection-title">/ {collectionName}</h5>
-          {/*<span className="button-new">
-                      <Link className="waves-effect waves-light btn" to={`/data-input?id=${id}`}>New</Link>
-                    </span>*/}
         </div>
         <div className="row">
         { 
@@ -173,25 +151,6 @@ class ExternalCollectionPage extends Component {
                   </tbody>
                 </table>
             </div>
-            {/*<div className="col s1 delete-button-container">
-                          <table className="table-delete-button">
-                            <thead><tr><th></th></tr></thead>
-                            <tbody>
-                              { 
-                                record && record.map((r, i) => (
-                                  <tr key={i}>
-                                    <td className="cell-delete-btn-container">
-                                      <span className="waves-effect waves-light btn-floating red" 
-                                         onClick={e => this.deleteRecord(i)}>
-                                        <i className="small material-icons">delete</i>
-                                      </span>
-                                    </td>
-                                  </tr>
-                                ))
-                              }
-                            </tbody>
-                          </table>
-                        </div>*/}
           </Fragment>
         }
         </div>
@@ -203,12 +162,10 @@ class ExternalCollectionPage extends Component {
                 <Form 
                   uiSchema={uiSchema}
                   schema={formSchema}
-                  onSubmit={this.onSubmit.bind(this)}
                 >
                   <div className="btn-action-container">
                     <button className="btn btn-approve" type="button" onClick={this.onApprove}>Approve</button>
                     <button className="btn btn-reject" type="button" onClick={this.onReject}>Reject</button>
-                    <button className="btn btn-submit" type="submit">Submit</button>
                   </div>
                 </Form>
               </div>

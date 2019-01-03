@@ -33,21 +33,20 @@
 
 #modal-edit-record .json-form .btn-action-container {
 	position: relative;
+	text-align: right;
 }
 
 #modal-edit-record .json-form .btn-approve {
-	position: relative;
+	/*position: relative;*/
 	margin-top: 10px;
-	margin-right: 10px;
-	/*left: 0;*/
+	margin-left: 10px;
 	width: 100px;
 }
 
 #modal-edit-record .json-form .btn-reject {
-	position: relative;
+	/*position: relative;*/
 	margin-top: 10px;
-	margin-right: 10px;
-	/*left: 0;*/
+	margin-left: 10px;
 	width: 100px;
 }
 
