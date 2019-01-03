@@ -3,11 +3,9 @@ import { connect } from 'react-redux'
 import axios from 'axios'
 import queryString from 'query-string'
 import M from 'materialize-css/dist/js/materialize.min.js'
-// import { Link } from 'react-router-dom'
 import Form from 'react-jsonschema-form'
 
 import API_URL from '../utils/api_url'
-// import * as ACT from '../actions'
 import './DesignForm.css'
 
 class DesignForm extends Component {
@@ -140,14 +138,24 @@ class DesignForm extends Component {
 		this.handlePreviewSchema()
 
 		this.saveFormSchema(schema)
+		this.redirectToFormDesigner()
 	}
 
 	saveFormSchema(schema) {
-		const id = queryString.parse(this.props.location.search).id
+		const { id } = queryString.parse(this.props.location.search)
 		axios.patch(`${API_URL}/update-form-schema?id=${id}`, schema)
 		.then(res => 
 			M.toast({ html: res.data.message }))
 		.catch(err => console.error(err))
+	}
+
+	handleCancel = () => {
+		this.redirectToFormDesigner()
+	}
+
+	redirectToFormDesigner = () => {
+		const { id } = queryString.parse(this.props.location.search)
+		window.location = `/form-designer?id=${id}`
 	}
 
 	render() {
@@ -170,8 +178,6 @@ class DesignForm extends Component {
 							<Form 
 								uiSchema={uiSchema}
 								schema={JSONSchema}
-			        	// onSubmit={this.onSubmit.bind(this)}
-			        	// onError={this.log("errors")} 
 			        />
 			      </div>
 			  	</div>
@@ -195,6 +201,7 @@ class DesignForm extends Component {
           />
 				</div>
 				<div className="col s2 btn-actions">
+					<span className="waves-effect waves-light btn" onClick={this.handleCancel}>Cancel</span>
 					<span className="waves-effect waves-light btn" onClick={this.handleDefaultSchema}>Default</span>
 					<span className="waves-effect waves-light btn" onClick={this.handlePreviewSchema}>Preview</span>
 					<span className="waves-effect waves-light btn" onClick={this.handleSaveApplySchema}>Save & Apply</span>
@@ -212,9 +219,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		// setDefaultNavItem: () => dispatch(ACT.setDefaultNavItem()),
-		// setCollectionNavItem: () => dispatch(ACT.setCollectionNavItem()),
-		// loadCollectionNavItemLinks: () => dispatch(ACT.loadCollectionNavItemLinks())
+
 	}
 }
 
