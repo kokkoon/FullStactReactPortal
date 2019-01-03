@@ -100,29 +100,33 @@ class FormDesigner extends Component {
 				let {
 					isEventCreatedSwitchOn, 
 					isURLExtWorkflowConnected, 
+					openApiTitle,
 					apiUrlText,
 					apiBody,
 					apiParameters,
 					isEventModifiedSwitchOn, 
 					isModifiedURLExtWorkflowConnected, 
+					modifiedOpenApiTitle,
 					modifiedApiUrlText,
 					modifiedApiBody,
 					modifiedApiParameters
 				} = this.state
 
 				if (createdActionAPI) {
-					document.getElementById('created-api-switch').checked = true
+					// document.getElementById('created-api-switch').checked = true
 					isEventCreatedSwitchOn = true
 					isURLExtWorkflowConnected = true
+					openApiTitle = createdActionAPI.openApiTitle
 					apiUrlText = createdActionAPI.openApiUrl
 					apiBody = createdActionAPI.body
 					apiParameters = createdActionAPI.parameters
 				}
 
 				if (modifiedActionAPI) {
-					document.getElementById('modified-api-switch').checked = true
+					// document.getElementById('modified-api-switch').checked = true
 					isEventModifiedSwitchOn = true
 					isModifiedURLExtWorkflowConnected = true
+					modifiedOpenApiTitle = modifiedActionAPI.openApiTitle
 					modifiedApiUrlText = modifiedActionAPI.openApiUrl
 					modifiedApiBody = modifiedActionAPI.body
 					modifiedApiParameters = modifiedActionAPI.parameters
@@ -135,11 +139,13 @@ class FormDesigner extends Component {
 					input,
 					isEventCreatedSwitchOn,
 					isURLExtWorkflowConnected,
+					openApiTitle,
 					apiUrlText,
 					apiBody,
 					apiParameters,
 					isEventModifiedSwitchOn,
 					isModifiedURLExtWorkflowConnected,
+					modifiedOpenApiTitle,
 					modifiedApiUrlText,
 					modifiedApiBody,
 					modifiedApiParameters
@@ -424,8 +430,8 @@ class FormDesigner extends Component {
 			if (res.data.success) {
 				axios.get(`${API_URL}/retrieve-external-workflow-parameters?url=${apiUrlText}`)
 				.then(res2 => {
-					const { apiBody, apiParameters } = res2.data
-					this.setState({ apiBody, apiParameters })
+					const { openApiTitle, apiBody, apiParameters } = res2.data
+					this.setState({ openApiTitle, apiBody, apiParameters })
 				})
 				.catch(e2 => console.error(e2))
 			}
@@ -448,8 +454,13 @@ class FormDesigner extends Component {
 			if (res.data.success) {
 				axios.get(`${API_URL}/retrieve-external-workflow-parameters?url=${modifiedApiUrlText}`)
 				.then(res2 => {
-					const { apiBody: modifiedApiBody, apiParameters: modifiedApiParameters } = res2.data
-					this.setState({ modifiedApiBody, modifiedApiParameters })
+					const { 
+						openApiTitle: modifiedOpenApiTitle, 
+						apiBody: modifiedApiBody, 
+						apiParameters: modifiedApiParameters 
+					} = res2.data
+
+					this.setState({ modifiedOpenApiTitle, modifiedApiBody, modifiedApiParameters })
 				})
 				.catch(e2 => console.error(e2))
 			}
@@ -476,9 +487,9 @@ class FormDesigner extends Component {
 	}
 
 	handleSaveCreatedEventAPI = () => {
-		const { formId, apiUrlText: openApiUrl, apiBody } = this.state
+		const { formId, openApiTitle, apiUrlText: openApiUrl, apiBody } = this.state
 
-		const data = { formId, openApiUrl, apiBody }
+		const data = { openApiTitle, formId, openApiUrl, apiBody }
 
 		axios.post(`${API_URL}/save-external-workflow?action_type=created`, data )
 		.then(res => {
@@ -488,9 +499,14 @@ class FormDesigner extends Component {
 	}
 
 	handleSaveModifiedEventAPI = () => {
-		const { formId, modifiedApiUrlText: openApiUrl, modifiedApiBody: apiBody } = this.state
+		const { 
+			formId, 
+			modifiedOpenApiTitle: openApiTitle,
+			modifiedApiUrlText:	openApiUrl, 
+			modifiedApiBody: apiBody 
+		} = this.state
 
-		const data = { formId, openApiUrl, apiBody }
+		const data = { formId, openApiTitle, openApiUrl, apiBody }
 
 		axios.post(`${API_URL}/save-external-workflow?action_type=modified`, data )
 		.then(res => {
@@ -540,10 +556,12 @@ class FormDesigner extends Component {
 			isEventCreatedSwitchOn,
 			isEventModifiedSwitchOn,
 			isURLExtWorkflowConnected,
+			openApiTitle,
 			apiUrlText, 
 			apiBody,
 			apiParameters,
 			isModifiedURLExtWorkflowConnected,
+			modifiedOpenApiTitle,
 			modifiedApiUrlText,
 			modifiedApiBody,
 			modifiedApiParameters
@@ -729,7 +747,11 @@ class FormDesigner extends Component {
             	<div className="col s2 right zero-padding">
 	              <div className="switch">
 							    <label>
-							      <input id="created-api-switch" type="checkbox" onChange={this.handleEventCreatedSwitch}/>
+							      <input 
+							      	id="created-api-switch" 
+							      	type="checkbox" 
+							      	checked={isEventCreatedSwitchOn}
+							      	onChange={this.handleEventCreatedSwitch}/>
 							      <span className="lever"></span>
 							    </label>
 							  </div>
@@ -769,7 +791,7 @@ class FormDesigner extends Component {
 										isURLExtWorkflowConnected &&
 										<div className="col s12 bordered-container parameters-container">
 											<div className="col s12 zero-padding border-bottom">
-												<span>ExtWorkflow</span>
+												<span>{openApiTitle}</span>
 											</div>
 											{
 												apiParameters && 
@@ -818,7 +840,11 @@ class FormDesigner extends Component {
           		<div className="col s2 right zero-padding">
 	              <div className="switch">
 							    <label>
-							      <input id="modified-api-switch" type="checkbox" onChange={this.handleEventModifiedSwitch}/>
+							      <input 
+							      	id="modified-api-switch" 
+							      	type="checkbox" 
+							      	checked={isEventModifiedSwitchOn}
+							      	onChange={this.handleEventModifiedSwitch}/>
 							      <span className="lever"></span>
 							    </label>
 							  </div>
@@ -858,7 +884,7 @@ class FormDesigner extends Component {
 										isModifiedURLExtWorkflowConnected &&
 										<div className="col s12 bordered-container parameters-container">
 											<div className="col s12 zero-padding border-bottom">
-												<span>ExtWorkflow</span>
+												<span>{modifiedOpenApiTitle}</span>
 											</div>
 											{
 												modifiedApiParameters && 
