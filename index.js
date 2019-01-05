@@ -9,8 +9,8 @@ const keys = require('./config/keys');
 // require('./models/Task');
 
 mongoUtil.connectToDB(err => {
-  if (err) console.error(err)
-  console.log('Connected to MongoDB successfully')
+  if (!err) console.log('Connected to MongoDB successfully')
+  else console.log('Fail to connect to MongoDB\nError: ', err)
   
   require('./services/passport');
   
