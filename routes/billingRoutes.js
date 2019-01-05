@@ -20,7 +20,6 @@ module.exports = app => {
       {$set: {credits: req.user.credits}},
       (err, obj) => {
       if (err) console.error(err)
-      console.log('updated document = ', obj.result.n)
     })
 
     res.send(req.user)
