@@ -12,16 +12,20 @@ const db = mongoUtil.getDB();
 module.exports = (app) => {	  
   app.use(cors());
 
-  // store new form type and form instance altogether in DB
+  // save new record in a form colletion
   app.post('/api/record', (req, res) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
-    // TODO: change formInstanceId to recordId
-  	const formInstanceId = cuid()
-  	const data = { ...req.body, formId, formInstanceId }
-  	let message = ''
   	const collection = db.collection(`form${formId}`)
-  	const formCollection = db.collection('form')
+    // TODO: change formInstanceId to recordId
+    const formInstanceId = cuid()
+    const data = { 
+      ...req.body,
+      formId, 
+      formInstanceId,
+      createdTime: new Date(), 
+      createdBy: req.user._id
+    }
 
   	collection.insertOne(data, (err, result) => {
   		if (err) console.error(err)
@@ -32,6 +36,24 @@ module.exports = (app) => {
   			data: { formInstanceId } 
   		})
   	})
+  })
+
+  // update record in a form collection
+  app.post('api/update-record', (req, res) => {
+    const url = URL.parse(req.url, true)
+    const formId = url.query.id
+    const formInstanceId = url.query.instance_id
+    const collection = db.collection(`form${formId}`)
+    const updatedData = {
+      ...req.body,
+      modifiedTime: new Date(),
+      modifiedBy: req.user._id
+    }
+
+    collection.updateOne({formInstanceId}, {$set: updatedData}, (err, obj) => {
+      if (err) console.error(err)
+      res.send({ message: `record ${formInstanceId} updated`})
+    })
   })
 
   // get the record of form instance by form id & instanceId from DB
