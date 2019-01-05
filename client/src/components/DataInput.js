@@ -44,7 +44,7 @@ class DataInput extends Component {
 					axios.post(`${API_URL}/call-events-api?form_id=${formId}&action_type=created`, formData)
 					.then(res2 => {
 						// redirect to collection page						
-						window.location = `/collection?id=${formId}`
+						this.props.history.push(`/collection?id=${formId}`)
 					})
 					.catch(e2 => console.error(e2))
 				}

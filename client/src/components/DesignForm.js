@@ -155,7 +155,7 @@ class DesignForm extends Component {
 
 	redirectToFormDesigner = () => {
 		const { id } = queryString.parse(this.props.location.search)
-		window.location = `/form-designer?id=${id}`
+		this.props.history.push(`/form-designer?id=${id}`)
 	}
 
 	render() {
