@@ -76,9 +76,7 @@ class CollectionPage extends Component {
 
   deleteRecord = (index) => {
     const { record } = this.state
-    // TODO: change formInstanceId to recordId from backend
-    const formId = record[index].formId
-    const recordId = record[index].formInstanceId
+    const { formId, _id: recordId } = record[index]
 
     axios.delete(`${API_URL}/record?form_id=${formId}&record_id=${recordId}`)
       .then(res => {

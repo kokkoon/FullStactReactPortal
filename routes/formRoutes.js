@@ -4,6 +4,7 @@ const lodash = require('lodash')
 const cors = require('cors')
 const cuid = require('cuid')
 const URL = require('url')
+const mongodb = require('mongodb')
 const { isEmpty } = lodash
 
 const mongoUtil = require( '../services/mongoUtil' );
@@ -17,23 +18,18 @@ module.exports = (app) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
   	const collection = db.collection(`form${formId}`)
-    // TODO: change formInstanceId to recordId
-    const formInstanceId = cuid()
     const data = { 
       ...req.body,
-      formId, 
-      formInstanceId,
+      formId,
       createdTime: new Date(), 
       createdBy: req.user._id
     }
 
   	collection.insertOne(data, (err, result) => {
   		if (err) console.error(err)
-  		// console.log('inserted = ', result.insertedCount)
   		res.send({ 
         success: true,
-  			message: 'success add data',
-  			data: { formInstanceId } 
+  			message: 'success add data'
   		})
   	})
   })
@@ -42,7 +38,7 @@ module.exports = (app) => {
   app.post('api/update-record', (req, res) => {
     const url = URL.parse(req.url, true)
     const formId = url.query.id
-    const formInstanceId = url.query.instance_id
+    const recordId = url.query.record_id
     const collection = db.collection(`form${formId}`)
     const updatedData = {
       ...req.body,
@@ -50,9 +46,9 @@ module.exports = (app) => {
       modifiedBy: req.user._id
     }
 
-    collection.updateOne({formInstanceId}, {$set: updatedData}, (err, obj) => {
+    collection.updateOne({_id: recordId}, {$set: updatedData}, (err, obj) => {
       if (err) console.error(err)
-      res.send({ message: `record ${formInstanceId} updated`})
+      res.send({ message: `record ${recordId} updated`})
     })
   })
 
@@ -60,11 +56,11 @@ module.exports = (app) => {
   app.get('/api/record', (req, res) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
-  	const formInstanceId = url.query.instanceId
+    const recordId = url.query.record_id
   	const collection = db.collection(`form${formId}`)
 
-  	if (!isEmpty(formInstanceId)) {
-	  	collection.find({ formInstanceId }).toArray((err, data) => {
+  	if (!isEmpty(recordId)) {
+	  	collection.find({ _id: recordId }).toArray((err, data) => {
 	  		if (err) console.error(err)
 	  		res.send({ data })
 	  	})	
@@ -83,7 +79,7 @@ module.exports = (app) => {
     const recordId = url.query.record_id
     const formCollection = db.collection(`form${formId}`)
 
-    formCollection.deleteOne({formInstanceId: recordId}, (err, obj) => {
+    formCollection.deleteOne({ _id: new mongodb.ObjectId(recordId) }, (err, obj) => {
       if (err) console.error(err)
 
       if (obj.result.n > 0) {
