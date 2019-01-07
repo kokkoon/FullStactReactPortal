@@ -125,9 +125,19 @@ module.exports = (app) => {
   	const formCollection = db.collection('form')
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
-  	const formStructure = req.body.formStructure
+  	const { formStructure, tableColumns, formFields } = req.body
     const collectionName = req.body.collectionName.toLowerCase()
-    const tableColumns = req.body.tableColumns
+
+    const tableViewConfig = formFields.reduce((obj, field, index) => {
+      return {
+        ...obj,
+        [field.fieldName] : {
+          displayName: field.fieldName,
+          order: index + 1,
+          showInTable: field.showInTable
+        }
+      }
+    }, {})
 
   	formCollection.find({}).toArray((err, result) => {
       if (err) console.error(err)
@@ -144,7 +154,8 @@ module.exports = (app) => {
     				icon: 'format_list_bulleted',
     				collectionName,
     				formStructure,
-            tableColumns
+            tableColumns,
+            tableViewConfig
     			}
 
           formCollection.updateOne({id: formId}, {$set: form}, (err, obj) => {
@@ -161,7 +172,8 @@ module.exports = (app) => {
     				icon: 'format_list_bulleted',
     				collectionName,
     				formStructure,
-            tableColumns
+            tableColumns,
+            tableViewConfig
     			}
 
     			formCollection.insertOne(form, (err, obj) => {
@@ -180,7 +192,8 @@ module.exports = (app) => {
           icon: 'format_list_bulleted',
           collectionName,
           formStructure,
-          tableColumns
+          tableColumns,
+          tableViewConfig
         }
 
         formCollection.insertOne(form, (err, obj) => {

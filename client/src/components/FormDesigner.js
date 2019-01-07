@@ -367,16 +367,23 @@ class FormDesigner extends Component {
 
 	handleCreateCollection = () => {
 		const { location, loadCollectionNavItemLinks } = this.props
-		const id = location.search.slice(4)
+		const { id } = queryString.parse(location.search)
 		const { formId, formStructure, input, fields } = this.state
+
 		const tableColumns = fields.reduce((arr, field) => {
-														return [...arr, { fieldName: field.fieldName, showInTable: field.showInTable }]
-												 }, [])
+			return [...arr, { fieldName: field.fieldName, showInTable: field.showInTable }]
+		}, [])
 		
 		formStructure.title = input.collectionName
 
-		axios.post(`${API_URL}/create-form?id=${id}`, 
-							 { collectionName: input.collectionName, tableColumns, formStructure })
+		const data = {
+			collectionName: input.collectionName, 
+			tableColumns, 
+			formFields: fields, 
+			formStructure
+		}
+
+		axios.post(`${API_URL}/create-form?id=${id}`, data)
 			.then(res => {
 
 				M.toast({
