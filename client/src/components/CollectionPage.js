@@ -82,8 +82,7 @@ class CollectionPage extends Component {
 
     axios.delete(`${API_URL}/record?form_id=${formId}&record_id=${recordId}`)
       .then(res => {
-        record.splice(index, 1)
-        this.setState({ record })
+        this.loadRecord(formId)
       })
       .catch(e => console.error(e))
   }
