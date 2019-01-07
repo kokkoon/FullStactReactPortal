@@ -430,7 +430,7 @@ class FormDesigner extends Component {
 	}
 
 	handleConnectApiURL = () => {
-		const { isURLExtWorkflowConnected, apiUrlText } = this.state
+		const { apiUrlText } = this.state
 
 		axios.get(`${API_URL}/ping-open-api?url=${apiUrlText}`)
 		.then(res => {
@@ -454,7 +454,7 @@ class FormDesigner extends Component {
 	}
 
 	handleConnectModifiedApiURL = () => {
-		const { isModifiedURLExtWorkflowConnected, modifiedApiUrlText } = this.state
+		const { modifiedApiUrlText } = this.state
 
 		axios.get(`${API_URL}/ping-open-api?url=${modifiedApiUrlText}`)
 		.then(res => {
@@ -951,11 +951,7 @@ class FormDesigner extends Component {
 	}
 
 	renderModalEditView = () => {
-		const {
-			viewConfigString,
-			defaultViewConfig,
-			viewConfig
-		} = this.state
+		const {	viewConfigString } = this.state
 
 		return (
 			<div id="modal-edit-view" className="modal">

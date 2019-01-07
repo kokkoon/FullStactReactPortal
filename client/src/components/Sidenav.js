@@ -137,6 +137,7 @@ class Sidenav extends Component {
 
 		return (
 			<Fragment>
+			{/* eslint-disable-next-line */}
 				<a data-target="slide-out" className="sidenav-trigger"><i className="material-icons">menu</i></a>
 
 				<ul id="slide-out" className="sidenav">
@@ -194,7 +195,10 @@ class Sidenav extends Component {
 			  			<div key={index}>
 			  			{
 			  				groupLink.header.length > 0 &&
-			    			<li><a className="subheader">{groupLink.header}</a></li>
+			    			<li>
+			  					{/* eslint-disable-next-line */}
+			    				<a className="subheader">{groupLink.header}</a>
+			    			</li>
 			    		}
 			  			{
 			  				groupLink.links.map((item, i) => (

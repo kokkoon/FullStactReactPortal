@@ -37,6 +37,7 @@ class DesignForm extends Component {
 			
 			const uiSchema = Object.keys(schema.properties).reduce((obj, key) => {
 				if (schema.properties[key].type !== 'boolean') {
+					/* eslint-disable-next-line */
 					return {...obj, [key] : { ['ui:widget']: 'text' }}
 				} else {
 					return {...obj, [key] : {}}

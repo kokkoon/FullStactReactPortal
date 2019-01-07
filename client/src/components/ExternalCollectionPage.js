@@ -69,6 +69,7 @@ class ExternalCollectionPage extends Component {
     // set UI schema for those fields to read-only
     const uiSchema = Object.keys(properties).reduce((obj, key) => {
       if (key !== 'comment') {
+        /* eslint-disable-next-line */
         return {...obj, [key] : { ["ui:readonly"]: true }}
       } else {
         return obj
@@ -148,7 +149,6 @@ class ExternalCollectionPage extends Component {
       record,
       formSchema, 
       uiSchema,
-      formData,
       actionMessage
     } = this.state
 
