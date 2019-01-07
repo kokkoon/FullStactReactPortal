@@ -603,6 +603,68 @@ module.exports = (app) => {
     })
   })
 
+  // save form table view config
+  app.post('/api/save-table-view-config', (req, res) => {
+    const formCollection = db.collection('form')
+    const url = URL.parse(req.url, true)
+    const id = url.query.form_id
+    const { tableViewConfig, formFields } = req.body
+
+    const tableColumns = formFields.reduce((arr, field) => {
+      if (Object.keys(tableViewConfig).indexOf(field.fieldName) > -1 ) {
+        return [
+          ...arr,
+          {
+            fieldName: tableViewConfig[field.fieldName],
+            showInTable: field.showInTable
+          }
+        ]
+      }
+
+      return [...arr, field]
+
+    }, [])
+
+    const updatedField = { 
+      tableViewConfig,
+      tableColumns
+    }
+
+    formCollection.updateOne(
+      {id}, 
+      {$set: updatedField}, 
+      (err, obj) => {
+        if (err) console.error(err)
+        else {
+          res.send({ message: `table view configuration for form ${formId} updated` })
+        }
+      }
+    )
+  })
+
+  // retrieve form table view config
+  app.get('/api/retrieve-table-view-config', (req, res) => {
+    const formCollection = db.collection('form')
+    const url = URL.parse(req.url, true)
+    const id = url.query.form_id
+
+    formCollection.findOne({id}, (err, result) => {
+      if (err) console.error(err)
+      else if (result != null) {
+        if (result.tableViewConfig) {
+          res.send({ 
+            message: `table view configuration form ${id} found`,
+            data: result.tableViewConfig
+          })
+        } else {
+          res.send({ message: `table view configuration not found in form ${id}` })
+        }
+      } else {
+        res.send({ message: `form ${id} not found` })
+      }
+    })
+  })
+
   // delete a document in a collection
   app.delete('/api/delete-document', (req, res) => {
     const url = URL.parse(req.url, true)
