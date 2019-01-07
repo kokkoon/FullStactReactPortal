@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import { isEmpty } from 'lodash'
-import * as helper from '../utils/helperFunctions'
+import queryString from 'query-string'
 
+import * as helper from '../utils/helperFunctions'
 import API_URL from '../utils/api_url'
 import * as ACT from '../actions'
 import './FormDesigner.css'
@@ -580,8 +581,6 @@ class FormDesigner extends Component {
 
 		const { documentFieldsTableHeader } = this.props
 
-		// console.log(this.state.viewConfig)
-
 		return (
 			<div className="form-designer">
 				<h4 className="center">{formId ? 'Update Collection' : 'Create New Collection'}</h4>
@@ -952,6 +951,7 @@ class FormDesigner extends Component {
 			defaultViewConfig,
 			viewConfig
 		} = this.state
+
 		return (
 			<div id="modal-edit-view" className="modal">
       	<div className="modal-content">
@@ -977,19 +977,20 @@ class FormDesigner extends Component {
 	}
 
 	loadViewConfig = () => {
-		const viewConfig = {
-			name: 'Customer name',
-			email: 'Main email',
-			address: 'Mail address'
-		}
+		const form_id = queryString.parse(this.props.location.search).id
 
-		const viewConfigString = helper.stringifyPrettyJSON(viewConfig)
+		axios.get(`${API_URL}/retrieve-table-view-config?form_id=${form_id}`)
+		.then(response => {
+			const viewConfig = response.data.data
+			const viewConfigString = helper.stringifyPrettyJSON(viewConfig)
 
-		this.setState({
-			viewConfig,
-			defaultViewConfig: viewConfig,
-			viewConfigString
+			this.setState({
+				viewConfig,
+				defaultViewConfig: viewConfig,
+				viewConfigString
+			})
 		})
+		.catch(error => console.error(error))
 	}
 
 	changeViewConfig = ({ target }) => {
@@ -1007,6 +1008,7 @@ class FormDesigner extends Component {
 	}
 
 	saveTableView = () => {
+		const form_id = queryString.parse(this.props.location.search).id
 		const { viewConfigString, defaultViewConfig } = this.state
 		let viewConfig = defaultViewConfig
 
@@ -1015,6 +1017,12 @@ class FormDesigner extends Component {
 		} catch (error) {
 			alert('JSON config is not valid\n' + error)
 		}
+
+		axios.post(`${API_URL}/save-table-view-config?form_id=${form_id}`, viewConfig)
+		.then(response => {
+			M.toast({ html: response.data.message })
+		})
+		.catch(error => console.error(error))
 
 		this.setState({ viewConfig })
 	}
