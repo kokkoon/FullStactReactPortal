@@ -332,11 +332,10 @@ class FormDesigner extends Component {
 		
 		axios.get(`${API_URL}/check-collection-name?name=${collectionName}&id=${formId}`)
 			.then(res => {
-				const { data, currentName } = res.data
+				const { isFound, currentName } = res.data
 				let message, icon, isCollectionNameOK
 
-				// found
-				if (data === 1) {
+				if (isFound) {
 					if (currentName === collectionName.toLowerCase()) {
 						message = '<span> Name is the same with current collection name.</span>'
 						icon = '<i class="material-icons">check_circle</i>'
@@ -348,8 +347,7 @@ class FormDesigner extends Component {
 					}
 					
 				} 
-				// not found
-				else if (data === 0) {
+				else { // not found
 					message = '<span> Name is unique, you can create new collection with it.</span>'
 					icon = '<i class="material-icons">check_circle</i>'
 					isCollectionNameOK = true

@@ -105,15 +105,15 @@ module.exports = (app) => {
       if (err) console.error(err)
       // console.log('check result = ', result)
       if (result.length === 0) {
-        res.send({ data: 0, message: 'not found' })
+        res.send({ isFound: false, message: 'not found' })
       } else {
         formCollection.findOne({id}, (err, form) => {
           if (err) console.error(err)
           // console.log('form = ', form)
           if (form !== null) {
-            res.send({ data: 1, currentName: form.collectionName, message: 'found' })
+            res.send({ isFound: true, currentName: form.collectionName, message: 'found' })
           } else {
-            res.send({ data: 1, message: 'found' })
+            res.send({ isFound: true, message: 'found' })
           }
         })
       }
