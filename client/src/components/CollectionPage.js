@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { isEmpty } from 'lodash'
+import queryString from 'query-string'
 
 import API_URL from '../utils/api_url'
 import './CollectionPage.css'
@@ -19,21 +20,25 @@ class CollectionPage extends Component {
   }
 
 	componentWillMount() {
-		const id = window.location.search.slice(4)
+    const { id } = queryString.parse(this.props.location.search)
 
+    this.setState({ id })
+    this.loadCollectionName(id)
+    this.loadRecord(id)
+    this.loadTableViewConfig(id)
+  }
+
+  loadCollectionName(id) {
     axios.get(`${API_URL}/form/?id=${id}`)
       .then(res => {
-        const collectionName = res.data.data.title
-        const rawColumn = res.data.column
-        const column = rawColumn.filter(c => c.showInTable).map(c => c.fieldName)
-
         this.setState({ 
-          collectionName,
-          column 
+          collectionName: res.data.data.title 
         })
       })
       .catch(err => console.log(err))
+  }
 
+  loadRecord(id) {
     axios.get(`${API_URL}/record/?id=${id}`)
       .then(res => {
         this.setState({ 
@@ -43,30 +48,29 @@ class CollectionPage extends Component {
       .catch(err => console.log(err))
   }
 
-  componentDidUpdate() {
-		const id = window.location.search.slice(4)
-
-    if (id !== this.state.id) {
-      axios.get(`${API_URL}/form/?id=${id}`)
-      .then(res => {
-        const collectionName = res.data.data.title
-        const rawColumn = res.data.column
-        const column = rawColumn.filter(c => c.showInTable).map(c => c.fieldName)
-
-        this.setState({ 
-          collectionName,
-          column 
+  loadTableViewConfig(id) {
+    axios.get(`${API_URL}/retrieve-table-view-config?form_id=${id}`)
+      .then(response => {
+        const tableViewConfig = response.data.data
+        const filteredColumn = Object.keys(tableViewConfig).filter(key => tableViewConfig[key].showInTable)
+        const sortedColumn = filteredColumn.sort((a, b) => tableViewConfig[a].order - tableViewConfig[b].order)
+        
+        this.setState({
+          tableViewConfig,
+          column: sortedColumn
         })
       })
-      .catch(err => console.log(err))
+      .catch(error => console.error(error))
+  }
 
-      axios.get(`${API_URL}/record/?id=${id}`)
-      .then(res => {
-        this.setState({ record: res.data.data })
-      })
-      .catch(err => console.log(err))
+  componentDidUpdate() {
+    const { id } = queryString.parse(this.props.location.search)
 
+    if (id !== this.state.id) {
       this.setState({ id })
+      this.loadCollectionName(id)
+      this.loadRecord(id)
+      this.loadTableViewConfig(id)
     }
   }
 
@@ -85,8 +89,13 @@ class CollectionPage extends Component {
   }
 
   render() {
-    const { collectionName, column, record } = this.state
-		const id = window.location.search.slice(4)
+    const { 
+      id,
+      collectionName, 
+      column, 
+      record, 
+      tableViewConfig 
+    } = this.state
 
     return (
       <div className="collection-page center">
@@ -107,7 +116,11 @@ class CollectionPage extends Component {
                 <table className="table-collection">
                   <thead>
                     <tr>
-                      { !isEmpty(column) && column.map((c, i) => <th key={i}>{c}</th>) }
+                      { 
+                        !isEmpty(column) && 
+                        !isEmpty(tableViewConfig) &&
+                        column.map((c, i) => <th key={i}>{tableViewConfig[c].displayName}</th>) 
+                      }
                     </tr>
                   </thead>
 
@@ -116,9 +129,11 @@ class CollectionPage extends Component {
                       record.map((r,i) => (
                         <tr key={i}>
                           {
-                            Object.keys(r).filter(k => column.indexOf(k) >= 0).map((k, i_2) => (
-                              <td key={i_2}>{r[k]}</td>
-                            ))
+                            Object.keys(r).filter(key => column.indexOf(key) >= 0)
+                              .sort((a, b) => tableViewConfig[a].order - tableViewConfig[b].order)
+                              .map((filteredKey, idx) => (
+                                <td key={idx}>{r[filteredKey]}</td>
+                              ))
                           }
                         </tr>
                       )) 
