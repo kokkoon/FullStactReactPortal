@@ -608,26 +608,26 @@ module.exports = (app) => {
     const formCollection = db.collection('form')
     const url = URL.parse(req.url, true)
     const id = url.query.form_id
-    const { tableViewConfig, formFields } = req.body
+    // const { tableViewConfig, formFields } = req.body
 
-    const tableColumns = formFields.reduce((arr, field) => {
-      if (Object.keys(tableViewConfig).indexOf(field.fieldName) > -1 ) {
-        return [
-          ...arr,
-          {
-            fieldName: tableViewConfig[field.fieldName],
-            showInTable: field.showInTable
-          }
-        ]
-      }
+    // const tableColumns = formFields.reduce((arr, field) => {
+    //   if (Object.keys(tableViewConfig).indexOf(field.fieldName) > -1 ) {
+    //     return [
+    //       ...arr,
+    //       {
+    //         fieldName: tableViewConfig[field.fieldName],
+    //         showInTable: field.showInTable
+    //       }
+    //     ]
+    //   }
 
-      return [...arr, field]
+    //   return [...arr, field]
 
-    }, [])
+    // }, [])
 
     const updatedField = { 
-      tableViewConfig,
-      tableColumns
+      tableViewConfig: req.body
+      // tableColumns
     }
 
     formCollection.updateOne(
@@ -636,7 +636,7 @@ module.exports = (app) => {
       (err, obj) => {
         if (err) console.error(err)
         else {
-          res.send({ message: `table view configuration for form ${formId} updated` })
+          res.send({ message: `table view configuration for form-${id} updated` })
         }
       }
     )
