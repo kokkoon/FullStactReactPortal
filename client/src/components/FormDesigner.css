@@ -159,7 +159,7 @@
 }
 
 #modal-edit-view .modal-content #textarea-edit-view {
-	min-height: 5rem;
+	min-height: 200px;
 	resize: vertical;
 	background-color: #37474f;
 	color: #ffd54f;
