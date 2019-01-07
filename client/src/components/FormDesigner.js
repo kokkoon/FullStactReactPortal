@@ -47,6 +47,73 @@ class FormDesigner extends Component {
 		}
 	}
 
+	render() {
+		const { collectionName } = this.state.input
+		const {
+			formId,
+			formStructure, 
+			isCollectionNameOK
+		} = this.state
+
+		return (
+			<div className="form-designer">
+				<h4 className="center">{formId ? 'Update Collection' : 'Create New Collection'}</h4>
+				<div className="row">
+					<div className="col s12 btn-form">
+					{
+						formId &&
+						(
+							<Fragment>
+								<span className="waves-effect waves-light btn" onClick={this.openModalFormEvent}>
+						    	Events
+						    </span>
+						    <span className="waves-effect waves-light btn" onClick={this.openModalEditView}>
+						    	Edit View
+						    </span>
+						    <Link className="waves-effect waves-light btn" to={`/design-form?id=${formId}`}>
+						    	Edit Form
+						    </Link>
+				    	</Fragment>
+				    )
+					}
+					</div>
+					<div className="col s12 first-row-container">
+						<span className="collection-name-label"> Collection name : </span>
+						<div className="input-field inline collection-name-input">
+							<input id="collection_name" type="text" value={collectionName} onChange={(e) => this.handleInputChange('collection_name', e)}/>
+						</div>
+						<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
+							 disabled={this.isEmptyString(collectionName)}
+							 data-position="right"
+							 data-tooltip="Check collection name"
+	        		 onClick={this.handleCheckCollectionName}>
+				    	Check
+				    </span>
+				    {
+				    	!formId &&
+				    	(
+				    		<span className="waves-effect waves-light btn btn-collection-templates">
+						    	Collection Templates
+						    </span>
+						  )
+				    }
+			    </div>
+			    { this.renderTableFormFields() }
+	        <div className="col s12">
+	        	<span className="waves-effect waves-light btn btn-submit right" 
+		        	 disabled={isEmpty(formStructure.properties) || isEmpty(collectionName) || !isCollectionNameOK} 
+	        		 onClick={this.handleCreateCollection}>
+				    	{formId ? 'Update Collection' : 'Create collection'}
+				    </span>
+	        </div>
+				</div>
+        { this.renderCardAddNewField() }
+        { this.renderModalFormEvent() }
+        { this.renderModalEditView() }
+      </div>
+		)
+	}
+
 	componentWillMount() {
 		const { location } = this.props
 		const id = location.search.slice(4)
@@ -413,18 +480,362 @@ class FormDesigner extends Component {
 		}
 	}
 
-	handleClickEventHandler = () => {
+	renderTableFormFields () {
+		const { documentFieldsTableHeader } = this.props
+		const { fields } = this.state
+
+		return (
+			<div className="col s12">
+				<span className="document-fields-label">Document fields</span>
+				<table className="table-collection centered responsive-table">
+          <thead>
+            <tr>
+              { 
+              	documentFieldsTableHeader.map((header, i) => 
+              		<th key={i} className={header === "Name" ? "left" : ""}>{header}</th>) 
+              }
+            </tr>
+          </thead>
+
+          <tbody>
+            { 
+              !fields && <p> loading .... </p>
+            }
+            { 
+              fields && fields.map((field, index) => (
+                <tr key={index}>
+                  <td className="left">{field.fieldName}</td>
+                  <td>{field.dataType}</td>
+                  <td>{field.defaultValue}</td>
+                  <td>
+                  	<label>
+							        <input 
+							        	type="checkbox" 
+							        	className="filled-in" 
+							        	checked={field.showInTable ? "checked" : ""} 
+							        	onChange={this.handleCheck.bind(this, index)} 
+							        />
+							        <span> </span>
+							      </label>
+							    </td>
+							    <td>
+							    {
+							    	field.action.map((action, index2) => {
+							    		if (action.name === 'edit') {
+						    				return (
+						    			    <span key={index2}
+						    			    	 className={action.enable 
+						    			    							? "waves-effect waves-light btn btn-action blue lighten-2 tooltipped"
+						    			    							: "waves-effect waves-light btn btn-action blue lighten-2 disabled"}
+						    			    	 data-position="bottom" 
+						    			    	 data-tooltip="edit field"
+						    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
+						    			    >
+						    			    	<i className="material-icons">{action.name}</i>
+						    			    </span>
+						    			  )
+					    			  } else if (action.name === 'delete') {
+					    			  	return (
+						    			    <span key={index2}
+						    			    	 className={action.enable 
+						    			    							? "waves-effect waves-light btn btn-action red lighten-2 tooltipped"
+						    			    							: "waves-effect waves-light btn btn-action red lighten-2 disabled"}
+						    			    	 data-position="bottom" 
+						    			    	 data-tooltip="delete field"
+						    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
+						    			    >
+						    			    	<i className="material-icons">{action.name}</i>
+						    			    </span>
+						    			  )
+					    			  }
+					    			  return <div key={index2}/>
+							    	})
+							    }
+							    </td>
+                </tr>
+              )) 
+            }
+          </tbody>
+        </table>
+      </div>
+		)
+	}
+
+	renderCardAddNewField () {
+		const {
+			isNewField,
+			isFieldNameExisted
+		} = this.state
+
+		const {
+			fieldName,
+			dataType,
+			defaultValue
+		} = this.state.input
+
+		return (
+			<div className="add-new-field card-panel indigo lighten-5">
+        <h4 className="center">{isNewField ? 'Add new field' : 'Edit field'}</h4>	
+       	<div className="row">
+					<div className="input-field col s6">
+						<input id="field_name" type="text" value={fieldName} onChange={(e) => this.handleInputChange('field_name', e)}/>
+	          <label htmlFor="field_name">Field name</label>
+					</div>
+					<div className="col s6">
+					  <div className="input-field col s12">
+					    <select value={dataType} onChange={(e) => this.handleInputChange('data_type', e)}>
+					      <option value="">Data type</option>
+					      <option value="string">String</option>
+					      <option value="number">Number</option>
+					      <option value="date">Date</option>
+					      <option value="boolean">Boolean</option>
+					      <option value="object">Object</option>
+					    </select>
+					  </div>
+					</div>
+					<div className="input-field col s6">
+						<input id="default_value" type="text" value={defaultValue} onChange={(e) => this.handleInputChange('default_value', e)}/>
+	          <label htmlFor="default_value">Default value</label>
+					</div>
+				</div>
+				<div className="row btn-add-container">
+	        <span className="waves-effect waves-light btn" 
+	        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || ( isFieldNameExisted && isNewField )} 
+	        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
+	        >
+			    	{isNewField ? 'Add' : 'Update'}
+			    </span>
+			  </div>
+      </div>
+		)
+	}
+
+	openModalFormEvent = () => {
 		const elem = document.getElementById('modal-form-event')
 		const modal = M.Modal.getInstance(elem)
 		modal.open()
 	}
 
-	handleEventCreatedSwitch = () => {
+	renderModalFormEvent () {
+		const {
+			isEventCreatedSwitchOn,
+			isEventModifiedSwitchOn,
+			isURLExtWorkflowConnected,
+			openApiTitle,
+			apiUrlText, 
+			apiBody,
+			apiParameters,
+			isModifiedURLExtWorkflowConnected,
+			modifiedOpenApiTitle,
+			modifiedApiUrlText,
+			modifiedApiBody,
+			modifiedApiParameters
+		} = this.state
+
+		return (
+			<div id="modal-form-event" className="modal">
+	      <div className="modal-content">
+	        <h5 className="title center"><strong>Event handler</strong></h5>
+	        <div className="row bordered-container event-container">
+	      		<div className="col s10 zero-padding">
+	        		<span>
+	        			Starts when documents are created
+	        		</span>
+	        	</div>
+	        	<div className="col s2 right zero-padding">
+	            <div className="switch">
+						    <label>
+						      <input 
+						      	id="created-api-switch" 
+						      	type="checkbox" 
+						      	checked={isEventCreatedSwitchOn}
+						      	onChange={this.toggleSwitchEventCreated}/>
+						      <span className="lever"></span>
+						    </label>
+						  </div>
+						</div>
+						{
+							isEventCreatedSwitchOn &&
+							<Fragment>
+								<div className="col s12 bordered-container url-container">
+									<div className="col s1">
+										<span>URL</span>
+									</div>
+									<div className="col s11 zero-padding">
+										<textarea className="textarea-url" value={apiUrlText} onChange={this.handleApiUrlText}>
+										</textarea>
+									</div>
+									<div className="col s9">
+									{ 
+										isURLExtWorkflowConnected &&
+										<span className="connected-label">
+											[Connected]
+										</span>
+									}
+									{
+										isURLExtWorkflowConnected === false &&
+										<span className="error-label">
+											[Error]
+										</span>
+									}
+									</div>
+									<div className="col s3 zero-padding btn-connect-container">
+										<span className={this.isEmptyString(apiUrlText) ? 'btn disabled' : 'waves-effect waves-light btn'} onClick={this.handleConnectApiURL}>
+											Connect
+										</span>
+									</div>
+								</div>
+								{
+									isURLExtWorkflowConnected &&
+									<div className="col s12 bordered-container parameters-container">
+										<div className="col s12 zero-padding border-bottom">
+											<span>{openApiTitle}</span>
+										</div>
+										{
+											apiParameters && 
+											apiParameters.length > 0 &&
+											apiParameters.map((parameter, paramIdx) => (
+												<div key={paramIdx} className="col s12">
+													<p className="parameter-name">{parameter.name}</p>
+													{
+														parameter.properties.map((property, propIdx) => (
+															<div key={propIdx} className="col s12">
+																<div className="col s4">
+																	<span className="col s12 property-name">{property.name}</span>
+																	<span className="col s12 property-type">{property.type}</span>
+																</div>
+																<div className="col s8">
+																	<input 
+																		id={`input-${parameter.name}-${property.name}`}
+																		value={apiBody[parameter.name][property.name]}
+																		onChange={e => this.handleInputProperties(parameter.name, property.name)} />
+																</div>
+															</div>
+														))
+													}
+												</div>
+											))
+										}
+									</div>
+								}
+	        			<span 
+	        				className={isURLExtWorkflowConnected ? 
+	        					"waves-effect waves-light btn btn-save-api right" 
+	        					: "btn btn-save-api disabled right"} 
+	        				onClick={this.handleSaveCreatedEventAPI}
+	        			>
+	        				Save
+	        			</span>
+							</Fragment>
+						}
+	        </div>
+	        <div className="row bordered-container event-container">
+	      		<div className="col s10 zero-padding">
+	        		<span>
+	        			Starts when documents are modified
+	        		</span>
+	        	</div>
+	      		<div className="col s2 right zero-padding">
+	            <div className="switch">
+						    <label>
+						      <input 
+						      	id="modified-api-switch" 
+						      	type="checkbox" 
+						      	checked={isEventModifiedSwitchOn}
+						      	onChange={this.toggleSwitchEventModified}/>
+						      <span className="lever"></span>
+						    </label>
+						  </div>
+						</div>
+						{
+							isEventModifiedSwitchOn &&
+							<Fragment>
+								<div className="col s12 bordered-container url-container">
+									<div className="col s1">
+										<span>URL</span>
+									</div>
+									<div className="col s11 zero-padding">
+										<textarea className="textarea-url" value={modifiedApiUrlText} onChange={this.handleModifiedApiUrlText}>
+										</textarea>
+									</div>
+									<div className="col s9">
+									{ 
+										isModifiedURLExtWorkflowConnected &&
+										<span className="connected-label">
+											[Connected]
+										</span>
+									}
+									{
+										isModifiedURLExtWorkflowConnected === false &&
+										<span className="error-label">
+											[Error]
+										</span>
+									}
+									</div>
+									<div className="col s3 zero-padding btn-connect-container">
+										<span className={this.isEmptyString(modifiedApiUrlText) ? 'btn disabled' : 'waves-effect waves-light btn'} onClick={this.handleConnectModifiedApiURL}>
+											Connect
+										</span>
+									</div>
+								</div>
+								{
+									isModifiedURLExtWorkflowConnected &&
+									<div className="col s12 bordered-container parameters-container">
+										<div className="col s12 zero-padding border-bottom">
+											<span>{modifiedOpenApiTitle}</span>
+										</div>
+										{
+											modifiedApiParameters && 
+											modifiedApiParameters.length > 0 &&
+											modifiedApiParameters.map((parameter, paramIdx) => (
+												<div key={paramIdx} className="col s12">
+													<p className="parameter-name">{parameter.name}</p>
+													{
+														parameter.properties.map((property, propIdx) => (
+															<div key={propIdx} className="col s12">
+																<div className="col s4">
+																	<span className="col s12 property-name">{property.name}</span>
+																	<span className="col s12 property-type">{property.type}</span>
+																</div>
+																<div className="col s8">
+																	<input 
+																		id={`input-modified-${parameter.name}-${property.name}`}
+																		value={modifiedApiBody[parameter.name][property.name]}
+																		onChange={e => this.handleInputModifiedProperties(parameter.name, property.name)} />
+																</div>
+															</div>
+														))
+													}
+												</div>
+											))
+										}
+									</div>
+								}
+	        			<span 
+	        				className={isModifiedURLExtWorkflowConnected ? 
+	        					"waves-effect waves-light btn btn-save-api right" 
+	        					: "btn btn-save-api disabled right"} 
+	        				onClick={this.handleSaveModifiedEventAPI}
+	        			>
+	        				Save
+	        			</span>
+							</Fragment>
+						}
+	        </div>
+	        <div className="row right btn-footer-modal">
+	        	<span className="waves-effect waves-light btn" onClick={this.handleCloseModal}>OK</span>
+	        </div>
+	      </div>
+	    </div>
+    )   
+	}
+
+	toggleSwitchEventCreated = () => {
 		const { isEventCreatedSwitchOn } = this.state
 		this.setState({ isEventCreatedSwitchOn: !isEventCreatedSwitchOn})
 	}
 
-	handleEventModifiedSwitch = () => {
+	toggleSwitchEventModified = () => {
 		const { isEventModifiedSwitchOn } = this.state
 		this.setState({ isEventModifiedSwitchOn: !isEventModifiedSwitchOn})
 	}
@@ -555,402 +966,13 @@ class FormDesigner extends Component {
 		this.setState({ modifiedApiBody: newApiBody })
 	}
 
-	render() {
-		const {
-			formId,
-			formStructure, 
-			isNewField, 
-			fields,
-			isFieldNameExisted,
-			isCollectionNameOK,
-			isEventCreatedSwitchOn,
-			isEventModifiedSwitchOn,
-			isURLExtWorkflowConnected,
-			openApiTitle,
-			apiUrlText, 
-			apiBody,
-			apiParameters,
-			isModifiedURLExtWorkflowConnected,
-			modifiedOpenApiTitle,
-			modifiedApiUrlText,
-			modifiedApiBody,
-			modifiedApiParameters
-		} = this.state
-
-		const {
-			collectionName,
-			fieldName,
-			dataType,
-			defaultValue
-		} = this.state.input
-
-		const { documentFieldsTableHeader } = this.props
-
-		return (
-			<div className="form-designer">
-				<h4 className="center">{formId ? 'Update Collection' : 'Create New Collection'}</h4>
-				<div className="row">
-					<div className="col s12 btn-form">
-					{
-						formId ?
-						(
-							<Fragment>
-								<span className="waves-effect waves-light btn" onClick={this.handleClickEventHandler}>
-						    	Events
-						    </span>
-						    <span className="waves-effect waves-light btn" onClick={this.openModalEditView}>
-						    	Edit View
-						    </span>
-						    <Link className="waves-effect waves-light btn" to={`/design-form?id=${formId}`}>
-						    	Edit Form
-						    </Link>
-				    	</Fragment>
-				    )
-				    : (<span />)
-					}
-					</div>
-					<div className="col s12 first-row-container">
-						<span className="collection-name-label"> Collection name : </span>
-						<div className="input-field inline collection-name-input">
-							<input id="collection_name" type="text" value={collectionName} onChange={(e) => this.handleInputChange('collection_name', e)}/>
-						</div>
-						<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
-							 disabled={this.isEmptyString(collectionName)}
-							 data-position="right"
-							 data-tooltip="Check collection name"
-	        		 onClick={this.handleCheckCollectionName}>
-				    	Check
-				    </span>
-				    {
-				    	formId ? 
-					      (<span />)
-						  : (<span className="waves-effect waves-light btn btn-collection-templates">
-						    	Collection Templates
-						    </span>)
-				    }
-			    </div>
-			    <div className="col s12">
-						<span className="document-fields-label">Document fields</span>
-						<table className="table-collection centered responsive-table">
-		          <thead>
-		            <tr>
-		              { 
-		              	documentFieldsTableHeader.map((header, i) => 
-		              		<th key={i} className={header === "Name" ? "left" : ""}>{header}</th>) 
-		              }
-		            </tr>
-		          </thead>
-
-		          <tbody>
-		            { 
-		              !fields && <p> loading .... </p>
-		            }
-		            { 
-		              fields && fields.map((field, index) => (
-		                <tr key={index}>
-		                  <td className="left">{field.fieldName}</td>
-		                  <td>{field.dataType}</td>
-		                  <td>{field.defaultValue}</td>
-		                  <td>
-		                  	<label>
-									        <input 
-									        	type="checkbox" 
-									        	className="filled-in" 
-									        	checked={field.showInTable ? "checked" : ""} 
-									        	onChange={this.handleCheck.bind(this, index)} 
-									        />
-									        <span> </span>
-									      </label>
-									    </td>
-									    <td>
-									    {
-									    	field.action.map((action, index2) => {
-									    		if (action.name === 'edit') {
-								    				return (
-								    			    <span key={index2}
-								    			    	 className={action.enable 
-								    			    							? "waves-effect waves-light btn btn-action blue lighten-2 tooltipped"
-								    			    							: "waves-effect waves-light btn btn-action blue lighten-2 disabled"}
-								    			    	 data-position="bottom" 
-								    			    	 data-tooltip="edit field"
-								    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
-								    			    >
-								    			    	<i className="material-icons">{action.name}</i>
-								    			    </span>
-								    			  )
-							    			  } else if (action.name === 'delete') {
-							    			  	return (
-								    			    <span key={index2}
-								    			    	 className={action.enable 
-								    			    							? "waves-effect waves-light btn btn-action red lighten-2 tooltipped"
-								    			    							: "waves-effect waves-light btn btn-action red lighten-2 disabled"}
-								    			    	 data-position="bottom" 
-								    			    	 data-tooltip="delete field"
-								    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
-								    			    >
-								    			    	<i className="material-icons">{action.name}</i>
-								    			    </span>
-								    			  )
-							    			  }
-							    			  return <div key={index2}/>
-									    	})
-									    }
-									    </td>
-		                </tr>
-		              )) 
-		            }
-		          </tbody>
-		        </table>
-	        </div>
-	        <div className="col s12">
-	        	<span className="waves-effect waves-light btn btn-submit right" 
-		        	 disabled={isEmpty(formStructure.properties) || isEmpty(collectionName) || !isCollectionNameOK} 
-	        		 onClick={this.handleCreateCollection}>
-				    	{formId ? 'Update Collection' : 'Create collection'}
-				    </span>
-	        </div>
-				</div>
-
-        <div className="add-new-field card-panel indigo lighten-5">
-	        <h4 className="center">{isNewField ? 'Add new field' : 'Edit field'}</h4>	
-	       	<div className="row">
-						<div className="input-field col s6">
-							<input id="field_name" type="text" value={fieldName} onChange={(e) => this.handleInputChange('field_name', e)}/>
-		          <label htmlFor="field_name">Field name</label>
-						</div>
-						<div className="col s6">
-						  <div className="input-field col s12">
-						    <select value={dataType} onChange={(e) => this.handleInputChange('data_type', e)}>
-						      <option value="">Data type</option>
-						      <option value="string">String</option>
-						      <option value="number">Number</option>
-						      <option value="date">Date</option>
-						      <option value="boolean">Boolean</option>
-						      <option value="object">Object</option>
-						    </select>
-						  </div>
-						</div>
-						<div className="input-field col s6">
-							<input id="default_value" type="text" value={defaultValue} onChange={(e) => this.handleInputChange('default_value', e)}/>
-		          <label htmlFor="default_value">Default value</label>
-						</div>
-					</div>
-					<div className="row btn-add-container">
-		        <span className="waves-effect waves-light btn" 
-		        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || ( isFieldNameExisted && isNewField )} 
-		        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
-		        >
-				    	{isNewField ? 'Add' : 'Update'}
-				    </span>
-				  </div>
-        </div>
-
-        <div id="modal-form-event" className="modal">
-          <div className="modal-content">
-            <h5 className="title center"><strong>Event handler</strong></h5>
-            <div className="row bordered-container event-container">
-          		<div className="col s10 zero-padding">
-            		<span>
-            			Starts when documents are created
-            		</span>
-            	</div>
-            	<div className="col s2 right zero-padding">
-	              <div className="switch">
-							    <label>
-							      <input 
-							      	id="created-api-switch" 
-							      	type="checkbox" 
-							      	checked={isEventCreatedSwitchOn}
-							      	onChange={this.handleEventCreatedSwitch}/>
-							      <span className="lever"></span>
-							    </label>
-							  </div>
-							</div>
-							{
-								isEventCreatedSwitchOn &&
-								<Fragment>
-									<div className="col s12 bordered-container url-container">
-										<div className="col s1">
-											<span>URL</span>
-										</div>
-										<div className="col s11 zero-padding">
-											<textarea className="textarea-url" value={apiUrlText} onChange={this.handleApiUrlText}>
-											</textarea>
-										</div>
-										<div className="col s9">
-										{ 
-											isURLExtWorkflowConnected &&
-											<span className="connected-label">
-												[Connected]
-											</span>
-										}
-										{
-											isURLExtWorkflowConnected === false &&
-											<span className="error-label">
-												[Error]
-											</span>
-										}
-										</div>
-										<div className="col s3 zero-padding btn-connect-container">
-											<span className={this.isEmptyString(apiUrlText) ? 'btn disabled' : 'waves-effect waves-light btn'} onClick={this.handleConnectApiURL}>
-												Connect
-											</span>
-										</div>
-									</div>
-									{
-										isURLExtWorkflowConnected &&
-										<div className="col s12 bordered-container parameters-container">
-											<div className="col s12 zero-padding border-bottom">
-												<span>{openApiTitle}</span>
-											</div>
-											{
-												apiParameters && 
-												apiParameters.length > 0 &&
-												apiParameters.map((parameter, paramIdx) => (
-													<div key={paramIdx} className="col s12">
-														<p className="parameter-name">{parameter.name}</p>
-														{
-															parameter.properties.map((property, propIdx) => (
-																<div key={propIdx} className="col s12">
-																	<div className="col s4">
-																		<span className="col s12 property-name">{property.name}</span>
-																		<span className="col s12 property-type">{property.type}</span>
-																	</div>
-																	<div className="col s8">
-																		<input 
-																			id={`input-${parameter.name}-${property.name}`}
-																			value={apiBody[parameter.name][property.name]}
-																			onChange={e => this.handleInputProperties(parameter.name, property.name)} />
-																	</div>
-																</div>
-															))
-														}
-													</div>
-												))
-											}
-										</div>
-									}
-            			<span 
-            				className={isURLExtWorkflowConnected ? 
-            					"waves-effect waves-light btn btn-save-api right" 
-            					: "btn btn-save-api disabled right"} 
-            				onClick={this.handleSaveCreatedEventAPI}
-            			>
-            				Save
-            			</span>
-								</Fragment>
-							}
-            </div>
-            <div className="row bordered-container event-container">
-          		<div className="col s10 zero-padding">
-	          		<span>
-	          			Starts when documents are modified
-	          		</span>
-	          	</div>
-          		<div className="col s2 right zero-padding">
-	              <div className="switch">
-							    <label>
-							      <input 
-							      	id="modified-api-switch" 
-							      	type="checkbox" 
-							      	checked={isEventModifiedSwitchOn}
-							      	onChange={this.handleEventModifiedSwitch}/>
-							      <span className="lever"></span>
-							    </label>
-							  </div>
-							</div>
-							{
-								isEventModifiedSwitchOn &&
-								<Fragment>
-									<div className="col s12 bordered-container url-container">
-										<div className="col s1">
-											<span>URL</span>
-										</div>
-										<div className="col s11 zero-padding">
-											<textarea className="textarea-url" value={modifiedApiUrlText} onChange={this.handleModifiedApiUrlText}>
-											</textarea>
-										</div>
-										<div className="col s9">
-										{ 
-											isModifiedURLExtWorkflowConnected &&
-											<span className="connected-label">
-												[Connected]
-											</span>
-										}
-										{
-											isModifiedURLExtWorkflowConnected === false &&
-											<span className="error-label">
-												[Error]
-											</span>
-										}
-										</div>
-										<div className="col s3 zero-padding btn-connect-container">
-											<span className={this.isEmptyString(modifiedApiUrlText) ? 'btn disabled' : 'waves-effect waves-light btn'} onClick={this.handleConnectModifiedApiURL}>
-												Connect
-											</span>
-										</div>
-									</div>
-									{
-										isModifiedURLExtWorkflowConnected &&
-										<div className="col s12 bordered-container parameters-container">
-											<div className="col s12 zero-padding border-bottom">
-												<span>{modifiedOpenApiTitle}</span>
-											</div>
-											{
-												modifiedApiParameters && 
-												modifiedApiParameters.length > 0 &&
-												modifiedApiParameters.map((parameter, paramIdx) => (
-													<div key={paramIdx} className="col s12">
-														<p className="parameter-name">{parameter.name}</p>
-														{
-															parameter.properties.map((property, propIdx) => (
-																<div key={propIdx} className="col s12">
-																	<div className="col s4">
-																		<span className="col s12 property-name">{property.name}</span>
-																		<span className="col s12 property-type">{property.type}</span>
-																	</div>
-																	<div className="col s8">
-																		<input 
-																			id={`input-modified-${parameter.name}-${property.name}`}
-																			value={modifiedApiBody[parameter.name][property.name]}
-																			onChange={e => this.handleInputModifiedProperties(parameter.name, property.name)} />
-																	</div>
-																</div>
-															))
-														}
-													</div>
-												))
-											}
-										</div>
-									}
-            			<span 
-            				className={isModifiedURLExtWorkflowConnected ? 
-            					"waves-effect waves-light btn btn-save-api right" 
-            					: "btn btn-save-api disabled right"} 
-            				onClick={this.handleSaveModifiedEventAPI}
-            			>
-            				Save
-            			</span>
-								</Fragment>
-							}
-            </div>
-            <div className="row right btn-footer-modal">
-            	<span className="waves-effect waves-light btn" onClick={this.handleCloseModal}>OK</span>
-            </div>
-          </div>
-        </div>
-        { this.renderModalEditView() }
-      </div>
-		)
-	}
-
 	openModalEditView = () => {
 		const elem = document.getElementById('modal-edit-view')
 		const modal = M.Modal.getInstance(elem)
 		modal.open()
 	}
 
-	renderModalEditView = () => {
+	renderModalEditView () {
 		const {	viewConfigString } = this.state
 
 		return (
