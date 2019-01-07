@@ -149,3 +149,35 @@
 .zero-padding {
 	padding: 0 !important;
 }
+
+#modal-edit-view {
+	max-height: 80vh !important;
+}
+
+#modal-edit-view .modal-content {
+	padding: 24px 50px 24px 50px;
+}
+
+#modal-edit-view .modal-content #textarea-edit-view {
+	min-height: 5rem;
+	resize: vertical;
+	background-color: #37474f;
+	color: #ffd54f;
+	width: 100%;
+	font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
+}
+
+#modal-edit-view .title {
+	margin-top: 0;
+	margin-bottom: 20px;
+}
+
+#modal-edit-view .btn-footer-modal {
+	text-align: right;
+	margin-top: 10px;
+}
+
+#modal-edit-view .btn-footer-modal .btn {
+	width: 100px;
+	margin-left: 10px;
+}

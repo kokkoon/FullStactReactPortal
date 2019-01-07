@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import { isEmpty } from 'lodash'
+import * as helper from '../utils/helperFunctions'
 
 import API_URL from '../utils/api_url'
 import * as ACT from '../actions'
@@ -38,7 +39,10 @@ class FormDesigner extends Component {
 			isModifiedURLExtWorkflowConnected: undefined,
 			modifiedApiUrlText: '',
 			modifiedApiBody: undefined,
-			modifiedApiParameters: undefined
+			modifiedApiParameters: undefined,
+			viewConfigString: '',
+			defaultViewConfig: {}, // object
+			viewConfig: {} // object
 		}
 	}
 
@@ -113,7 +117,6 @@ class FormDesigner extends Component {
 				} = this.state
 
 				if (createdActionAPI) {
-					// document.getElementById('created-api-switch').checked = true
 					isEventCreatedSwitchOn = true
 					isURLExtWorkflowConnected = true
 					openApiTitle = createdActionAPI.openApiTitle
@@ -123,7 +126,6 @@ class FormDesigner extends Component {
 				}
 
 				if (modifiedActionAPI) {
-					// document.getElementById('modified-api-switch').checked = true
 					isEventModifiedSwitchOn = true
 					isModifiedURLExtWorkflowConnected = true
 					modifiedOpenApiTitle = modifiedActionAPI.openApiTitle
@@ -152,6 +154,8 @@ class FormDesigner extends Component {
 				})
 			})
 			.catch(e => console.error(e))
+
+			this.loadViewConfig()
 	}
 
 	componentDidMount() {
@@ -576,6 +580,8 @@ class FormDesigner extends Component {
 
 		const { documentFieldsTableHeader } = this.props
 
+		// console.log(this.state.viewConfig)
+
 		return (
 			<div className="form-designer">
 				<h4 className="center">{formId ? 'Update Collection' : 'Create New Collection'}</h4>
@@ -588,7 +594,7 @@ class FormDesigner extends Component {
 								<span className="waves-effect waves-light btn" onClick={this.handleClickEventHandler}>
 						    	Events
 						    </span>
-						    <span className="waves-effect waves-light btn">
+						    <span className="waves-effect waves-light btn" onClick={this.openModalEditView}>
 						    	Edit View
 						    </span>
 						    <Link className="waves-effect waves-light btn" to={`/design-form?id=${formId}`}>
@@ -925,14 +931,92 @@ class FormDesigner extends Component {
 							}
             </div>
             <div className="row right btn-footer-modal">
-            <span className="waves-effect waves-light btn" onClick={this.handleCloseModal}>OK</span>
-            	{/*<span className="waves-effect waves-light btn" onClick={this.handleCloseModal}>Cancel</span>
-            	            	<span className={isURLExtWorkflowConnected ? "waves-effect waves-light btn" : "btn disabled"} onClick={this.handleSaveCreatedEventAPI}>Save</span>*/}
+            	<span className="waves-effect waves-light btn" onClick={this.handleCloseModal}>OK</span>
             </div>
           </div>
         </div>
+        { this.renderModalEditView() }
       </div>
 		)
+	}
+
+	openModalEditView = () => {
+		const elem = document.getElementById('modal-edit-view')
+		const modal = M.Modal.getInstance(elem)
+		modal.open()
+	}
+
+	renderModalEditView = () => {
+		const {
+			viewConfigString,
+			defaultViewConfig,
+			viewConfig
+		} = this.state
+		return (
+			<div id="modal-edit-view" className="modal">
+      	<div className="modal-content">
+      		<h5 className="center title"><strong>Edit view</strong></h5>
+      		<textarea 
+      			id="textarea-edit-view" 
+      			value={viewConfigString}
+      			onChange={this.changeViewConfig}/>
+      		<div className="btn-footer-modal">
+	      		<span className="waves-effect waves-light btn" onClick={this.setDefaultTableView}>Default</span>
+	      		<span className="waves-effect waves-light btn" onClick={this.closeModalEditView}>Cancel</span>
+	      		<span className="waves-effect waves-light btn" onClick={this.saveTableView}>Save</span>
+      		</div>
+      	</div>
+      </div>
+		)
+	}
+
+	closeModalEditView = () => {
+		const elem = document.getElementById('modal-edit-view')
+		const modal = M.Modal.getInstance(elem)
+		modal.close()
+	}
+
+	loadViewConfig = () => {
+		const viewConfig = {
+			name: 'Customer name',
+			email: 'Main email',
+			address: 'Mail address'
+		}
+
+		const viewConfigString = helper.stringifyPrettyJSON(viewConfig)
+
+		this.setState({
+			viewConfig,
+			defaultViewConfig: viewConfig,
+			viewConfigString
+		})
+	}
+
+	changeViewConfig = ({ target }) => {
+		this.setState({ viewConfigString: target.value })
+	}
+
+	setDefaultTableView = () => {
+		const { defaultViewConfig } = this.state
+		const viewConfigString = helper.stringifyPrettyJSON(defaultViewConfig)
+
+		this.setState({ 
+			viewConfig: defaultViewConfig,
+			viewConfigString 
+		})
+	}
+
+	saveTableView = () => {
+		const { viewConfigString, defaultViewConfig } = this.state
+		let viewConfig = defaultViewConfig
+
+		try {
+			viewConfig = JSON.parse(viewConfigString)
+		} catch (error) {
+			alert('JSON config is not valid\n' + error)
+		}
+
+		this.setState({ viewConfig })
 	}
 
 	// helper functions always put below the main code
