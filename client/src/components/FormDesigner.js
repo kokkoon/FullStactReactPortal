@@ -83,7 +83,7 @@ class FormDesigner extends Component {
 							<input id="collection_name" type="text" value={collectionName} onChange={(e) => this.handleInputChange('collection_name', e)}/>
 						</div>
 						<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
-							 disabled={this.isEmptyString(collectionName)}
+							 disabled={helper.isEmptyString(collectionName)}
 							 data-position="right"
 							 data-tooltip="Check collection name"
 	        		 onClick={this.handleCheckCollectionName}>
@@ -734,7 +734,7 @@ class FormDesigner extends Component {
 							}
 							</div>
 							<div className="col s3 zero-padding btn-connect-container">
-								<span className={this.isEmptyString(apiUrlText) ? 'btn disabled' : 'waves-effect waves-light btn'} onClick={handleConnectApiURL}>
+								<span className={helper.isEmptyString(apiUrlText) ? 'btn disabled' : 'waves-effect waves-light btn'} onClick={handleConnectApiURL}>
 									Connect
 								</span>
 							</div>
@@ -1004,11 +1004,6 @@ class FormDesigner extends Component {
 		.catch(error => console.error(error))
 
 		this.setState({ viewConfig })
-	}
-
-	// helper functions always put below the main code
-	isEmptyString(string) {
-		return /^\s*$/.test(string)
 	}
 }
 
