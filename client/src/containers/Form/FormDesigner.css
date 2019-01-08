@@ -7,7 +7,7 @@
 	text-align: right;
 }
 
-.btn-form > span, .btn-form > a {
+.btn-form > .btn {
 	margin-left: 10px;
 	width: 110px;
 }
@@ -69,7 +69,7 @@
 	text-align: center;
 }
 
-.btn-add-container > a {
+.btn-add-container > .btn {
 	width: 150px;
 }
 
