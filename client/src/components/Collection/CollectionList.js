@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 
-import API_URL from '../utils/api_url'
+import API_URL from '../../utils/api_url'
 import './CollectionList.css'
 
 class CollectionList extends Component {

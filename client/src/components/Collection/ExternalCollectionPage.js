@@ -1,11 +1,10 @@
 import React, { Component, Fragment } from 'react'
 import Form from 'react-jsonschema-form'
-// import { Link } from 'react-router-dom'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import axios from 'axios'
 import { isEmpty } from 'lodash'
 
-import API_URL from '../utils/api_url'
+import API_URL from '../../utils/api_url'
 import './ExternalCollectionPage.css'
 
 class ExternalCollectionPage extends Component {
@@ -46,10 +45,6 @@ class ExternalCollectionPage extends Component {
   componentDidMount() {
     // materialize css initialization
     M.AutoInit()
-
-    // alternative modal initialization in case error happens in future
-    // let modal = document.querySelectorAll('.modal');
-    // M.Modal.init(modal);
   }
 
   handleEditRecord = (index) => {

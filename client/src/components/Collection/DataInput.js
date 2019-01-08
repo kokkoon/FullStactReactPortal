@@ -3,7 +3,7 @@ import axios from 'axios'
 import Form from 'react-jsonschema-form'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
-import API_URL from '../utils/api_url'
+import API_URL from '../../utils/api_url'
 import './DataInput.css'
 
 class DataInput extends Component {

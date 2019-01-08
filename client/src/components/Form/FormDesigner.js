@@ -5,8 +5,8 @@ import M from 'materialize-css/dist/js/materialize.min.js'
 import { isEmpty } from 'lodash'
 import queryString from 'query-string'
 
-import * as helper from '../utils/helperFunctions'
-import API_URL from '../utils/api_url'
+import * as helper from '../../utils/helperFunctions'
+import API_URL from '../../utils/api_url'
 import './FormDesigner.css'
 
 export default class FormDesigner extends Component {

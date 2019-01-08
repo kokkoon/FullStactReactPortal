@@ -4,19 +4,19 @@ import { connect } from 'react-redux'
 import * as actions from '../actions'
 import './App.css'
 
-import Header from './Header'
-import Landing from './Landing'
-import Dashboard from './Dashboard'
+import Topnav from './Topnav/Topnav'
 import User from './Admin/User'
 import Settings from './Admin/Settings'
-import DataInput from './DataInput'
-import FormDesigner from './FormDesigner'
-import CollectionPage from './CollectionPage'
-import CollectionList from './CollectionList'
-import ProfilePage from './ProfilePage'
-import SidenavSetup from './SidenavSetup'
-import ExternalCollectionPage from './ExternalCollectionPage'
-import DesignForm from './DesignForm'
+import DataInput from './Collection/DataInput'
+import CollectionPage from './Collection/CollectionPage'
+import CollectionList from './Collection/CollectionList'
+import ExternalCollectionPage from './Collection/ExternalCollectionPage'
+import SidenavSetup from './Sidenav/SidenavSetup'
+import FormDesigner from './Form/FormDesigner'
+import DesignForm from './Form/DesignForm'
+import Dashboard from './Dashboard/Dashboard'
+import Landing from './LandingPage/Landing'
+import ProfilePage from './ProfilePage/ProfilePage'
 
 class App extends Component {
 
@@ -24,7 +24,7 @@ class App extends Component {
     return (
         <BrowserRouter>
         <div className="container">
-          <Header />
+          <Topnav />
           <Route exact path="/" component={Landing} />
           <Route exact path="/dashboard" component={Dashboard} />
           <Route exact path="/user" component={User} />
@@ -42,7 +42,7 @@ class App extends Component {
         </BrowserRouter>
     );
   }
-  
+
   componentWillMount() {
     this.props.fetchUser()
     this.props.setApp('default')

@@ -4,7 +4,7 @@ import axios from 'axios'
 import { isEmpty } from 'lodash'
 import queryString from 'query-string'
 
-import API_URL from '../utils/api_url'
+import API_URL from '../../utils/api_url'
 import './CollectionPage.css'
 
 export default class CollectionPage extends Component {

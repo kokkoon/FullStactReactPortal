@@ -4,8 +4,8 @@ import queryString from 'query-string'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import Form from 'react-jsonschema-form'
 
-import * as helper from '../utils/helperFunctions'
-import API_URL from '../utils/api_url'
+import * as helper from '../../utils/helperFunctions'
+import API_URL from '../../utils/api_url'
 import './DesignForm.css'
 
 export default class DesignForm extends Component {

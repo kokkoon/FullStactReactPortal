@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 
-import * as helper from '../utils/helperFunctions'
-import * as ACT from '../actions'
+import * as helper from '../../utils/helperFunctions'
+import * as ACT from '../../actions'
 import './SidenavSetup.css'
 
 class SidenavSetup extends Component {

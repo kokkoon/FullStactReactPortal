@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
 import './Sidenav.css'
-import * as ACT from '../actions'
+import * as ACT from '../../actions'
 
 class Sidenav extends Component {
 	constructor(props) {

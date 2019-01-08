@@ -3,13 +3,13 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import Payments from './Payments'
-import Sidenav from './Sidenav'
+import Sidenav from '../Sidenav/Sidenav'
 import UserMenu from './UserMenu'
-import * as ACT from '../actions'
+import * as ACT from '../../actions'
 
-import './Header.css'
+import './Topnav.css'
 
-class Header extends Component {
+class Topnav extends Component {
   constructor(props) {
     super(props)
 
@@ -118,11 +118,8 @@ function mapStateToProps({ user }) {
 const mapDispatchToProps = (dispatch) => {
   return {
     setApp: (appName) => dispatch(ACT.setApp(appName)),
-    loadSidenavConfig: (appName) => dispatch(ACT.loadSidenavConfig(appName)),
-    // setDefaultNavItem: () => dispatch(ACT.setDefaultNavItem()),
-    // setSidenavAdmin: () => dispatch(ACT.setSidenavAdmin()),
-    // setCollectionNavItem: () => dispatch(ACT.setCollectionNavItem()),
+    loadSidenavConfig: (appName) => dispatch(ACT.loadSidenavConfig(appName))
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps) (Header);
+export default connect(mapStateToProps, mapDispatchToProps) (Topnav);
