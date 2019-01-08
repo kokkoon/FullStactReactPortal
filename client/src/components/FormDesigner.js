@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react'
-import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import M from 'materialize-css/dist/js/materialize.min.js'
@@ -8,10 +7,9 @@ import queryString from 'query-string'
 
 import * as helper from '../utils/helperFunctions'
 import API_URL from '../utils/api_url'
-import * as ACT from '../actions'
 import './FormDesigner.css'
 
-class FormDesigner extends Component {
+export default class FormDesigner extends Component {
 	constructor(props) {
 		super(props);
 
@@ -115,13 +113,23 @@ class FormDesigner extends Component {
 	}
 
 	componentWillMount() {
-		const { location } = this.props
-		const id = location.search.slice(4)
+		const { id: formId } = queryString.parse(this.props.location.search)
 
-		axios.get(`${API_URL}/form?id=${id}`)
+		this.loadFormData(formId)
+		this.loadEventApiData(formId)
+		this.loadViewConfig(formId)
+	}
+
+	componentDidMount() {
+		// materialize css initialization
+		M.AutoInit()
+	}
+
+	loadFormData (formId) {
+		axios.get(`${API_URL}/form?id=${formId}`)
 			.then(res => {
 				let { input } = this.state
-				const { formId, createdActionAPI, modifiedActionAPI } = res.data
+				const { formId } = res.data
 				const formStructure = res.data.data
 				const { properties } = formStructure
 				let fields = res.data.column
@@ -168,7 +176,20 @@ class FormDesigner extends Component {
 
 				input.collectionName = formStructure.title
 
-				// load action API data to frontend
+				this.setState({
+					formId,
+					formStructure,
+					fields,
+					input
+				})
+			})
+			.catch(e => console.error(e))
+	}
+
+	loadEventApiData (formId) {
+		axios.get(`${API_URL}/form?id=${formId}`)
+			.then(res => {
+				const { createdActionAPI, modifiedActionAPI } = res.data
 				let {
 					isEventCreatedSwitchOn, 
 					isURLExtWorkflowConnected, 
@@ -203,10 +224,6 @@ class FormDesigner extends Component {
 				}
 
 				this.setState({
-					formId,
-					formStructure,
-					fields,
-					input,
 					isEventCreatedSwitchOn,
 					isURLExtWorkflowConnected,
 					openApiTitle,
@@ -222,13 +239,21 @@ class FormDesigner extends Component {
 				})
 			})
 			.catch(e => console.error(e))
-
-			this.loadViewConfig()
 	}
 
-	componentDidMount() {
-		// materialize css initialization
-		M.AutoInit()
+	loadViewConfig = (formId) => {
+		axios.get(`${API_URL}/retrieve-table-view-config?form_id=${formId}`)
+		.then(response => {
+			const viewConfig = response.data.data
+			const viewConfigString = helper.stringifyPrettyJSON(viewConfig)
+
+			this.setState({
+				viewConfig,
+				defaultViewConfig: viewConfig,
+				viewConfigString
+			})
+		})
+		.catch(error => console.error(error))
 	}
 
 	handleCheck = (i) => {
@@ -431,7 +456,7 @@ class FormDesigner extends Component {
 	}
 
 	handleCreateCollection = () => {
-		const { location, loadCollectionNavItemLinks } = this.props
+		const { location } = this.props
 		const { id } = queryString.parse(location.search)
 		const { formId, formStructure, input, fields } = this.state
 
@@ -449,16 +474,13 @@ class FormDesigner extends Component {
 		}
 
 		axios.post(`${API_URL}/create-form?id=${id}`, data)
-			.then(res => {
-
+			.then(response => {
 				M.toast({
-					html: res.data.message,
+					html: response.data.message,
 					displayLength: 5000,
 				})
-
-				loadCollectionNavItemLinks()
 			})
-			.catch(err => console.log(err))
+			.catch(error => console.error(error))
 
 		// reset to initial state after new collection created
 		if (formId === undefined) {
@@ -971,23 +993,6 @@ class FormDesigner extends Component {
 		modal.close()
 	}
 
-	loadViewConfig = () => {
-		const form_id = queryString.parse(this.props.location.search).id
-
-		axios.get(`${API_URL}/retrieve-table-view-config?form_id=${form_id}`)
-		.then(response => {
-			const viewConfig = response.data.data
-			const viewConfigString = helper.stringifyPrettyJSON(viewConfig)
-
-			this.setState({
-				viewConfig,
-				defaultViewConfig: viewConfig,
-				viewConfigString
-			})
-		})
-		.catch(error => console.error(error))
-	}
-
 	changeViewConfig = ({ target }) => {
 		this.setState({ viewConfigString: target.value })
 	}
@@ -1068,17 +1073,3 @@ FormDesigner.defaultProps = {
 		},
 	]
 }
-
-const mapStateToProps = (state) => {
-  return {
-    
-  }
-}
-
-const mapDispacthToProps = (dispatch) => {
-	return {
-		loadCollectionNavItemLinks: () => dispatch(ACT.loadCollectionNavItemLinks())
-	}
-}
-
-export default connect(mapStateToProps, mapDispacthToProps)(FormDesigner)
