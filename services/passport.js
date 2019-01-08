@@ -19,7 +19,16 @@ passport.use(
 
         if (user) return done(null, user)
         else {
-          User.insertOne({ googleId: profile.id, credits: 0 }, (err, obj) => {
+          const profileData = { 
+            googleId: profile.id, 
+            credits: 0, 
+            fullname: profile.displayName,
+            firstname: profile.name.givenName,
+            lastname: profile.name.familyName,
+            email: profile.emails[0].value
+          }
+          
+          User.insertOne(profileData, (err, obj) => {
             if (obj.result.ok) done(null, obj.ops[0])
           })
         }
