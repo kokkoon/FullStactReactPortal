@@ -22,6 +22,10 @@ class ExternalCollectionPage extends Component {
   }
 
 	componentWillMount() {
+    this.loadExternalRecords()
+  }
+
+  loadExternalRecords() {
     axios.get(`${API_URL}/external-content`)
       .then(res => {
         const record = res.data.data.tasks
@@ -133,8 +137,7 @@ class ExternalCollectionPage extends Component {
     M.Modal.getInstance(elem1).close()
     M.Modal.getInstance(elem2).close()
     
-    // reload table with new data
-    this.componentWillMount()
+    this.loadExternalRecords()
   }
 
   render() {
