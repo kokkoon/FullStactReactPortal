@@ -3,17 +3,23 @@ import axios from 'axios';
 import API_URL from '../utils/api_url'
 import * as TYPES from './types';
 
-export const fetchUser = () => async dispatch => {
-   const res = await axios.get('/api/current_user');
+export const fetchUser = () => {
+ 	return (dispatch) => {
+   axios.get('/api/current_user')
+   	.then(res => {
+		   dispatch({ type: TYPES.FETCH_USER, payload: {...res.data, isLoggedIn: res.data.googleId != null} });
+   	})
+	}
+}
 
-   dispatch({ type: TYPES.FETCH_USER, payload: {...res.data, isLoggedIn: res.data.googleId != null} });
-};
-
-export const handleToken = token => async dispatch => {
-  const res = await axios.post('/api/stripe', token);
-
-  dispatch({ type: TYPES.FETCH_USER, payload: res.data });
-};
+export const handleToken = (token) => {
+ 	return (dispatch) => {
+	  axios.post('/api/stripe', token)
+	  	.then(res => {
+			  dispatch({ type: TYPES.ADD_CREDITS, payload: res.data })  		
+	  	})
+	}
+}
 
 export const setCollectionNavItem = () => {
 	return (dispatch) => {
@@ -111,7 +117,6 @@ export const setSidenavFromConfig = (collections, sidenavGroupLinks) => {
 
 export const setSidenavGroupLinks = (sidenavGroupLinks) => {	
 	return (dispatch) => {
-		console.log('sidenavGroupLinks = ', sidenavGroupLinks)
 		dispatch({ type: TYPES.SET_SIDENAV_GROUP_LINKS, sidenavGroupLinks })
 	}
 }
@@ -120,9 +125,7 @@ export const setSidenavGroupLinks = (sidenavGroupLinks) => {
 export const saveSidenavConfig = (config) => {	
 	return (dispatch) => {
 		axios.post(`${API_URL}/sidenav-links`, config)
-			.then(res => {
-				console.log('res = ', res)
-			})
+			.then(res => {})
 			.catch(e => console.error(e))	
 	}
 }

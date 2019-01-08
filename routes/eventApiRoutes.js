@@ -85,7 +85,6 @@ module.exports = (app) => {
   // save the API data to corresponding form collection
   app.post('/api/save-external-workflow', (req, res) => {
     const formCollection = db.collection('form')
-    // TODO: handle start and modify action type differently
     const url = URL.parse(req.url, true)
     const actionType = url.query.action_type
 
@@ -220,7 +219,7 @@ module.exports = (app) => {
                     ...obj2,
                     [property] : formData[fieldName]
                   }
-                } else { // if the value is normal string use the value                  
+                } else { // use value if it is normal string (without pattern: <<value>>)                  
                   return {
                     ...obj2, 
                     [property] : value

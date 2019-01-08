@@ -9,6 +9,9 @@ export default function(state = initialState, action) {
     case TYPES.FETCH_USER:
       return { ...state, ...action.payload }
 
+    case TYPES.ADD_CREDITS:
+      return { ...state, ...action.payload }
+    
     case TYPES.SET_APP: {
       const { appName } = action
       return { ...state, appName }

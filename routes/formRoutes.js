@@ -87,7 +87,7 @@ module.exports = (app) => {
     })
   })
 
-  // check if collection name already exist in DB
+  // check if collection name already exist in database
   app.get('/api/check-collection-name', (req, res) => {
     const formCollection = db.collection('form')
     const url = URL.parse(req.url, true)
@@ -111,7 +111,7 @@ module.exports = (app) => {
     })
   })
 
-  // create/update and save the new form to DB
+  // create/update and save the new form to database
   app.post('/api/create-form', (req, res) => {
   	const formCollection = db.collection('form')
   	const url = URL.parse(req.url, true)
@@ -199,8 +199,8 @@ module.exports = (app) => {
     const formCollection = db.collection('form')
     const url = URL.parse(req.url, true)
     const id = url.query.id
-    const schema = req.body 
-    // TODO: need to cater for UIschema in DB also
+    const schema = req.body
+    
     const updateFields = {
       $set: { 
         formStructure: schema.JSON,

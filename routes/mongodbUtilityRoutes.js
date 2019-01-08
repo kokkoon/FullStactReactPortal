@@ -24,9 +24,11 @@ module.exports = (app) => {
     })
   })
 
-  // clear form collection in DB
-  app.get('/api/clear-form', (req, res) => {
-  	const formCollection = db.collection('form')
+  // clear collection
+  app.get('/api/delete-all-documents', (req, res) => {
+    const url = URL.parse(req.url, true)
+    const { form } = url.query
+  	const formCollection = db.collection(form)
 
   	formCollection.deleteMany({}, (err, result) => {
   		if (err) console.error(err)
@@ -34,7 +36,7 @@ module.exports = (app) => {
   	})
   })
 
-  // delete a collection in DB
+  // delete collection
   app.get('/api/delete-collection', (req, res) => {
   	const url = URL.parse(req.url, true)
   	const name = url.query.name
@@ -46,14 +48,14 @@ module.exports = (app) => {
   	})
   })
 
-  // get the all collections in DB
+  // get the all collections
   app.get('/api/all-collection', (req, res) => {
   	db.listCollections().toArray((err, result) => {
   		res.send({ result })
   	})
   })
 
-  // find collection by name in DB
+  // find collection by name
   app.get('/api/collection', (req, res) => {
   	const url = URL.parse(req.url, true)
   	const name = url.query.name
