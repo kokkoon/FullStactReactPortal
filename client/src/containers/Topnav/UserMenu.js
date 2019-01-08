@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import M from 'materialize-css/dist/js/materialize.min.js'
+import { connect } from 'react-redux'
 
 import './UserMenu.css'
 
@@ -16,7 +17,7 @@ class UserMenu extends Component {
 		    <ul id="dropdown-user-menu" className="dropdown-content">
 		      {this.props.item}
 		    </ul>
-		  	{this.props.user.name}
+		  	{this.props.user.firstname}
 		  </span>
 		)
 	}
@@ -24,8 +25,12 @@ class UserMenu extends Component {
 
 UserMenu.defaultProps = {
 	user: {
-		name: 'Richard'
+		firstname: 'User'
 	}
 }
 
-export default UserMenu
+function mapStateToProps({ user }) {
+  return { user }
+}
+
+export default connect(mapStateToProps, null) (UserMenu);
