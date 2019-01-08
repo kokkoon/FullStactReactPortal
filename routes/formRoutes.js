@@ -537,6 +537,25 @@ module.exports = (app) => {
     })
   })
 
+  app.patch('/api/toggle-external-api', (req, res) => {
+    const formCollection = db.collection('form')
+    const url = URL.parse(req.url, true)
+    const { formId, actionType } = url.query
+    const { isActive } = req.body
+
+    const updatedField = {
+      [`${actionType}ActionAPI.isActive`] : isActive
+    }
+
+    formCollection.updateOne({id: formId}, {$set: updatedField}, (err, obj) => {
+      if (err) console.error(err)
+      else {
+        const message = `${actionType} action api is ` + (isActive ? 'activated' : 'deactivated')
+        res.send({ message })
+      }
+    })
+  })
+
   // update the body contents of external api call
   app.post('/api/update-external-api-body', (req, res) => {
     const formCollection = db.collection('form')

@@ -185,7 +185,7 @@ class FormDesigner extends Component {
 				} = this.state
 
 				if (createdActionAPI) {
-					isEventCreatedSwitchOn = true
+					isEventCreatedSwitchOn = createdActionAPI.isActive
 					isURLExtWorkflowConnected = true
 					openApiTitle = createdActionAPI.openApiTitle
 					apiUrlText = createdActionAPI.openApiUrl
@@ -194,7 +194,7 @@ class FormDesigner extends Component {
 				}
 
 				if (modifiedActionAPI) {
-					isEventModifiedSwitchOn = true
+					isEventModifiedSwitchOn = modifiedActionAPI.isActive
 					isModifiedURLExtWorkflowConnected = true
 					modifiedOpenApiTitle = modifiedActionAPI.openApiTitle
 					modifiedApiUrlText = modifiedActionAPI.openApiUrl
@@ -787,12 +787,28 @@ class FormDesigner extends Component {
 	}
 
 	toggleSwitchEventCreated = () => {
-		const { isEventCreatedSwitchOn } = this.state
+		const { formId, isEventCreatedSwitchOn } = this.state
+		const actionType = 'created'
+
+		axios.patch(`${API_URL}/toggle-external-api?formId=${formId}&actionType=${actionType}`, {isActive: !isEventCreatedSwitchOn})
+			.then(response => {
+				M.toast({ html: response.data.message })
+			})
+			.catch(error => console.error(error))
+		
 		this.setState({ isEventCreatedSwitchOn: !isEventCreatedSwitchOn})
 	}
 
 	toggleSwitchEventModified = () => {
-		const { isEventModifiedSwitchOn } = this.state
+		const { formId, isEventModifiedSwitchOn } = this.state
+		const actionType = 'modified'
+
+		axios.patch(`${API_URL}/toggle-external-api?formId=${formId}&actionType=${actionType}`, {isActive: !isEventModifiedSwitchOn})
+			.then(response => {
+				M.toast({ html: response.data.message })
+			})
+			.catch(error => console.error(error))
+
 		this.setState({ isEventModifiedSwitchOn: !isEventModifiedSwitchOn})
 	}
 
@@ -980,7 +996,7 @@ class FormDesigner extends Component {
 		const { defaultViewConfig } = this.state
 		const viewConfigString = helper.stringifyPrettyJSON(defaultViewConfig)
 
-		this.setState({ 
+		this.setState({
 			viewConfig: defaultViewConfig,
 			viewConfigString 
 		})
