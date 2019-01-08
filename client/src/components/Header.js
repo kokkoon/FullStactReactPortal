@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-// import M from 'materialize-css/dist/js/materialize.min.js'
 
 import Payments from './Payments'
 import Sidenav from './Sidenav'

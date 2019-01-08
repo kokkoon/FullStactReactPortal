@@ -15,19 +15,6 @@ export const handleToken = token => async dispatch => {
   dispatch({ type: TYPES.FETCH_USER, payload: res.data });
 };
 
-export const submitTask = (values, history) => async dispatch => {
-  const res = await axios.post('/api/tasks', values);
-
-  history.push('/tasks');
-  dispatch({ type: TYPES.FETCH_USER, payload: res.data });
-};
-
-export const fetchTasks = () => async dispatch => {
-  const res = await axios.get('/api/tasks');
-
-  dispatch({ type: TYPES.FETCH_TASKS, payload: res.data });
-};
-
 export const setCollectionNavItem = () => {
 	return (dispatch) => {
 		axios.get(`${API_URL}/sidenav-links`)

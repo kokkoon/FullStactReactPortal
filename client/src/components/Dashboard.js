@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import TaskList from './tasks/TaskList'
 import * as ACT from '../actions'
 
 class Dashboard extends Component {
@@ -10,12 +9,7 @@ class Dashboard extends Component {
 	render() {
 	  return (
 			<div>
-				<TaskList />
-				<div className="fixed-action-btn">
-					<Link to="/tasks/new" className="btn-floating btn-large red">
-					<i className="material-icons">add</i>
-					</Link>
-				</div>
+				<p>Welcome to dashboard</p>
 			</div>
 	  )
 	}

@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import axios from 'axios'
 import queryString from 'query-string'
 import M from 'materialize-css/dist/js/materialize.min.js'
