@@ -10,7 +10,7 @@ mongoUtil.connectToDB(err => {
   if (!err) console.log('Connected to MongoDB successfully')
   else console.log('Fail to connect to MongoDB\nError: ', err)
   
-  require('./services/passport');
+  // require('./services/passport');
   
   const app = express();
 
@@ -23,6 +23,7 @@ mongoUtil.connectToDB(err => {
   );
   app.use(passport.initialize());
   app.use(passport.session());
+  require('./services/passport');
 
   require('./routes/authRoutes')(app);
   require('./routes/billingRoutes')(app);

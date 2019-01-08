@@ -10,16 +10,16 @@ module.exports = (app) => {
   // delete a document in a collection
   app.delete('/api/delete-document', (req, res) => {
     const url = URL.parse(req.url, true)
-    const doc = url.query.document
-    const form = url.query.form
+    const { value, form, field} = url.query
     const collection = db.collection(form)
+    const data = { [field] : value }
 
-    collection.deleteOne({collectionName: doc}, (err, obj) => {
+    collection.deleteOne(data, (err, obj) => {
       if (err) console.error(err)
       if (obj.result.n > 0) {
-        res.send({ message: `success delete document ${doc} from ${form} collection` })
+        res.send({ message: `success delete document with ${field} = ${value} from ${form} collection` })
       } else {
-        res.send({ message: `no document ${doc} in ${form} collection` })
+        res.send({ message: `no document with ${field} = ${value} in ${form} collection` })
       }
     })
   })
