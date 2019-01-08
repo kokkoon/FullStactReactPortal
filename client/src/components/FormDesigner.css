@@ -104,10 +104,12 @@
 
 #modal-form-event .event-container .url-container .connected-label {
 	color: green;
+	margin-left: 42px;
 }
 
 #modal-form-event .event-container .url-container .error-label {
 	color: red;
+	margin-left: 42px;
 }
 
 #modal-form-event .event-container .url-container .textarea-url {
