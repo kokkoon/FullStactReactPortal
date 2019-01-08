@@ -5,8 +5,6 @@ const passport = require('passport');
 const bodyParser = require('body-parser');
 
 const keys = require('./config/keys');
-// require('./models/User');
-// require('./models/Task');
 
 mongoUtil.connectToDB(err => {
   if (!err) console.log('Connected to MongoDB successfully')
@@ -28,7 +26,6 @@ mongoUtil.connectToDB(err => {
 
   require('./routes/authRoutes')(app);
   require('./routes/billingRoutes')(app);
-  // require('./routes/taskRoutes')(app);
   require('./routes/formRoutes')(app);
 
   if (process.env.NODE_ENV === 'production') {

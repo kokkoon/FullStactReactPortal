@@ -1,8 +1,6 @@
-const bodyParser = require('body-parser')
 const request = require('request')
 const lodash = require('lodash')
 const cors = require('cors')
-const cuid = require('cuid')
 const URL = require('url')
 const mongodb = require('mongodb')
 const { isEmpty } = lodash
