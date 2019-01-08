@@ -10,7 +10,7 @@
 	/*margin-top: 0px;*/
 }
 
-.design-form-page .btn-actions > span {
+.design-form-page .btn-actions > .btn {
 	width: 100%;
 	margin-top: 8px;
 }
@@ -30,7 +30,8 @@
 .design-form-page-json-form {
 	text-align: left;
 	max-width: 100%;
-	overflow-x: auto;
+	height: 75vh;
+	overflow: auto;
 }
 
 .design-form-page-json-form label {
