@@ -26,7 +26,67 @@ export default class DesignForm extends Component {
 		this.textareaJSONschema = React.createRef()
 	}
 
+	render() {
+		const { 
+			collectionName, 
+			stringUIschema,
+			stringJSONschema,
+			uiSchema,
+			JSONSchema 
+		} = this.state
+
+	  return (
+			<div className="row design-form-page">
+				<div className="col s12 title">
+					<h5>Design {collectionName} form</h5>
+				</div>
+				<div className="col s4">
+					<div id="form-preview">
+			  		<div className="design-form-page-json-form">
+							<Form 
+								uiSchema={uiSchema}
+								schema={JSONSchema}
+			        />
+			      </div>
+			  	</div>
+				</div>
+				<div className="col s6">
+          <span className="left"><strong>JSON schema</strong></span>
+          <textarea 
+          	id="textarea-form-json-schema" 
+          	value={stringJSONschema}
+          	onChange={this.handleChangeJSONschema}
+          	ref={this.textareaJSONschema}
+          	onKeyDown={e => helper.handleTabPressedOnJSONTextarea(e, this.textareaJSONschema.current)} 
+          />
+          <span className="left"><strong>UI schema</strong></span>
+          <textarea 
+          	id="textarea-form-ui-schema" 
+          	value={stringUIschema}
+          	onChange={this.handleChangeUIschema}
+          	ref={this.textareaUIschema}
+          	onKeyDown={e => helper.handleTabPressedOnJSONTextarea(e, this.textareaUIschema.current)} 
+          />
+				</div>
+				<div className="col s2 btn-actions">
+					<span className="waves-effect waves-light btn" onClick={this.handleCancel}>Cancel</span>
+					<span className="waves-effect waves-light btn" onClick={this.handleDefaultSchema}>Default</span>
+					<span className="waves-effect waves-light btn" onClick={this.handlePreviewSchema}>Preview</span>
+					<span className="waves-effect waves-light btn" onClick={this.handleSaveApplySchema}>Save & Apply</span>
+				</div>
+			</div>
+	  )
+	}
+
 	componentWillMount() {
+		this.loadData()
+	}
+
+	componentDidMount() {
+		M.AutoInit()
+	}
+
+	loadData() {
 		const { location } = this.props
 		const formId = location.search.slice(4)
 
@@ -57,10 +117,6 @@ export default class DesignForm extends Component {
 			})
 		})
 		.catch(e => console.error(e))
-	}
-
-	componentDidMount() {
-		M.AutoInit()
 	}
 
 	log = (type) => console.log.bind(console, type)
@@ -137,57 +193,5 @@ export default class DesignForm extends Component {
 	redirectToFormDesigner = () => {
 		const { id } = queryString.parse(this.props.location.search)
 		this.props.history.push(`/form-designer?id=${id}`)
-	}
-
-	render() {
-		const { 
-			collectionName, 
-			stringUIschema,
-			stringJSONschema,
-			uiSchema,
-			JSONSchema 
-		} = this.state
-
-	  return (
-			<div className="row design-form-page">
-				<div className="col s12 title">
-					<h5>Design {collectionName} form</h5>
-				</div>
-				<div className="col s4">
-					<div id="form-preview">
-			  		<div className="design-form-page-json-form">
-							<Form 
-								uiSchema={uiSchema}
-								schema={JSONSchema}
-			        />
-			      </div>
-			  	</div>
-				</div>
-				<div className="col s6">
-          <span className="left"><strong>JSON schema</strong></span>
-          <textarea 
-          	id="textarea-form-json-schema" 
-          	value={stringJSONschema}
-          	onChange={this.handleChangeJSONschema}
-          	ref={this.textareaJSONschema}
-          	onKeyDown={e => helper.handleTabPressedOnJSONTextarea(e, this.textareaJSONschema.current)} 
-          />
-          <span className="left"><strong>UI schema</strong></span>
-          <textarea 
-          	id="textarea-form-ui-schema" 
-          	value={stringUIschema}
-          	onChange={this.handleChangeUIschema}
-          	ref={this.textareaUIschema}
-          	onKeyDown={e => helper.handleTabPressedOnJSONTextarea(e, this.textareaUIschema.current)} 
-          />
-				</div>
-				<div className="col s2 btn-actions">
-					<span className="waves-effect waves-light btn" onClick={this.handleCancel}>Cancel</span>
-					<span className="waves-effect waves-light btn" onClick={this.handleDefaultSchema}>Default</span>
-					<span className="waves-effect waves-light btn" onClick={this.handlePreviewSchema}>Preview</span>
-					<span className="waves-effect waves-light btn" onClick={this.handleSaveApplySchema}>Save & Apply</span>
-				</div>
-			</div>
-	  )
 	}
 }

@@ -14,17 +14,6 @@ class CollectionList extends Component {
 		}
 	}
 
-	componentWillMount() {
-		// get form data from backend
-		axios.get(`${API_URL}/collection-list`)
-			.then(res => {
-				this.setState({
-					collectionList: res.data.data
-				})
-			})
-			.catch(e => console.error(e))
-	}
-
 	render() {
 		const { collectionList } = this.state
 
@@ -47,6 +36,20 @@ class CollectionList extends Component {
 				}
 			</div>
 		)
+	}
+
+	componentWillMount () {
+		this.loadCollectionList()
+	}
+
+	loadCollectionList () {
+		axios.get(`${API_URL}/collection-list`)
+			.then(res => {
+				this.setState({
+					collectionList: res.data.data
+				})
+			})
+			.catch(e => console.error(e))
 	}
 }
 

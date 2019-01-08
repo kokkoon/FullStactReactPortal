@@ -15,53 +15,6 @@ class Sidenav extends Component {
 		}
 	}
 
-	componentWillMount() {
-		const { 
-			setApp,
-			loadSidenavConfig
-		} = this.props
-
-    setApp('default')
-    loadSidenavConfig('default')
-	}
-
-	componentDidUpdate(prevProps) {
-		const { 
-			appName, 
-			sidenavConfig, 
-			setSidenavFromConfig,
-		} = this.props
-
-		if (appName !== prevProps.appName || sidenavConfig !== prevProps.sidenavConfig) {
-			if (sidenavConfig !== prevProps.sidenavConfig && sidenavConfig) {
-					setSidenavFromConfig([], sidenavConfig.groupLinks)
-			}
-		}
-	}
-
-	componentDidMount() {
-		// materialize css initialization
-		this.initMaterialize()
-	}
-
-	initMaterialize() {
-		let sidenav = document.querySelectorAll('.sidenav');
-    M.Sidenav.init(sidenav);
-
-    let modal = document.querySelectorAll('.modal');
-    M.Modal.init(modal);
-	}
-
-	handleClickNavItem(i) {
-		const elems = document.querySelectorAll('.sidenav');
-		const sidenavInstance = M.Sidenav.getInstance(elems[0])
-		sidenavInstance.close()
-
-		this.setState({
-			selectedNavItem: i,
-		})
-	}
-
 	render() {
 		const { selectedNavItem } = this.state
 		const { 
@@ -153,6 +106,53 @@ class Sidenav extends Component {
 			  </div>
 	    </Fragment>
 		);
+	}
+
+	componentWillMount() {
+		const { 
+			setApp,
+			loadSidenavConfig
+		} = this.props
+
+    setApp('default')
+    loadSidenavConfig('default')
+	}
+
+	componentDidUpdate(prevProps) {
+		const { 
+			appName, 
+			sidenavConfig, 
+			setSidenavFromConfig,
+		} = this.props
+
+		if (appName !== prevProps.appName || sidenavConfig !== prevProps.sidenavConfig) {
+			if (sidenavConfig !== prevProps.sidenavConfig && sidenavConfig) {
+					setSidenavFromConfig([], sidenavConfig.groupLinks)
+			}
+		}
+	}
+
+	componentDidMount() {
+		// materialize css initialization
+		this.initMaterialize()
+	}
+
+	initMaterialize() {
+		let sidenav = document.querySelectorAll('.sidenav');
+    M.Sidenav.init(sidenav);
+
+    let modal = document.querySelectorAll('.modal');
+    M.Modal.init(modal);
+	}
+
+	handleClickNavItem(i) {
+		const elems = document.querySelectorAll('.sidenav');
+		const sidenavInstance = M.Sidenav.getInstance(elems[0])
+		sidenavInstance.close()
+
+		this.setState({
+			selectedNavItem: i,
+		})
 	}
 }
 

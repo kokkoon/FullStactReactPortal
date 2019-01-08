@@ -18,31 +18,37 @@ class Topnav extends Component {
     }
   }
 
-  handleClickDashboard = () => {
-    this.setSidenavUser()
-    this.setState({ selectedItem: 'dashboard' })
-  }
+  render() {
+    const { isLoggedIn } = this.props.user
+    const dropdown_menu_item = [
+      <li key="1" className="non-hoverable"><Payments /></li>,
+      <li key="2" className="non-hoverable" style={{padding: '15px'}}>Credits: {this.props.user.credits}</li>,
+      <li key="3"><Link to="/profile">Profile</Link></li>,
+      <li key="4"><a href="/api/logout">Logout</a></li>
+    ]
 
-  handleClickAdmin = () => {
-    this.setSidenavAdmin()
-    this.setState({ selectedItem: 'admin' })
-  }
-
-  setSidenavUser = () => {
-    // use code below to render config from frontend
-    // this.props.setCollectionNavItem()
-    // this.props.setDefaultNavItem()
-
-    this.props.setApp('default')
-    this.props.loadSidenavConfig('default')
-  }
-
-  setSidenavAdmin = () => {
-    // use code below to render config from frontend
-    // this.props.setSidenavAdmin()
-
-    this.props.setApp('admin')
-    this.props.loadSidenavConfig('admin')
+    return (
+      <nav>
+        <Sidenav />
+        <div className="nav-wrapper">
+          <Link
+            to={this.props.user ? '/dashboard' : '/'}
+            onClick={this.setSidenavUser}
+            className="brand-logo left"
+          >
+             FLOWNGIN
+          </Link>
+          {
+            isLoggedIn &&
+            <UserMenu
+              className="right"
+              item={dropdown_menu_item} 
+            />
+          }
+          {this.renderContent()}
+        </div>
+      </nav>
+    )
   }
 
   renderContent() {
@@ -77,41 +83,28 @@ class Topnav extends Component {
     }
   }
 
-  render() {
-    const { isLoggedIn } = this.props.user
-    const dropdown_menu_item = [
-      <li key="1" className="non-hoverable"><Payments /></li>,
-      <li key="2" className="non-hoverable" style={{padding: '15px'}}>Credits: {this.props.user.credits}</li>,
-      <li key="3"><Link to="/profile">Profile</Link></li>,
-      <li key="4"><a href="/api/logout">Logout</a></li>
-    ]
+  handleClickDashboard = () => {
+    this.setSidenavUser()
+    this.setState({ selectedItem: 'dashboard' })
+  }
 
-    return (
-      <nav>
-        <Sidenav />
-        <div className="nav-wrapper">
-          <Link
-            to={this.props.user ? '/dashboard' : '/'}
-            onClick={this.setSidenavUser}
-            className="brand-logo left"
-          >
-             FLOWNGIN
-          </Link>
-          {
-            isLoggedIn &&
-            <UserMenu
-              className="right"
-              item={dropdown_menu_item} 
-            />
-          }
-          {this.renderContent()}
-        </div>
-      </nav>
-    );
+  handleClickAdmin = () => {
+    this.setSidenavAdmin()
+    this.setState({ selectedItem: 'admin' })
+  }
+
+  setSidenavUser = () => {
+    this.props.setApp('default')
+    this.props.loadSidenavConfig('default')
+  }
+
+  setSidenavAdmin = () => {
+    this.props.setApp('admin')
+    this.props.loadSidenavConfig('admin')
   }
 }
 
-function mapStateToProps({ user }) {
+const mapStateToProps = ({ user }) => {
   return { user }
 }
 

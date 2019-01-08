@@ -20,70 +20,6 @@ class SidenavSetup extends Component {
 		this.textJSONconfig = React.createRef()
 	}
 
-	componentWillMount() {
-		const { loadSidenavConfig } = this.props
-		const { appName } = this.state
-
-		// load sidenav config based on app name
-		loadSidenavConfig(appName)
-	}
-
-	componentDidUpdate(prevProps) {
-		const { appName, sidenavConfig, loadSidenavConfig } = this.props
-
-		if (sidenavConfig !== prevProps.sidenavConfig) {
-			const JSONconfig = helper.stringifyPrettyJSON(sidenavConfig.groupLinks)
-
-			this.setState({ 
-				config: sidenavConfig, 
-				defaultConfig: sidenavConfig,
-				JSONconfig,
-			})
-		}
-
-		if (appName !== prevProps.appName) {
-			loadSidenavConfig(appName)
-		}
-	}
-
-	handleChangeJSONconfig = (event) => {
-		this.setState({ JSONconfig: event.target.value })
-	}
-
-	handleDefaultConfig = () => {
-		const { defaultConfig } = this.state
-		const JSONconfig = helper.stringifyPrettyJSON(defaultConfig.groupLinks)
-		this.setState({ 
-			config: defaultConfig,
-			JSONconfig 
-		})
-	}
-
-	handlePreviewConfig = () => {
-		const newConfig = this.updateConfig()
-		this.setState({ config: newConfig })
-	}
-
-	updateConfig = () => {
-		const { JSONconfig, config, defaultConfig } = this.state
-		let newConfig = defaultConfig
-		try {
-			newConfig = { ...config, groupLinks: JSON.parse(JSONconfig) }
-		} catch (err) {
-			alert('JSON config is not valid\nError : ' + err)
-		} 
-
-		return newConfig
-	}
-
-	handleSaveApplyConfig = (JSONconfig) => {
-		const config = this.updateConfig()
-		const { saveSidenavConfig, setSidenavFromConfig } = this.props
-		this.handlePreviewConfig()
-		saveSidenavConfig(config)
-		setSidenavFromConfig([], config.groupLinks)
-	}
-
 	render() {
 		const { JSONconfig, config } = this.state
 		let groupLinks = config ? config.groupLinks : []
@@ -167,6 +103,70 @@ class SidenavSetup extends Component {
 				</div>
 			</div>
 		)
+	}
+
+	componentWillMount() {
+		const { loadSidenavConfig } = this.props
+		const { appName } = this.state
+
+		// load sidenav config based on app name
+		loadSidenavConfig(appName)
+	}
+
+	componentDidUpdate(prevProps) {
+		const { appName, sidenavConfig, loadSidenavConfig } = this.props
+
+		if (sidenavConfig !== prevProps.sidenavConfig) {
+			const JSONconfig = helper.stringifyPrettyJSON(sidenavConfig.groupLinks)
+
+			this.setState({ 
+				config: sidenavConfig, 
+				defaultConfig: sidenavConfig,
+				JSONconfig,
+			})
+		}
+
+		if (appName !== prevProps.appName) {
+			loadSidenavConfig(appName)
+		}
+	}
+
+	handleChangeJSONconfig = (event) => {
+		this.setState({ JSONconfig: event.target.value })
+	}
+
+	handleDefaultConfig = () => {
+		const { defaultConfig } = this.state
+		const JSONconfig = helper.stringifyPrettyJSON(defaultConfig.groupLinks)
+		this.setState({ 
+			config: defaultConfig,
+			JSONconfig 
+		})
+	}
+
+	handlePreviewConfig = () => {
+		const newConfig = this.updateConfig()
+		this.setState({ config: newConfig })
+	}
+
+	updateConfig = () => {
+		const { JSONconfig, config, defaultConfig } = this.state
+		let newConfig = defaultConfig
+		try {
+			newConfig = { ...config, groupLinks: JSON.parse(JSONconfig) }
+		} catch (err) {
+			alert('JSON config is not valid\nError : ' + err)
+		} 
+
+		return newConfig
+	}
+
+	handleSaveApplyConfig = (JSONconfig) => {
+		const config = this.updateConfig()
+		const { saveSidenavConfig, setSidenavFromConfig } = this.props
+		this.handlePreviewConfig()
+		saveSidenavConfig(config)
+		setSidenavFromConfig([], config.groupLinks)
 	}
 }
 

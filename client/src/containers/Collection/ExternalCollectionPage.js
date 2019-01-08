@@ -21,8 +21,98 @@ class ExternalCollectionPage extends Component {
     }
   }
 
-	componentWillMount() {
+  render() {
+    const { 
+      collectionName, 
+      column, 
+      record,
+      formSchema, 
+      uiSchema,
+      actionMessage
+    } = this.state
+
+    return (
+      <div className="collection-page center">
+        <div className="row">
+        	<h5 className="collection-title">/ {collectionName}</h5>
+        </div>
+        <div className="row">
+        { 
+          !record && <p> loading .... </p>
+        }
+        {
+          record &&
+          <Fragment>
+            <div className="col s11">
+                <table className="table-collection">
+                  <thead>
+                    <tr>
+                      { !isEmpty(column) && column.map((c, i) => <th key={i}>{c}</th>) }
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    { 
+                      record.map((r,i) => (
+                        <tr key={i}>
+                          {
+                            Object.keys(r).filter(k => column.indexOf(k) >= 0) // filter data based on column
+                            .sort((a, b) => (column.indexOf(a) - column.indexOf(b))) // sort data based on column order
+                            .map((k, i_2) => (
+                              <td key={i_2}>{r[k]}</td>
+                            ))
+                          }
+                          <td>
+                            <a className="modal-trigger" href="#modal-edit-record" onClick={e => this.handleEditRecord(i)}>
+                              ...
+                            </a> 
+                          </td>
+                        </tr>
+                      )) 
+                    }
+                  </tbody>
+                </table>
+            </div>
+          </Fragment>
+        }
+        </div>
+        <div id="modal-edit-record" className="modal">
+          <div className="modal-content">
+            <h5 className="title"><strong>Action on record</strong></h5>
+            <div className="row">
+              <div className="json-form">
+                <Form 
+                  uiSchema={uiSchema}
+                  schema={formSchema}
+                >
+                  <div className="btn-action-container">
+                    <button className="btn btn-approve" type="button" onClick={this.onApprove}>Approve</button>
+                    <button className="btn btn-reject" type="button" onClick={this.onReject}>Reject</button>
+                  </div>
+                </Form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="modal-post-action-message" className="modal">
+          <div className="modal-content">
+            <h5 className="title"><strong>{actionMessage}</strong></h5>
+            <span className="waves-effect waves-light btn btn-close" onClick={this.handleClickClose}>
+              Close
+            </span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  componentWillMount() {
     this.loadExternalRecords()
+  }
+
+  componentDidMount() {
+    // materialize css initialization
+    M.AutoInit()
   }
 
   loadExternalRecords() {
@@ -44,11 +134,6 @@ class ExternalCollectionPage extends Component {
         })
       })
       .catch(err => console.log(err))
-  }
-
-  componentDidMount() {
-    // materialize css initialization
-    M.AutoInit()
   }
 
   handleEditRecord = (index) => {
@@ -138,91 +223,6 @@ class ExternalCollectionPage extends Component {
     M.Modal.getInstance(elem2).close()
     
     this.loadExternalRecords()
-  }
-
-  render() {
-    const { 
-      collectionName, 
-      column, 
-      record,
-      formSchema, 
-      uiSchema,
-      actionMessage
-    } = this.state
-
-    return (
-      <div className="collection-page center">
-        <div className="row">
-        	<h5 className="collection-title">/ {collectionName}</h5>
-        </div>
-        <div className="row">
-        { 
-          !record && <p> loading .... </p>
-        }
-        {
-          record &&
-          <Fragment>
-            <div className="col s11">
-                <table className="table-collection">
-                  <thead>
-                    <tr>
-                      { !isEmpty(column) && column.map((c, i) => <th key={i}>{c}</th>) }
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    { 
-                      record.map((r,i) => (
-                        <tr key={i}>
-                          {
-                            Object.keys(r).filter(k => column.indexOf(k) >= 0) // filter data based on column
-                            .sort((a, b) => (column.indexOf(a) - column.indexOf(b))) // sort data based on column order
-                            .map((k, i_2) => (
-                              <td key={i_2}>{r[k]}</td>
-                            ))
-                          }
-                          <td>
-                            <a className="modal-trigger" href="#modal-edit-record" onClick={e => this.handleEditRecord(i)}>
-                              ...
-                            </a> 
-                          </td>
-                        </tr>
-                      )) 
-                    }
-                  </tbody>
-                </table>
-            </div>
-          </Fragment>
-        }
-        </div>
-        <div id="modal-edit-record" className="modal">
-          <div className="modal-content">
-            <h5 className="title"><strong>Action on record</strong></h5>
-            <div className="row">
-              <div className="json-form">
-                <Form 
-                  uiSchema={uiSchema}
-                  schema={formSchema}
-                >
-                  <div className="btn-action-container">
-                    <button className="btn btn-approve" type="button" onClick={this.onApprove}>Approve</button>
-                    <button className="btn btn-reject" type="button" onClick={this.onReject}>Reject</button>
-                  </div>
-                </Form>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="modal-post-action-message" className="modal">
-          <div className="modal-content">
-            <h5 className="title"><strong>{actionMessage}</strong></h5>
-            <span className="waves-effect waves-light btn btn-close" onClick={this.handleClickClose}>
-              Close
-            </span>
-          </div>
-        </div>
-      </div>
-    )
   }
 }
 

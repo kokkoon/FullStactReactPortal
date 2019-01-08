@@ -5,11 +5,6 @@ import { connect } from 'react-redux'
 import './UserMenu.css'
 
 class UserMenu extends Component {
-	componentDidMount() {
-		// materialize css initialization
-		M.AutoInit()
-	}
-
 	render() {
 		return (
 			<span className={this.props.className + " user-menu-container dropdown-trigger"} 
@@ -21,7 +16,13 @@ class UserMenu extends Component {
 		  </span>
 		)
 	}
+	
+	componentDidMount() {
+		// materialize css initialization
+		M.AutoInit()
+	}
 }
+
 
 UserMenu.defaultProps = {
 	user: {

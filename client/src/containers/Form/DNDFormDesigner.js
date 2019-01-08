@@ -1,4 +1,4 @@
-// Work in progress
+// reserve this code for later probable use
 
 import React, { Component } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';

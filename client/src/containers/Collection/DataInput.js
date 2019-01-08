@@ -13,12 +13,32 @@ class DataInput extends Component {
 		this.state = {
 			formStructure: { title: 'Form', type: "object", properties: {} }
 		}
+	}	
+
+	render() {
+		const { formStructure } = this.state
+
+		return (
+			<div className="form-input">
+				<h5>Input form</h5>
+				<div className="json-form">
+					<Form 
+						schema={formStructure}
+	        	onSubmit={this.onSubmit.bind(this)}
+	        	onError={this.log("errors")} />
+	      </div>
+			</div>
+		)
 	}
 
 	componentWillMount() {
 		const { location } = this.props
 		const formId = location.search.slice(4)
 
+		this.loadFormData(formId)
+	}
+
+	loadFormData (formId) {
 		axios.get(`${API_URL}/form?id=${formId}`)
 			.then(res => {
 				this.setState({
@@ -50,24 +70,6 @@ class DataInput extends Component {
 				}
 			})
 			.catch(err => console.log(err))
-	}
-
-	
-
-	render() {
-		const { formStructure } = this.state
-
-		return (
-			<div className="form-input">
-				<h5>Input form</h5>
-				<div className="json-form">
-					<Form 
-						schema={formStructure}
-	        	onSubmit={this.onSubmit.bind(this)}
-	        	onError={this.log("errors")} />
-	      </div>
-			</div>
-		)
 	}
 }
 

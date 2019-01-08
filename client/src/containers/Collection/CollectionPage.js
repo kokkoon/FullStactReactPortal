@@ -19,72 +19,6 @@ export default class CollectionPage extends Component {
     }
   }
 
-	componentWillMount() {
-    const { id } = queryString.parse(this.props.location.search)
-
-    this.setState({ id })
-    this.loadCollectionName(id)
-    this.loadRecord(id)
-    this.loadTableViewConfig(id)
-  }
-
-  loadCollectionName(id) {
-    axios.get(`${API_URL}/form/?id=${id}`)
-      .then(response => {
-        this.setState({ 
-          collectionName: response.data.data.title 
-        })
-      })
-      .catch(error => console.log(error))
-  }
-
-  loadRecord(id) {
-    axios.get(`${API_URL}/record/?id=${id}`)
-      .then(response => {
-        this.setState({ 
-          record: response.data.data
-        })
-      })
-      .catch(error => console.log(error))
-  }
-
-  loadTableViewConfig(id) {
-    axios.get(`${API_URL}/retrieve-table-view-config?form_id=${id}`)
-      .then(response => {
-        const tableViewConfig = response.data.data
-        const filteredColumn = Object.keys(tableViewConfig).filter(key => tableViewConfig[key].showInTable)
-        const sortedColumn = filteredColumn.sort((a, b) => tableViewConfig[a].order - tableViewConfig[b].order)
-        
-        this.setState({
-          tableViewConfig,
-          column: sortedColumn
-        })
-      })
-      .catch(error => console.error(error))
-  }
-
-  componentDidUpdate() {
-    const { id } = queryString.parse(this.props.location.search)
-
-    if (id !== this.state.id) {
-      this.setState({ id })
-      this.loadCollectionName(id)
-      this.loadRecord(id)
-      this.loadTableViewConfig(id)
-    }
-  }
-
-  deleteRecord = (index) => {
-    const { record } = this.state
-    const { formId, _id: recordId } = record[index]
-
-    axios.delete(`${API_URL}/record?form_id=${formId}&record_id=${recordId}`)
-      .then(response => {
-        this.loadRecord(formId)
-      })
-      .catch(error => console.error(error))
-  }
-
   render() {
     const { 
       id,
@@ -162,5 +96,71 @@ export default class CollectionPage extends Component {
         </div>
       </div>
     )
+  }
+
+  componentWillMount() {
+    const { id } = queryString.parse(this.props.location.search)
+
+    this.setState({ id })
+    this.loadCollectionName(id)
+    this.loadRecord(id)
+    this.loadTableViewConfig(id)
+  }
+
+  componentDidUpdate() {
+    const { id } = queryString.parse(this.props.location.search)
+
+    if (id !== this.state.id) {
+      this.setState({ id })
+      this.loadCollectionName(id)
+      this.loadRecord(id)
+      this.loadTableViewConfig(id)
+    }
+  }
+
+  loadCollectionName(id) {
+    axios.get(`${API_URL}/form/?id=${id}`)
+      .then(response => {
+        this.setState({ 
+          collectionName: response.data.data.title 
+        })
+      })
+      .catch(error => console.log(error))
+  }
+
+  loadRecord(id) {
+    axios.get(`${API_URL}/record/?id=${id}`)
+      .then(response => {
+        this.setState({ 
+          record: response.data.data
+        })
+      })
+      .catch(error => console.log(error))
+  }
+
+  loadTableViewConfig(id) {
+    axios.get(`${API_URL}/retrieve-table-view-config?form_id=${id}`)
+      .then(response => {
+        const tableViewConfig = response.data.data
+        const filteredColumn = Object.keys(tableViewConfig).filter(key => tableViewConfig[key].showInTable)
+        const sortedColumn = filteredColumn.sort((a, b) => tableViewConfig[a].order - tableViewConfig[b].order)
+        
+        this.setState({
+          tableViewConfig,
+          column: sortedColumn
+        })
+      })
+      .catch(error => console.error(error))
+  }
+
+  deleteRecord = (index) => {
+    const { record } = this.state
+    const { formId, _id: recordId } = record[index]
+
+    axios.delete(`${API_URL}/record?form_id=${formId}&record_id=${recordId}`)
+      .then(response => {
+        this.loadRecord(formId)
+      })
+      .catch(error => console.error(error))
   }
 }
