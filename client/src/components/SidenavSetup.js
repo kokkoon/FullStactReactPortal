@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 
+import * as helper from '../utils/helperFunctions'
 import * as ACT from '../actions'
 import './SidenavSetup.css'
 
@@ -31,7 +32,7 @@ class SidenavSetup extends Component {
 		const { appName, sidenavConfig, loadSidenavConfig } = this.props
 
 		if (sidenavConfig !== prevProps.sidenavConfig) {
-			const JSONconfig = this.stringifyPrettyJSON(sidenavConfig.groupLinks)
+			const JSONconfig = helper.stringifyPrettyJSON(sidenavConfig.groupLinks)
 
 			this.setState({ 
 				config: sidenavConfig, 
@@ -45,31 +46,13 @@ class SidenavSetup extends Component {
 		}
 	}
 
-	stringifyPrettyJSON = (object) => {
-		return JSON.stringify(object, undefined, 2)/*.replace(/": /g, '"\t:  ')*/
-	}
-
 	handleChangeJSONconfig = (event) => {
 		this.setState({ JSONconfig: event.target.value })
 	}
 
-	handleTabPressedOnJSONTextarea = (event) => {
-		if(event.keyCode === 9) {
-			event.preventDefault()
-
-			const thisTextarea = this.textJSONconfig.current
-			let v = thisTextarea.value,
-			s = thisTextarea.selectionStart,
-			e = thisTextarea.selectionEnd
-
-			thisTextarea.value = v.substring(0, s) + '\t' + v.substring(e)
-			thisTextarea.selectionStart = thisTextarea.selectionEnd = s + 1
-		}
-	}
-
 	handleDefaultConfig = () => {
 		const { defaultConfig } = this.state
-		const JSONconfig = this.stringifyPrettyJSON(defaultConfig.groupLinks)
+		const JSONconfig = helper.stringifyPrettyJSON(defaultConfig.groupLinks)
 		this.setState({ 
 			config: defaultConfig,
 			JSONconfig 
@@ -88,9 +71,6 @@ class SidenavSetup extends Component {
 			newConfig = { ...config, groupLinks: JSON.parse(JSONconfig) }
 		} catch (err) {
 			alert('JSON config is not valid\nError : ' + err)
-			// uncomment code below to apply default config if 
-			// user try to preview or save invalid JSON
-			// if (err) this.handleDefaultConfig()
 		} 
 
 		return newConfig
@@ -177,7 +157,7 @@ class SidenavSetup extends Component {
 	          	value={JSONconfig}
 	          	onChange={this.handleChangeJSONconfig}
 	          	ref={this.textJSONconfig}
-	          	onKeyDown={this.handleTabPressedOnJSONTextarea} />
+	          	onKeyDown={event => helper.handleTabPressedOnJSONTextarea(event, this.textJSONconfig.current)} />
 	        </div>
 				</div>
 				<div className="col s2 btn-actions">

@@ -5,10 +5,11 @@ import queryString from 'query-string'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import Form from 'react-jsonschema-form'
 
+import * as helper from '../utils/helperFunctions'
 import API_URL from '../utils/api_url'
 import './DesignForm.css'
 
-class DesignForm extends Component {
+export default class DesignForm extends Component {
 	constructor(props) {
 		super(props)
 
@@ -33,7 +34,7 @@ class DesignForm extends Component {
 		axios.get(`${API_URL}/form?id=${formId}`)
 		.then(res => {
 			const schema = res.data.data
-			const stringJSONschema = this.stringifyPrettyJSON(schema)
+			const stringJSONschema = helper.stringifyPrettyJSON(schema)
 			
 			const uiSchema = Object.keys(schema.properties).reduce((obj, key) => {
 				if (schema.properties[key].type !== 'boolean') {
@@ -44,7 +45,7 @@ class DesignForm extends Component {
 				}
 			}, {})
 			
-			const stringUIschema = this.stringifyPrettyJSON(uiSchema)
+			const stringUIschema = helper.stringifyPrettyJSON(uiSchema)
 
 			this.setState({
 				collectionName: res.data.collectionName,
@@ -65,10 +66,6 @@ class DesignForm extends Component {
 
 	log = (type) => console.log.bind(console, type)
 
-	stringifyPrettyJSON = (object) => {
-		return JSON.stringify(object, undefined, 2)/*.replace(/": /g, '"\t:  ')*/
-	}
-
 	handleChangeJSONschema = (event) => {
 		this.setState({ stringJSONschema: event.target.value })
 	}
@@ -77,23 +74,10 @@ class DesignForm extends Component {
 		this.setState({ stringUIschema: event.target.value })
 	}
 
-	handleTabPressedOnJSONTextarea = (event, textarea) => {
-		if(event.keyCode === 9) {
-			event.preventDefault()
-
-			let v = textarea.value,
-			s = textarea.selectionStart,
-			e = textarea.selectionEnd
-
-			textarea.value = v.substring(0, s) + '\t' + v.substring(e)
-			textarea.selectionStart = textarea.selectionEnd = s + 1
-		}
-	}
-
 	handleDefaultSchema = () => {
 		const { defaultJSONschema, defaultUIschema } = this.state
-		const stringJSONschema = this.stringifyPrettyJSON(defaultJSONschema)
-		const stringUIschema = this.stringifyPrettyJSON(defaultUIschema)
+		const stringJSONschema = helper.stringifyPrettyJSON(defaultJSONschema)
+		const stringUIschema = helper.stringifyPrettyJSON(defaultUIschema)
 		
 		this.setState({
 			JSONSchema: defaultJSONschema,
@@ -126,9 +110,6 @@ class DesignForm extends Component {
 			}
 		} catch (err) {
 			alert('JSON schema is not valid\nError : ' + err)
-			// uncomment code below to apply default config if 
-			// user try to preview or save invalid JSON
-			// if (err) this.handleDefaultSchema()
 		} 
 		
 		return newSchema
@@ -190,7 +171,7 @@ class DesignForm extends Component {
           	value={stringJSONschema}
           	onChange={this.handleChangeJSONschema}
           	ref={this.textareaJSONschema}
-          	onKeyDown={e => this.handleTabPressedOnJSONTextarea(e, this.textareaJSONschema.current)} 
+          	onKeyDown={e => helper.handleTabPressedOnJSONTextarea(e, this.textareaJSONschema.current)} 
           />
           <span className="left"><strong>UI schema</strong></span>
           <textarea 
@@ -198,7 +179,7 @@ class DesignForm extends Component {
           	value={stringUIschema}
           	onChange={this.handleChangeUIschema}
           	ref={this.textareaUIschema}
-          	onKeyDown={e => this.handleTabPressedOnJSONTextarea(e, this.textareaUIschema.current)} 
+          	onKeyDown={e => helper.handleTabPressedOnJSONTextarea(e, this.textareaUIschema.current)} 
           />
 				</div>
 				<div className="col s2 btn-actions">
@@ -211,17 +192,3 @@ class DesignForm extends Component {
 	  )
 	}
 }
-
-const mapStateToProps = (state) => {
-  return {
-  	
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-	return {
-
-	}
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(DesignForm)

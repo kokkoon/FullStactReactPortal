@@ -7,7 +7,7 @@ import queryString from 'query-string'
 import API_URL from '../utils/api_url'
 import './CollectionPage.css'
 
-class CollectionPage extends Component {
+export default class CollectionPage extends Component {
 	constructor(props) {
     super(props)
 
@@ -30,22 +30,22 @@ class CollectionPage extends Component {
 
   loadCollectionName(id) {
     axios.get(`${API_URL}/form/?id=${id}`)
-      .then(res => {
+      .then(response => {
         this.setState({ 
-          collectionName: res.data.data.title 
+          collectionName: response.data.data.title 
         })
       })
-      .catch(err => console.log(err))
+      .catch(error => console.log(error))
   }
 
   loadRecord(id) {
     axios.get(`${API_URL}/record/?id=${id}`)
-      .then(res => {
+      .then(response => {
         this.setState({ 
-          record: res.data.data
+          record: response.data.data
         })
       })
-      .catch(err => console.log(err))
+      .catch(error => console.log(error))
   }
 
   loadTableViewConfig(id) {
@@ -79,10 +79,10 @@ class CollectionPage extends Component {
     const { formId, _id: recordId } = record[index]
 
     axios.delete(`${API_URL}/record?form_id=${formId}&record_id=${recordId}`)
-      .then(res => {
+      .then(response => {
         this.loadRecord(formId)
       })
-      .catch(e => console.error(e))
+      .catch(error => console.error(error))
   }
 
   render() {
@@ -164,5 +164,3 @@ class CollectionPage extends Component {
     )
   }
 }
-
-export default CollectionPage;
