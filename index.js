@@ -27,6 +27,10 @@ mongoUtil.connectToDB(err => {
   require('./routes/authRoutes')(app);
   require('./routes/billingRoutes')(app);
   require('./routes/formRoutes')(app);
+  require('./routes/sidenavRoutes')(app);
+  require('./routes/externalCollectionRoutes')(app);
+  require('./routes/eventApiRoutes')(app);
+  require('./routes/mongodbUtilityRoutes')(app);
 
   if (process.env.NODE_ENV === 'production') {
     // Express will serve up production assets
