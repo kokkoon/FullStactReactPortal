@@ -452,6 +452,14 @@ class FormDesigner extends Component {
 		M.AutoInit()
 	}
 
+	reloadData() {
+		const { formId } = this.state
+		
+		this.loadFormData(formId)
+		this.loadEventApiData(formId)
+		this.loadViewConfig(formId)
+	}
+
 	loadDefaultFields() {
 		this.setState({ fields: this.generateDefaultFields() })
 	}
@@ -820,7 +828,8 @@ class FormDesigner extends Component {
 					displayLength: 5000,
 				})
 
-				this.props.history.push('/collection-list')
+				if (id === 'new') this.props.history.push('/collection-list')
+				else this.reloadData()
 			})
 			.catch(error => console.error(error))
 	}
@@ -1053,7 +1062,7 @@ class FormDesigner extends Component {
 
 	saveTableView = () => {
 		const form_id = queryString.parse(this.props.location.search).id
-		const { viewConfigString, defaultViewConfig } = this.state
+		const { viewConfigString, defaultViewConfig, fields } = this.state
 		let viewConfig = defaultViewConfig
 
 		try {
@@ -1062,8 +1071,11 @@ class FormDesigner extends Component {
 			alert('JSON config is not valid\n' + error)
 		}
 
-		axios.post(`${API_URL}/save-table-view-config?form_id=${form_id}`, viewConfig)
+		const data = { tableViewConfig: viewConfig, formFields: fields }
+
+		axios.post(`${API_URL}/save-table-view-config?form_id=${form_id}`, data)
 		.then(response => {
+			this.reloadData()
 			M.toast({ html: response.data.message })
 		})
 		.catch(error => console.error(error))

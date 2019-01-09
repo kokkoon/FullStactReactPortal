@@ -269,9 +269,15 @@ module.exports = (app) => {
     const formCollection = db.collection('form')
     const url = URL.parse(req.url, true)
     const id = url.query.form_id
+    const { tableViewConfig, formFields } = req.body
+
+    const newFormFields = formFields.map(field => {
+      return { ...field, showInTable: tableViewConfig[field.fieldName].showInTable }
+    })
 
     const updatedField = { 
-      tableViewConfig: req.body
+      tableViewConfig,
+      formFields: newFormFields
     }
 
     formCollection.updateOne(
