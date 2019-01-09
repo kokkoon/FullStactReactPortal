@@ -263,4 +263,49 @@ module.exports = (app) => {
   		res.send({ data })
   	})
   })
+
+  // save form table view config
+  app.post('/api/save-table-view-config', (req, res) => {
+    const formCollection = db.collection('form')
+    const url = URL.parse(req.url, true)
+    const id = url.query.form_id
+
+    const updatedField = { 
+      tableViewConfig: req.body
+    }
+
+    formCollection.updateOne(
+      {id}, 
+      {$set: updatedField}, 
+      (err, obj) => {
+        if (err) console.error(err)
+        else {
+          res.send({ message: `table view configuration for form-${id} updated` })
+        }
+      }
+    )
+  })
+
+  // retrieve form table view config
+  app.get('/api/retrieve-table-view-config', (req, res) => {
+    const formCollection = db.collection('form')
+    const url = URL.parse(req.url, true)
+    const id = url.query.form_id
+
+    formCollection.findOne({id}, (err, result) => {
+      if (err) console.error(err)
+      else if (result != null) {
+        if (result.tableViewConfig) {
+          res.send({ 
+            message: `table view configuration form ${id} found`,
+            data: result.tableViewConfig
+          })
+        } else {
+          res.send({ message: `table view configuration not found in form ${id}` })
+        }
+      } else {
+        res.send({ message: `form ${id} not found` })
+      }
+    })
+  })
 }
