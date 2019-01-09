@@ -15,7 +15,17 @@ module.exports = (app) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
   	const collection = db.collection(`form${formId}`)
-    const data = { formId, ...req.body }
+    const newDate = new Date().toISOString()
+    const userId = req.user._id
+
+    const data = { 
+      formId, 
+      createdTime: newDate,
+      createdBy: userId,
+      modifiedTime: newDate,
+      modifiedBy: userId,
+      ...req.body 
+    }
 
   	collection.insertOne(data, (err, result) => {
   		if (err) console.error(err)
@@ -32,7 +42,14 @@ module.exports = (app) => {
     const formId = url.query.id
     const recordId = url.query.record_id
     const collection = db.collection(`form${formId}`)
-    const updatedData = { ...req.body }
+    const newDate = new Date().toISOString()
+    const userId = req.user._id
+
+    const updatedData = { 
+      ...req.body,
+      modifiedTime: newDate,
+      modifiedBy: userId,
+    }
 
     collection.updateOne({_id: recordId}, {$set: updatedData}, (err, obj) => {
       if (err) console.error(err)
@@ -107,7 +124,7 @@ module.exports = (app) => {
   	const formCollection = db.collection('form')
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
-  	const { formStructure, tableColumns, formFields } = req.body
+  	const { formStructure, tableColumns, formFields, defaultFields } = req.body
     const collectionName = req.body.collectionName.toLowerCase()
 
     const tableViewConfig = formFields.reduce((obj, field, index) => {
@@ -121,6 +138,16 @@ module.exports = (app) => {
       }
     }, {})
 
+    const formData = {
+      icon: 'format_list_bulleted',
+      collectionName,
+      formFields,
+      defaultFields,
+      formStructure,
+      tableColumns,
+      tableViewConfig
+    }
+
   	formCollection.find({}).toArray((err, result) => {
       if (err) console.error(err)
 
@@ -130,14 +157,10 @@ module.exports = (app) => {
 
     		if (Number(formId) <= lastId && Number(formId) > 0) {
     			const form = {
-    				id: formId,
-    				name: `form${formId}`,
-    				route: `/collection?id=${formId}`,
-    				icon: 'format_list_bulleted',
-    				collectionName,
-    				formStructure,
-            tableColumns,
-            tableViewConfig
+    				...formData,
+            id: formId,
+            name: `form${formId}`,
+            route: `/collection?id=${formId}`
     			}
 
           formCollection.updateOne({id: formId}, {$set: form}, (err, obj) => {
@@ -147,14 +170,10 @@ module.exports = (app) => {
     		} else {
           const newId = Number(lastId) + 1
     			const form = {
+            ...formData,
     				id: newId.toString(),
     				name: `form${newId}`,
-    				route: `/collection?id=${newId}`,
-    				icon: 'format_list_bulleted',
-    				collectionName,
-    				formStructure,
-            tableColumns,
-            tableViewConfig
+    				route: `/collection?id=${newId}`
     			}
 
     			formCollection.insertOne(form, (err, obj) => {
@@ -166,14 +185,10 @@ module.exports = (app) => {
       } else {
         const newId = 1
         const form = {
+          ...formData,
           id: newId.toString(),
           name: `form${newId}`,
           route: `/collection?id=${newId}`,
-          icon: 'format_list_bulleted',
-          collectionName,
-          formStructure,
-          tableColumns,
-          tableViewConfig
         }
 
         formCollection.insertOne(form, (err, obj) => {
@@ -222,6 +237,7 @@ module.exports = (app) => {
   				res.send({
             formId: formId,
             collectionName: form.collectionName,
+            formFields: form.formFields,
             column: form.tableColumns, 
             data: form.formStructure,
             createdActionAPI: form.createdActionAPI,

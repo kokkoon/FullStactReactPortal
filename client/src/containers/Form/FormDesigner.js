@@ -453,20 +453,14 @@ class FormDesigner extends Component {
 	}
 
 	loadDefaultFields() {
-		// add new fields from empty array
-		this.setState({ fields: this.addDefaultFields([]) })
+		this.setState({ fields: this.generateDefaultFields() })
 	}
 
 	loadFormData (formId) {
 		axios.get(`${API_URL}/form?id=${formId}`)
 			.then(res => {
 				let { input } = this.state
-				const { formId } = res.data
-				const formStructure = res.data.data
-				const { properties } = formStructure
-				let fields = res.data.column
-
-				fields = this.mapFieldsDataFromSchema(fields, properties)
+				const { formId, data: formStructure, formFields: fields } = res.data
 				input.collectionName = formStructure.title
 
 				this.setState({
@@ -479,88 +473,35 @@ class FormDesigner extends Component {
 			.catch(e => console.error(e))
 	}
 
-	mapFieldsDataFromSchema (fields, properties) {
-		return fields.map(field => { 
-			const { fieldName } = field
-
-			// take data type and default value fields from schema
-			const derivedFields = Object.keys(properties[fieldName]).reduce((obj, key) => {
-					if (key === 'type') {
-						return { 
-							...obj, 
-							dataType : properties[fieldName][key]
-						}
-					} else if (key === 'default') {
-						return { 
-							...obj, 
-							defaultValue : properties[fieldName][key] 
-						}
-					} else if (key === 'format' && properties[fieldName][key] === 'date') {
-						return { 
-							...obj, 
-							dataType: properties[fieldName][key] 
-						}
-					}
-					return {...obj}
-				}, {})	
-
-			const defaultFields = ['Created time', 'Created by', 'Modified time', 'Modified by']
-
-			if (defaultFields.indexOf(field.fieldName) > -1) // if field is default fields = no action buttons
-			{
-				return {
-					...field,
-					...derivedFields,
-					action: []
-				}
-			} else {
-				return {
-					...field,
-					...derivedFields,
-					action: [
-						{
-							name: 'edit',
-							enable: true
-						},
-						{
-							name: 'delete',
-							enable: true
-						}
-					]
-				}
-			}
-		})
-	}
-
-	addDefaultFields (fields, shouldAddModifiedOnly) {
+	generateDefaultFields () {
 		const { user } = this.props
 		const date = new Date().toISOString()
 		
 		const createdTime = { 
 			fieldName: 'Created time', 
-			dataType: 'Date', 
+			dataType: 'date', 
 			defaultValue: date,
 			showInTable: false
 		}
 
 		const createdBy = {
 			fieldName: 'Created by', 
-			dataType: 'String', 
-			defaultValue: user.googleId, 
+			dataType: 'string', 
+			defaultValue: user._id, 
 			showInTable: false
 		}
 
 		const modifiedTime = { 
 			fieldName: 'Modified time', 
-			dataType: 'Date', 
+			dataType: 'date', 
 			defaultValue: date, 
 			showInTable: false
 		}
 
 		const modifiedBy = {
 			fieldName: 'Modified by', 
-			dataType: 'String', 
-			defaultValue: user.googleId, 
+			dataType: 'string', 
+			defaultValue: user._id, 
 			showInTable: false
 		}
 
@@ -568,14 +509,8 @@ class FormDesigner extends Component {
 			createdTime,
 			createdBy,
 			modifiedTime,
-			modifiedBy,
-			...fields
+			modifiedBy
 		]
-		
-		newFields.forEach(field => {
-			const { fieldName, dataType, defaultValue } = field
-			this.updateFormStructure(fieldName, dataType, defaultValue)
-		})
 
 		return newFields
 	}
@@ -852,28 +787,30 @@ class FormDesigner extends Component {
 	handleCreateCollection = () => {
 		const { location } = this.props
 		const { id } = queryString.parse(location.search)
-		const { formId, formStructure, input, fields } = this.state
+		const { 
+			formId, 
+			formStructure, 
+			input, 
+			fields
+		} = this.state
 
 		let updatedFields = fields
-		let updatedFormStructure = formStructure
 
-		if (formId != undefined) {
-			const data = this.updateModifiedFields(fields, formStructure)
-			updatedFields = data.updatedFields
-			updatedFormStructure= data.updatedFormStructure
+		if (formId !== undefined) {
+			updatedFields = this.updateModifiedFields(fields)
 		}
 
 		const tableColumns = updatedFields.reduce((arr, field) => {
 			return [...arr, { fieldName: field.fieldName, showInTable: field.showInTable }]
 		}, [])
 		
-		updatedFormStructure.title = input.collectionName
+		formStructure.title = input.collectionName
 
 		const data = {
 			collectionName: input.collectionName, 
 			tableColumns, 
-			formFields: updatedFields, 
-			formStructure: updatedFormStructure
+			formStructure,
+			formFields: updatedFields
 		}
 
 		axios.post(`${API_URL}/create-form?id=${id}`, data)
@@ -886,58 +823,48 @@ class FormDesigner extends Component {
 				this.props.history.push('/collection-list')
 			})
 			.catch(error => console.error(error))
-
-		// reset to initial state after new collection created
-		// if (formId === undefined) {
-		// 	this.setState({ 
-		// 		formId: undefined,
-		// 		isCollectionNameOK: false,
-		// 		formStructure: { title: 'New Collection', type: "object", properties: {} },
-		// 		input: {
-		// 			collectionName: '',
-		// 			fieldName: '',
-		// 			dataType: '',
-		// 			defaultValue: ''
-		// 		},
-		// 		isNewField: true,
-		// 		currentIndex: -1,
-		// 		isFieldNameExisted: false,
-		// 		fields: [], 
-		// 	})
-		// }
 	}
 
-	updateModifiedFields (fields, formStructure) {
+	// reset to initial state
+	resetState() {
+		this.setState({ 
+			formId: undefined,
+			isCollectionNameOK: false,
+			formStructure: { title: 'New Collection', type: "object", properties: {} },
+			input: {
+				collectionName: '',
+				fieldName: '',
+				dataType: '',
+				defaultValue: ''
+			},
+			isNewField: true,
+			currentIndex: -1,
+			isFieldNameExisted: false,
+			fields: [], 
+		})
+	}
+
+	updateModifiedFields (fields) {
 		const { user } = this.props
 		const newDate = new Date().toISOString()
 
-		const updatedFields = fields.map(field => {
-			const { fieldName, dataType, defaultValue } = field
+		return fields.map(field => {
+			const { fieldName } = field
 
-			if (field.fieldName === 'Modified time') {
+			if (fieldName === 'Modified time') {
 				return { 
-					fieldName: 'Modified time', 
-					dataType: 'Date', 
+					...field,
 					defaultValue: newDate, 
-					showInTable: field.showInTable
 				}
-			} else if (field.fieldName === 'Modified by') {
+			} else if (fieldName === 'Modified by') {
 				return {
-					fieldName: 'Modified by', 
-					dataType: 'String', 
-					defaultValue: user.googleId, 
-					showInTable: field.showInTable
+					...field,
+					defaultValue: user._id, 
 				}
 			}
 			
 			return field
 		})
-
-		let updatedFormStructure = { ...formStructure }
-		updatedFormStructure.properties['Modified time'].default = newDate
-		updatedFormStructure.properties['Modified by'].default = user.googleId
-
-		return { updatedFields, updatedFormStructure }
 	}
 
 	openModalFormEvent = () => {
