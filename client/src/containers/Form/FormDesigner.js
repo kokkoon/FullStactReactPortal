@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react'
+import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import M from 'materialize-css/dist/js/materialize.min.js'
@@ -9,7 +10,7 @@ import * as helper from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import './FormDesigner.css'
 
-export default class FormDesigner extends Component {
+class FormDesigner extends Component {
 	constructor(props) {
 		super(props);
 
@@ -112,17 +113,348 @@ export default class FormDesigner extends Component {
 		)
 	}
 
+	renderTableFormFields () {
+		const { documentFieldsTableHeader } = this.props
+		const { fields } = this.state
+
+		return (
+			<div className="col s12">
+				<span className="document-fields-label">Document fields</span>
+				<table className="table-collection centered responsive-table">
+          <thead>
+            <tr>
+              { 
+              	documentFieldsTableHeader.map((header, i) => 
+              		<th key={i} className={header === "Name" ? "left" : ""}>{header}</th>) 
+              }
+            </tr>
+          </thead>
+
+          <tbody>
+            { 
+              !fields && <p> loading .... </p>
+            }
+            { 
+              fields && fields.map((field, index) => (
+                <tr key={index}>
+                  <td className="left">{field.fieldName}</td>
+                  <td>{field.dataType}</td>
+                  <td>{field.defaultValue}</td>
+                  <td>
+                  	<label>
+							        <input 
+							        	type="checkbox" 
+							        	className="filled-in" 
+							        	checked={field.showInTable ? "checked" : ""} 
+							        	onChange={this.handleCheck.bind(this, index)} 
+							        />
+							        <span> </span>
+							      </label>
+							    </td>
+							    <td>
+							    {
+							    	field.action &&
+							    	field.action.map((action, index2) => {
+							    		if (action.name === 'edit') {
+						    				return (
+						    			    <span key={index2}
+						    			    	 className={action.enable 
+						    			    							? "waves-effect waves-light btn btn-action blue lighten-2 tooltipped"
+						    			    							: "waves-effect waves-light btn btn-action blue lighten-2 disabled"}
+						    			    	 data-position="bottom" 
+						    			    	 data-tooltip="edit field"
+						    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
+						    			    >
+						    			    	<i className="material-icons">{action.name}</i>
+						    			    </span>
+						    			  )
+					    			  } else if (action.name === 'delete') {
+					    			  	return (
+						    			    <span key={index2}
+						    			    	 className={action.enable 
+						    			    							? "waves-effect waves-light btn btn-action red lighten-2 tooltipped"
+						    			    							: "waves-effect waves-light btn btn-action red lighten-2 disabled"}
+						    			    	 data-position="bottom" 
+						    			    	 data-tooltip="delete field"
+						    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
+						    			    >
+						    			    	<i className="material-icons">{action.name}</i>
+						    			    </span>
+						    			  )
+					    			  }
+					    			  return <div key={index2}/>
+							    	})
+							    }
+							    </td>
+                </tr>
+              )) 
+            }
+          </tbody>
+        </table>
+      </div>
+		)
+	}
+
+	renderCardAddNewField () {
+		const {
+			isNewField,
+			isFieldNameExisted
+		} = this.state
+
+		const {
+			fieldName,
+			dataType,
+			defaultValue
+		} = this.state.input
+
+		return (
+			<div className="add-new-field card-panel indigo lighten-5">
+        <h4 className="center">{isNewField ? 'Add new field' : 'Edit field'}</h4>	
+       	<div className="row">
+					<div className="input-field col s6">
+						<input id="field_name" type="text" value={fieldName} onChange={(e) => this.handleInputChange('field_name', e)}/>
+	          <label htmlFor="field_name">Field name</label>
+					</div>
+					<div className="col s6">
+					  <div className="input-field col s12">
+					    <select value={dataType} onChange={(e) => this.handleInputChange('data_type', e)}>
+					      <option value="">Data type</option>
+					      <option value="string">String</option>
+					      <option value="number">Number</option>
+					      <option value="date">Date</option>
+					      <option value="boolean">Boolean</option>
+					      <option value="object">Object</option>
+					    </select>
+					  </div>
+					</div>
+					<div className="input-field col s6">
+						<input id="default_value" type="text" value={defaultValue} onChange={(e) => this.handleInputChange('default_value', e)}/>
+	          <label htmlFor="default_value">Default value</label>
+					</div>
+				</div>
+				<div className="row btn-add-container">
+	        <span className="waves-effect waves-light btn" 
+	        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || ( isFieldNameExisted && isNewField )} 
+	        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
+	        >
+			    	{isNewField ? 'Add' : 'Update'}
+			    </span>
+			  </div>
+      </div>
+		)
+	}
+
+	renderModalFormEvent () {
+		const {
+			isEventCreatedSwitchOn,
+			isURLExtWorkflowConnected,
+			openApiTitle,
+			apiUrlText, 
+			apiBody,
+			apiParameters,
+			isEventModifiedSwitchOn,
+			isModifiedURLExtWorkflowConnected,
+			modifiedOpenApiTitle,
+			modifiedApiUrlText,
+			modifiedApiBody,
+			modifiedApiParameters
+		} = this.state
+
+		const createdEventApi = {
+			actionType: 'created',
+			isEventSwitchOn: isEventCreatedSwitchOn,
+			isURLConnected: isURLExtWorkflowConnected,
+			openApiTitle: openApiTitle,
+			apiUrlText: apiUrlText, 
+			apiBody: apiBody,
+			apiParameters: apiParameters,
+			toggleSwitchEvent: this.toggleSwitchEventCreated,
+			changeApiUrlText: this.handleApiUrlText,	
+			handleConnectApiURL: this.handleConnectApiURL,
+			handleInputProperties: this.handleInputCreatedApiProperties,
+			handleSaveEventAPI: this.handleSaveCreatedEventAPI
+		}
+
+		const modifiedEventApi = {
+			actionType: 'modified',
+			isEventSwitchOn: isEventModifiedSwitchOn,
+			isURLConnected: isModifiedURLExtWorkflowConnected,
+			openApiTitle: modifiedOpenApiTitle,
+			apiUrlText: modifiedApiUrlText, 
+			apiBody: modifiedApiBody,
+			apiParameters: modifiedApiParameters,
+			toggleSwitchEvent: this.toggleSwitchEventModified,
+			changeApiUrlText: this.handleModifiedApiUrlText,
+			handleConnectApiURL: this.handleConnectModifiedApiURL,
+			handleInputProperties: this.handleInputModifiedApiProperties,
+			handleSaveEventAPI: this.handleSaveModifiedEventAPI
+		}
+
+		return (
+			<div id="modal-form-event" className="modal">
+	      <div className="modal-content">
+	        <h5 className="title center"><strong>Event handler</strong></h5>
+					{ this.renderEventContainer(createdEventApi) }
+					{ this.renderEventContainer(modifiedEventApi) }
+				</div>
+			</div>
+		)
+	}
+
+	renderEventContainer (input) {
+		const {
+			actionType,
+			isEventSwitchOn,
+			isURLConnected,
+			openApiTitle,
+			apiUrlText, 
+			apiBody,
+			apiParameters,
+			toggleSwitchEvent,
+			changeApiUrlText,
+			handleConnectApiURL,
+			handleInputProperties,
+			handleSaveEventAPI
+		} = input
+
+		return (
+			<div className="row bordered-container event-container">
+	  		<div className="col s10 zero-padding">
+	    		<span>
+	    			Starts when documents are created
+	    		</span>
+	    	</div>
+	    	<div className="col s2 right zero-padding">
+	        <div className="switch">
+				    <label>
+				      <input 
+				      	id="created-api-switch" 
+				      	type="checkbox" 
+				      	checked={isEventSwitchOn}
+				      	onChange={toggleSwitchEvent} />
+				      <span className="lever"></span>
+				    </label>
+				  </div>
+				</div>
+				{
+					isEventSwitchOn &&
+					<Fragment>
+						<div className="col s12 bordered-container url-container">
+							<div className="col s1">
+								<span>URL</span>
+							</div>
+							<div className="col s11 zero-padding">
+								<textarea className="textarea-url" value={apiUrlText} onChange={changeApiUrlText}>
+								</textarea>
+							</div>
+							<div className="col s9">
+							{ 
+								isURLConnected &&
+								<span className="connected-label">
+									[Connected]
+								</span>
+							}
+							{
+								isURLConnected === false &&
+								<span className="error-label">
+									[Error]
+								</span>
+							}
+							</div>
+							<div className="col s3 zero-padding btn-connect-container">
+								<span className={helper.isEmptyString(apiUrlText) ? 'btn disabled' : 'waves-effect waves-light btn'} onClick={handleConnectApiURL}>
+									Connect
+								</span>
+							</div>
+						</div>
+						{
+							isURLConnected &&
+							<div className="col s12 bordered-container parameters-container">
+								<div className="col s12 zero-padding border-bottom">
+									<span>{openApiTitle}</span>
+								</div>
+								{
+									apiParameters && 
+									apiParameters.length > 0 &&
+									apiParameters.map((parameter, paramIdx) => (
+										<div key={paramIdx} className="col s12">
+											<p className="parameter-name">{parameter.name}</p>
+											{
+												parameter.properties.map((property, propIdx) => (
+													<div key={propIdx} className="col s12">
+														<div className="col s4">
+															<span className="col s12 property-name">{property.name}</span>
+															<span className="col s12 property-type">{property.type}</span>
+														</div>
+														<div className="col s8">
+															<input 
+																id={`input-${actionType}-${parameter.name}-${property.name}`}
+																value={apiBody[parameter.name][property.name]}
+																onChange={e => handleInputProperties(parameter.name, property.name)} />
+														</div>
+													</div>
+												))
+											}
+										</div>
+									))
+								}
+							</div>
+						}
+	    			<span 
+	    				className={isURLConnected ? 
+	    					"waves-effect waves-light btn btn-save-api right" 
+	    					: "btn btn-save-api disabled right"} 
+	    				onClick={handleSaveEventAPI}
+	    			>
+	    				Save
+	    			</span>
+					</Fragment>
+				}
+	    </div>
+	  )
+	}
+
+	renderModalEditView () {
+		const {	viewConfigString } = this.state
+
+		return (
+			<div id="modal-edit-view" className="modal">
+      	<div className="modal-content">
+      		<h5 className="center title"><strong>Edit view</strong></h5>
+      		<textarea 
+      			id="textarea-edit-view" 
+      			value={viewConfigString}
+      			onChange={this.changeViewConfig}/>
+      		<div className="btn-footer-modal">
+	      		<span className="waves-effect waves-light btn" onClick={this.setDefaultTableView}>Default</span>
+	      		<span className="waves-effect waves-light btn" onClick={this.closeModalEditView}>Cancel</span>
+	      		<span className="waves-effect waves-light btn" onClick={this.saveTableView}>Save</span>
+      		</div>
+      	</div>
+      </div>
+		)
+	}
+
 	componentWillMount() {
 		const { id: formId } = queryString.parse(this.props.location.search)
 
-		this.loadFormData(formId)
-		this.loadEventApiData(formId)
-		this.loadViewConfig(formId)
+		if (formId === 'new') {
+			this.loadDefaultFields()
+		} else {
+			this.loadFormData(formId)
+			this.loadEventApiData(formId)
+			this.loadViewConfig(formId)
+		}
 	}
 
 	componentDidMount() {
 		// materialize css initialization
 		M.AutoInit()
+	}
+
+	loadDefaultFields() {
+		// add new fields from empty array
+		this.setState({ fields: this.addDefaultFields([]) })
 	}
 
 	loadFormData (formId) {
@@ -134,46 +466,7 @@ export default class FormDesigner extends Component {
 				const { properties } = formStructure
 				let fields = res.data.column
 
-				fields = fields.map(field => { 
-					const { fieldName } = field
-
-					// take data type and default value fields from schema
-					const derivedFields = Object.keys(properties[fieldName]).reduce((obj, key) => {
-							if (key === 'type') {
-								return { 
-									...obj, 
-									dataType : properties[fieldName][key]
-								}
-							} else if (key === 'default') {
-								return { 
-									...obj, 
-									defaultValue : properties[fieldName][key] 
-								}
-							} else if (key === 'format' && properties[fieldName][key] === 'date') {
-								return { 
-									...obj, 
-									dataType: properties[fieldName][key] 
-								}
-							}
-							return {...obj}
-						}, {})	
-
-					return {
-						...field,
-						...derivedFields,
-						action: [
-							{
-								name: 'edit',
-								enable: true
-							},
-							{
-								name: 'delete',
-								enable: true
-							}
-						]
-					}
-				})
-
+				fields = this.mapFieldsDataFromSchema(fields, properties)
 				input.collectionName = formStructure.title
 
 				this.setState({
@@ -184,6 +477,107 @@ export default class FormDesigner extends Component {
 				})
 			})
 			.catch(e => console.error(e))
+	}
+
+	mapFieldsDataFromSchema (fields, properties) {
+		return fields.map(field => { 
+			const { fieldName } = field
+
+			// take data type and default value fields from schema
+			const derivedFields = Object.keys(properties[fieldName]).reduce((obj, key) => {
+					if (key === 'type') {
+						return { 
+							...obj, 
+							dataType : properties[fieldName][key]
+						}
+					} else if (key === 'default') {
+						return { 
+							...obj, 
+							defaultValue : properties[fieldName][key] 
+						}
+					} else if (key === 'format' && properties[fieldName][key] === 'date') {
+						return { 
+							...obj, 
+							dataType: properties[fieldName][key] 
+						}
+					}
+					return {...obj}
+				}, {})	
+
+			const defaultFields = ['Created time', 'Created by', 'Modified time', 'Modified by']
+
+			if (defaultFields.indexOf(field.fieldName) > -1) // if field is default fields = no action buttons
+			{
+				return {
+					...field,
+					...derivedFields,
+					action: []
+				}
+			} else {
+				return {
+					...field,
+					...derivedFields,
+					action: [
+						{
+							name: 'edit',
+							enable: true
+						},
+						{
+							name: 'delete',
+							enable: true
+						}
+					]
+				}
+			}
+		})
+	}
+
+	addDefaultFields (fields, shouldAddModifiedOnly) {
+		const { user } = this.props
+		const date = new Date().toISOString()
+		
+		const createdTime = { 
+			fieldName: 'Created time', 
+			dataType: 'Date', 
+			defaultValue: date,
+			showInTable: false
+		}
+
+		const createdBy = {
+			fieldName: 'Created by', 
+			dataType: 'String', 
+			defaultValue: user.googleId, 
+			showInTable: false
+		}
+
+		const modifiedTime = { 
+			fieldName: 'Modified time', 
+			dataType: 'Date', 
+			defaultValue: date, 
+			showInTable: false
+		}
+
+		const modifiedBy = {
+			fieldName: 'Modified by', 
+			dataType: 'String', 
+			defaultValue: user.googleId, 
+			showInTable: false
+		}
+
+		const newFields = [
+			createdTime,
+			createdBy,
+			modifiedTime,
+			modifiedBy,
+			...fields
+		]
+		
+		newFields.forEach(field => {
+			const { fieldName, dataType, defaultValue } = field
+			this.updateFormStructure(fieldName, dataType, defaultValue)
+		})
+
+		return newFields
 	}
 
 	loadEventApiData (formId) {
@@ -460,17 +854,26 @@ export default class FormDesigner extends Component {
 		const { id } = queryString.parse(location.search)
 		const { formId, formStructure, input, fields } = this.state
 
-		const tableColumns = fields.reduce((arr, field) => {
+		let updatedFields = fields
+		let updatedFormStructure = formStructure
+
+		if (formId != undefined) {
+			const data = this.updateModifiedFields(fields, formStructure)
+			updatedFields = data.updatedFields
+			updatedFormStructure= data.updatedFormStructure
+		}
+
+		const tableColumns = updatedFields.reduce((arr, field) => {
 			return [...arr, { fieldName: field.fieldName, showInTable: field.showInTable }]
 		}, [])
 		
-		formStructure.title = input.collectionName
+		updatedFormStructure.title = input.collectionName
 
 		const data = {
 			collectionName: input.collectionName, 
 			tableColumns, 
-			formFields: fields, 
-			formStructure
+			formFields: updatedFields, 
+			formStructure: updatedFormStructure
 		}
 
 		axios.post(`${API_URL}/create-form?id=${id}`, data)
@@ -479,333 +882,68 @@ export default class FormDesigner extends Component {
 					html: response.data.message,
 					displayLength: 5000,
 				})
+
+				this.props.history.push('/collection-list')
 			})
 			.catch(error => console.error(error))
 
 		// reset to initial state after new collection created
-		if (formId === undefined) {
-			this.setState({ 
-				formId: undefined,
-				isCollectionNameOK: false,
-				formStructure: { title: 'New Collection', type: "object", properties: {} },
-				input: {
-					collectionName: '',
-					fieldName: '',
-					dataType: '',
-					defaultValue: ''
-				},
-				isNewField: true,
-				currentIndex: -1,
-				isFieldNameExisted: false,
-				fields: [], 
-			})
-		}
+		// if (formId === undefined) {
+		// 	this.setState({ 
+		// 		formId: undefined,
+		// 		isCollectionNameOK: false,
+		// 		formStructure: { title: 'New Collection', type: "object", properties: {} },
+		// 		input: {
+		// 			collectionName: '',
+		// 			fieldName: '',
+		// 			dataType: '',
+		// 			defaultValue: ''
+		// 		},
+		// 		isNewField: true,
+		// 		currentIndex: -1,
+		// 		isFieldNameExisted: false,
+		// 		fields: [], 
+		// 	})
+		// }
 	}
 
-	renderTableFormFields () {
-		const { documentFieldsTableHeader } = this.props
-		const { fields } = this.state
+	updateModifiedFields (fields, formStructure) {
+		const { user } = this.props
+		const newDate = new Date().toISOString()
 
-		return (
-			<div className="col s12">
-				<span className="document-fields-label">Document fields</span>
-				<table className="table-collection centered responsive-table">
-          <thead>
-            <tr>
-              { 
-              	documentFieldsTableHeader.map((header, i) => 
-              		<th key={i} className={header === "Name" ? "left" : ""}>{header}</th>) 
-              }
-            </tr>
-          </thead>
+		const updatedFields = fields.map(field => {
+			const { fieldName, dataType, defaultValue } = field
 
-          <tbody>
-            { 
-              !fields && <p> loading .... </p>
-            }
-            { 
-              fields && fields.map((field, index) => (
-                <tr key={index}>
-                  <td className="left">{field.fieldName}</td>
-                  <td>{field.dataType}</td>
-                  <td>{field.defaultValue}</td>
-                  <td>
-                  	<label>
-							        <input 
-							        	type="checkbox" 
-							        	className="filled-in" 
-							        	checked={field.showInTable ? "checked" : ""} 
-							        	onChange={this.handleCheck.bind(this, index)} 
-							        />
-							        <span> </span>
-							      </label>
-							    </td>
-							    <td>
-							    {
-							    	field.action.map((action, index2) => {
-							    		if (action.name === 'edit') {
-						    				return (
-						    			    <span key={index2}
-						    			    	 className={action.enable 
-						    			    							? "waves-effect waves-light btn btn-action blue lighten-2 tooltipped"
-						    			    							: "waves-effect waves-light btn btn-action blue lighten-2 disabled"}
-						    			    	 data-position="bottom" 
-						    			    	 data-tooltip="edit field"
-						    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
-						    			    >
-						    			    	<i className="material-icons">{action.name}</i>
-						    			    </span>
-						    			  )
-					    			  } else if (action.name === 'delete') {
-					    			  	return (
-						    			    <span key={index2}
-						    			    	 className={action.enable 
-						    			    							? "waves-effect waves-light btn btn-action red lighten-2 tooltipped"
-						    			    							: "waves-effect waves-light btn btn-action red lighten-2 disabled"}
-						    			    	 data-position="bottom" 
-						    			    	 data-tooltip="delete field"
-						    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
-						    			    >
-						    			    	<i className="material-icons">{action.name}</i>
-						    			    </span>
-						    			  )
-					    			  }
-					    			  return <div key={index2}/>
-							    	})
-							    }
-							    </td>
-                </tr>
-              )) 
-            }
-          </tbody>
-        </table>
-      </div>
-		)
-	}
+			if (field.fieldName === 'Modified time') {
+				return { 
+					fieldName: 'Modified time', 
+					dataType: 'Date', 
+					defaultValue: newDate, 
+					showInTable: field.showInTable
+				}
+			} else if (field.fieldName === 'Modified by') {
+				return {
+					fieldName: 'Modified by', 
+					dataType: 'String', 
+					defaultValue: user.googleId, 
+					showInTable: field.showInTable
+				}
+			}
+			
+			return field
+		})
 
-	renderCardAddNewField () {
-		const {
-			isNewField,
-			isFieldNameExisted
-		} = this.state
+		let updatedFormStructure = { ...formStructure }
+		updatedFormStructure.properties['Modified time'].default = newDate
+		updatedFormStructure.properties['Modified by'].default = user.googleId
 
-		const {
-			fieldName,
-			dataType,
-			defaultValue
-		} = this.state.input
-
-		return (
-			<div className="add-new-field card-panel indigo lighten-5">
-        <h4 className="center">{isNewField ? 'Add new field' : 'Edit field'}</h4>	
-       	<div className="row">
-					<div className="input-field col s6">
-						<input id="field_name" type="text" value={fieldName} onChange={(e) => this.handleInputChange('field_name', e)}/>
-	          <label htmlFor="field_name">Field name</label>
-					</div>
-					<div className="col s6">
-					  <div className="input-field col s12">
-					    <select value={dataType} onChange={(e) => this.handleInputChange('data_type', e)}>
-					      <option value="">Data type</option>
-					      <option value="string">String</option>
-					      <option value="number">Number</option>
-					      <option value="date">Date</option>
-					      <option value="boolean">Boolean</option>
-					      <option value="object">Object</option>
-					    </select>
-					  </div>
-					</div>
-					<div className="input-field col s6">
-						<input id="default_value" type="text" value={defaultValue} onChange={(e) => this.handleInputChange('default_value', e)}/>
-	          <label htmlFor="default_value">Default value</label>
-					</div>
-				</div>
-				<div className="row btn-add-container">
-	        <span className="waves-effect waves-light btn" 
-	        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || ( isFieldNameExisted && isNewField )} 
-	        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
-	        >
-			    	{isNewField ? 'Add' : 'Update'}
-			    </span>
-			  </div>
-      </div>
-		)
+		return { updatedFields, updatedFormStructure }
 	}
 
 	openModalFormEvent = () => {
 		const elem = document.getElementById('modal-form-event')
 		const modal = M.Modal.getInstance(elem)
 		modal.open()
-	}
-
-	renderModalFormEvent () {
-		const {
-			isEventCreatedSwitchOn,
-			isURLExtWorkflowConnected,
-			openApiTitle,
-			apiUrlText, 
-			apiBody,
-			apiParameters,
-			isEventModifiedSwitchOn,
-			isModifiedURLExtWorkflowConnected,
-			modifiedOpenApiTitle,
-			modifiedApiUrlText,
-			modifiedApiBody,
-			modifiedApiParameters
-		} = this.state
-
-		const createdEventApi = {
-			actionType: 'created',
-			isEventSwitchOn: isEventCreatedSwitchOn,
-			isURLConnected: isURLExtWorkflowConnected,
-			openApiTitle: openApiTitle,
-			apiUrlText: apiUrlText, 
-			apiBody: apiBody,
-			apiParameters: apiParameters,
-			toggleSwitchEvent: this.toggleSwitchEventCreated,
-			changeApiUrlText: this.handleApiUrlText,	
-			handleConnectApiURL: this.handleConnectApiURL,
-			handleInputProperties: this.handleInputCreatedApiProperties,
-			handleSaveEventAPI: this.handleSaveCreatedEventAPI
-		}
-
-		const modifiedEventApi = {
-			actionType: 'modified',
-			isEventSwitchOn: isEventModifiedSwitchOn,
-			isURLConnected: isModifiedURLExtWorkflowConnected,
-			openApiTitle: modifiedOpenApiTitle,
-			apiUrlText: modifiedApiUrlText, 
-			apiBody: modifiedApiBody,
-			apiParameters: modifiedApiParameters,
-			toggleSwitchEvent: this.toggleSwitchEventModified,
-			changeApiUrlText: this.handleModifiedApiUrlText,
-			handleConnectApiURL: this.handleConnectModifiedApiURL,
-			handleInputProperties: this.handleInputModifiedApiProperties,
-			handleSaveEventAPI: this.handleSaveModifiedEventAPI
-		}
-
-		return (
-			<div id="modal-form-event" className="modal">
-	      <div className="modal-content">
-	        <h5 className="title center"><strong>Event handler</strong></h5>
-					{ this.renderEventContainer(createdEventApi) }
-					{ this.renderEventContainer(modifiedEventApi) }
-				</div>
-			</div>
-		)
-	}
-
-	renderEventContainer (input) {
-		const {
-			actionType,
-			isEventSwitchOn,
-			isURLConnected,
-			openApiTitle,
-			apiUrlText, 
-			apiBody,
-			apiParameters,
-			toggleSwitchEvent,
-			changeApiUrlText,
-			handleConnectApiURL,
-			handleInputProperties,
-			handleSaveEventAPI
-		} = input
-
-		return (
-			<div className="row bordered-container event-container">
-	  		<div className="col s10 zero-padding">
-	    		<span>
-	    			Starts when documents are created
-	    		</span>
-	    	</div>
-	    	<div className="col s2 right zero-padding">
-	        <div className="switch">
-				    <label>
-				      <input 
-				      	id="created-api-switch" 
-				      	type="checkbox" 
-				      	checked={isEventSwitchOn}
-				      	onChange={toggleSwitchEvent} />
-				      <span className="lever"></span>
-				    </label>
-				  </div>
-				</div>
-				{
-					isEventSwitchOn &&
-					<Fragment>
-						<div className="col s12 bordered-container url-container">
-							<div className="col s1">
-								<span>URL</span>
-							</div>
-							<div className="col s11 zero-padding">
-								<textarea className="textarea-url" value={apiUrlText} onChange={changeApiUrlText}>
-								</textarea>
-							</div>
-							<div className="col s9">
-							{ 
-								isURLConnected &&
-								<span className="connected-label">
-									[Connected]
-								</span>
-							}
-							{
-								isURLConnected === false &&
-								<span className="error-label">
-									[Error]
-								</span>
-							}
-							</div>
-							<div className="col s3 zero-padding btn-connect-container">
-								<span className={helper.isEmptyString(apiUrlText) ? 'btn disabled' : 'waves-effect waves-light btn'} onClick={handleConnectApiURL}>
-									Connect
-								</span>
-							</div>
-						</div>
-						{
-							isURLConnected &&
-							<div className="col s12 bordered-container parameters-container">
-								<div className="col s12 zero-padding border-bottom">
-									<span>{openApiTitle}</span>
-								</div>
-								{
-									apiParameters && 
-									apiParameters.length > 0 &&
-									apiParameters.map((parameter, paramIdx) => (
-										<div key={paramIdx} className="col s12">
-											<p className="parameter-name">{parameter.name}</p>
-											{
-												parameter.properties.map((property, propIdx) => (
-													<div key={propIdx} className="col s12">
-														<div className="col s4">
-															<span className="col s12 property-name">{property.name}</span>
-															<span className="col s12 property-type">{property.type}</span>
-														</div>
-														<div className="col s8">
-															<input 
-																id={`input-${actionType}-${parameter.name}-${property.name}`}
-																value={apiBody[parameter.name][property.name]}
-																onChange={e => handleInputProperties(parameter.name, property.name)} />
-														</div>
-													</div>
-												))
-											}
-										</div>
-									))
-								}
-							</div>
-						}
-	    			<span 
-	    				className={isURLConnected ? 
-	    					"waves-effect waves-light btn btn-save-api right" 
-	    					: "btn btn-save-api disabled right"} 
-	    				onClick={handleSaveEventAPI}
-	    			>
-	    				Save
-	    			</span>
-					</Fragment>
-				}
-	    </div>
-	  )
 	}
 
 	toggleSwitchEventCreated = () => {
@@ -966,27 +1104,6 @@ export default class FormDesigner extends Component {
 		modal.open()
 	}
 
-	renderModalEditView () {
-		const {	viewConfigString } = this.state
-
-		return (
-			<div id="modal-edit-view" className="modal">
-      	<div className="modal-content">
-      		<h5 className="center title"><strong>Edit view</strong></h5>
-      		<textarea 
-      			id="textarea-edit-view" 
-      			value={viewConfigString}
-      			onChange={this.changeViewConfig}/>
-      		<div className="btn-footer-modal">
-	      		<span className="waves-effect waves-light btn" onClick={this.setDefaultTableView}>Default</span>
-	      		<span className="waves-effect waves-light btn" onClick={this.closeModalEditView}>Cancel</span>
-	      		<span className="waves-effect waves-light btn" onClick={this.saveTableView}>Save</span>
-      		</div>
-      	</div>
-      </div>
-		)
-	}
-
 	closeModalEditView = () => {
 		const elem = document.getElementById('modal-edit-view')
 		const modal = M.Modal.getInstance(elem)
@@ -1073,3 +1190,7 @@ FormDesigner.defaultProps = {
 		},
 	]
 }
+
+const mapStateToProps = ({ user }) => ({ user })
+
+export default connect(mapStateToProps, null) (FormDesigner)

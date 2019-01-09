@@ -15,12 +15,7 @@ module.exports = (app) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
   	const collection = db.collection(`form${formId}`)
-    const data = { 
-      ...req.body,
-      formId,
-      createdTime: new Date(), 
-      createdBy: req.user._id
-    }
+    const data = { formId, ...req.body }
 
   	collection.insertOne(data, (err, result) => {
   		if (err) console.error(err)
@@ -37,11 +32,7 @@ module.exports = (app) => {
     const formId = url.query.id
     const recordId = url.query.record_id
     const collection = db.collection(`form${formId}`)
-    const updatedData = {
-      ...req.body,
-      modifiedTime: new Date(),
-      modifiedBy: req.user._id
-    }
+    const updatedData = { ...req.body }
 
     collection.updateOne({_id: recordId}, {$set: updatedData}, (err, obj) => {
       if (err) console.error(err)
