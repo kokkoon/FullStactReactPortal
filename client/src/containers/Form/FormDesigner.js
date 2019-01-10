@@ -486,28 +486,28 @@ class FormDesigner extends Component {
 		const date = new Date().toISOString()
 		
 		const createdTime = { 
-			fieldName: 'Created time', 
+			fieldName: 'createdTime', 
 			dataType: 'date', 
 			defaultValue: date,
 			showInTable: false
 		}
 
 		const createdBy = {
-			fieldName: 'Created by', 
+			fieldName: 'createdBy', 
 			dataType: 'string', 
 			defaultValue: user._id, 
 			showInTable: false
 		}
 
 		const modifiedTime = { 
-			fieldName: 'Modified time', 
+			fieldName: 'modifiedTime', 
 			dataType: 'date', 
 			defaultValue: date, 
 			showInTable: false
 		}
 
 		const modifiedBy = {
-			fieldName: 'Modified by', 
+			fieldName: 'modifiedBy', 
 			dataType: 'string', 
 			defaultValue: user._id, 
 			showInTable: false
@@ -860,12 +860,12 @@ class FormDesigner extends Component {
 		return fields.map(field => {
 			const { fieldName } = field
 
-			if (fieldName === 'Modified time') {
+			if (fieldName === 'modifiedTime') {
 				return { 
 					...field,
 					defaultValue: newDate, 
 				}
-			} else if (fieldName === 'Modified by') {
+			} else if (fieldName === 'modifiedBy') {
 				return {
 					...field,
 					defaultValue: user._id, 
