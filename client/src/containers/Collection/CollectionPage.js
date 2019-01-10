@@ -42,7 +42,7 @@ export default class CollectionPage extends Component {
         }
         {
           record &&
-          <div className="col s11">
+          <div className="col s12 table-container zero-padding">
             <table className="table-collection">
               <thead>
                 <tr>

@@ -1,5 +1,5 @@
 .collection-page {
-	margin: 0 24px 0 24px;
+	margin: 0 50px 0 50px;
 }
 
 .collection-page > .row {
@@ -15,8 +15,15 @@
 	left: 0;
 }
 
+.table-container {
+	max-width: 100%;
+	overflow-x: auto;
+	min-height: 70vh;
+}
+
 .table-collection {
 	border-spacing: 10px !important;
+	margin-bottom: 50px;
 }
 
 .table-collection thead {
