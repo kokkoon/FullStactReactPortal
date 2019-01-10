@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import * as actions from '../actions'
 import './App.css'
 
-import Topnav from './Topnav/Topnav'
+import Topnav from './Topnav'
 import User from './Admin/User'
 import Settings from './Admin/Settings'
 import DataInput from './Collection/DataInput'
@@ -15,9 +15,9 @@ import ExternalCollectionPage from './Collection/ExternalCollectionPage'
 import SidenavSetup from './Sidenav/SidenavSetup'
 import FormDesigner from './Form/FormDesigner'
 import DesignForm from './Form/DesignForm'
-import Dashboard from './Dashboard/Dashboard'
-import Landing from './LandingPage/Landing'
-import ProfilePage from './ProfilePage/ProfilePage'
+import Dashboard from './Dashboard'
+import Landing from './LandingPage'
+import ProfilePage from './ProfilePage'
 
 class App extends Component {
 
