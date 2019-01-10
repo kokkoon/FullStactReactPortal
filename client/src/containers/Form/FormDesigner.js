@@ -713,7 +713,7 @@ class FormDesigner extends Component {
 		const { fieldName, dataType, defaultValue } = this.state.input
 		
 		if (fields[currentIndex].fieldName !== fieldName) {
-			this.deleteFieldOnFormStructure(fields[currentIndex].fieldName])
+			this.deleteFieldOnFormStructure(fields[currentIndex].fieldName)
 		}
 		this.updateFormStructure(fieldName, dataType, defaultValue)
 		
