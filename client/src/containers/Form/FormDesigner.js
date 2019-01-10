@@ -17,6 +17,8 @@ class FormDesigner extends Component {
 		this.state = {
 			formId: undefined,
 			isCollectionNameOK: false,
+			hasCollectionNameChanged: false,
+			hasFormFieldsChanged: false,
 			// see formStructure data structure at the bottom of the code
 			formStructure: { title: 'New Collection', type: "object", properties: {} },
 			input: {
@@ -51,6 +53,8 @@ class FormDesigner extends Component {
 		const {
 			formId,
 			formStructure, 
+			hasCollectionNameChanged,
+			hasFormFieldsChanged,
 			isCollectionNameOK
 		} = this.state
 
@@ -82,7 +86,7 @@ class FormDesigner extends Component {
 							<input id="collection_name" type="text" value={collectionName} onChange={(e) => this.handleInputChange('collection_name', e)}/>
 						</div>
 						<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
-							 disabled={helper.isEmptyString(collectionName)}
+							 disabled={helper.isEmptyString(collectionName) || !hasCollectionNameChanged}
 							 data-position="right"
 							 data-tooltip="Check collection name"
 	        		 onClick={this.handleCheckCollectionName}>
@@ -100,7 +104,12 @@ class FormDesigner extends Component {
 			    { this.renderTableFormFields() }
 	        <div className="col s12">
 	        	<span className="waves-effect waves-light btn btn-submit right" 
-		        	 disabled={isEmpty(formStructure.properties) || isEmpty(collectionName) || !isCollectionNameOK} 
+		        	 disabled={
+		        	 	isEmpty(formStructure.properties) || 
+		        	 	isEmpty(collectionName) || 
+		        	 	!isCollectionNameOK || 
+		        	 	!hasFormFieldsChanged
+		        	 } 
 	        		 onClick={this.handleCreateCollection}>
 				    	{formId ? 'Update Collection' : 'Create collection'}
 				    </span>
@@ -444,6 +453,8 @@ class FormDesigner extends Component {
 			this.loadFormData(formId)
 			this.loadEventApiData(formId)
 			this.loadViewConfig(formId)
+
+			this.setState({ isCollectionNameOK: true })
 		}
 	}
 
@@ -603,31 +614,41 @@ class FormDesigner extends Component {
 			return field
 		})
 
-		this.setState({ fields })
+		this.setState({ fields, hasFormFieldsChanged: true })
 	}
 
 	handleClickAction = (actionType, index) => {
-		let { fields } = this.state
+		let { fields, input } = this.state
 
 		if (actionType === 'edit') {
-			const input = {
+			const newInput = {
+				...input,
 				fieldName: fields[index].fieldName,
 				dataType: fields[index].dataType,
 				defaultValue: fields[index].defaultValue
 			}
 
+			// disabled the action buttons until user click update field button
 			fields[index].action = fields[index].action.map(action => ({ ...action, enable: false }))
 
 			this.setState({ 
-				input,
+				input: newInput,
 				isNewField: false,
 				currentIndex: index,
 				fields
 			})
 		} else if (actionType === 'delete') {
+			this.deleteFieldOnFormStructure(fields[index].fieldName)
 			fields.splice(index, 1)
-			this.setState({ fields })
+			this.setState({ fields, hasFormFieldsChanged: true })
 		}
+	}
+
+	deleteFieldOnFormStructure = (fieldName) => {
+		const { formStructure } = this.state
+		delete formStructure.properties[fieldName]
+
+		this.setState({ formStructure })
 	}
 
 	handleAddField = () => {
@@ -660,6 +681,7 @@ class FormDesigner extends Component {
 
 		this.updateFormStructure(fieldName, dataType, defaultValue)
 		this.setState({ 
+			hasFormFieldsChanged: true,
 			input: {...input, ...emptyInput},
 			fields 
 		})
@@ -691,7 +713,7 @@ class FormDesigner extends Component {
 		const { fieldName, dataType, defaultValue } = this.state.input
 		
 		if (fields[currentIndex].fieldName !== fieldName) {
-			delete formStructure[fields[currentIndex].fieldName]
+			this.deleteFieldOnFormStructure(fields[currentIndex].fieldName])
 		}
 		this.updateFormStructure(fieldName, dataType, defaultValue)
 		
@@ -719,6 +741,7 @@ class FormDesigner extends Component {
 		}
 
 		this.setState({
+			hasFormFieldsChanged: true,
 			input: {...input, ...emptyInput},
 			isNewField: true,
 			currentIndex: -1,
@@ -732,6 +755,10 @@ class FormDesigner extends Component {
 		switch (inputType) {
 			case 'collection_name': 
 				input.collectionName = event.target.value
+				this.setState({	
+					hasCollectionNameChanged: true,
+					isCollectionNameOK: false
+				})
 				break
 
 			case 'field_name':
