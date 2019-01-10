@@ -120,7 +120,7 @@ class FormDesigner extends Component {
 		return (
 			<div className="col s12">
 				<span className="document-fields-label">Document fields</span>
-				<table className="table-collection centered responsive-table">
+				<table className="table-form-fields centered responsive-table">
           <thead>
             <tr>
               { 
