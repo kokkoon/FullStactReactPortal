@@ -8,6 +8,7 @@ import Topnav from './Topnav/Topnav'
 import User from './Admin/User'
 import Settings from './Admin/Settings'
 import DataInput from './Collection/DataInput'
+import SampleCollectionPage from '../components/SampleCollectionPage'
 import CollectionPage from './Collection/CollectionPage'
 import CollectionList from './Collection/CollectionList'
 import ExternalCollectionPage from './Collection/ExternalCollectionPage'
@@ -30,6 +31,7 @@ class App extends Component {
           <Route exact path="/user" component={User} />
           <Route exact path="/settings" component={Settings} />
           <Route exact path="/data-input" component={DataInput} />
+          <Route exact path="/sample-collection" component={SampleCollectionPage} />
           <Route exact path="/collection" component={CollectionPage} />
           <Route exact path="/collection-list" component={CollectionList} />
           <Route exact path="/form-designer" component={FormDesigner} />

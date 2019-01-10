@@ -2,7 +2,9 @@ import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import M from 'materialize-css/dist/js/materialize.min.js'
+import { isEmpty } from 'lodash'
 
+import initialSidenavConfig from './initialSidenavConfig'
 import './Sidenav.css'
 import * as ACT from '../../actions'
 
@@ -17,11 +19,13 @@ class Sidenav extends Component {
 
 	render() {
 		const { selectedNavItem } = this.state
-		const { 
-			user,
-			groupLinks
-		} = this.props;
+		const { user } = this.props
+		let { groupLinks } = this.props
 
+		if (!groupLinks || isEmpty(groupLinks)) {
+			groupLinks = initialSidenavConfig.groupLinks
+		}
+		
 		return (
 			<Fragment>
 			{/* eslint-disable-next-line */}
