@@ -1,5 +1,5 @@
 .collection-page {
-	margin: 0 10vw 0 10vw;
+	margin: 0 24px 0 24px;
 }
 
 .collection-page > .row {
@@ -16,25 +16,34 @@
 }
 
 .table-collection {
-	border: 1px solid rgba(0,0,0,0.12);
 	border-spacing: 10px !important;
 }
 
-.delete-button-container {
-	padding-left: 0 !important;
+.table-collection thead {
+	margin: 10px;
+	padding: 10px;
 }
 
-.table-delete-button {
-	border-color: transparent;
+.table-collection th, .table-collection td {
+	padding: 15px;
+	border-top: solid 1px rgba(0,0,0,0.12);
+	border-bottom: solid 1px rgba(0,0,0,0.12);
 }
 
-.table-delete-button th {
-	height: 52px;
+.table-collection th:first-child, .table-collection td:first-child {
+	border-left: solid 1px rgba(0,0,0,0.12);
 }
 
-.table-delete-button tr {
-	height: 52px;
-	border-color: transparent;
+.table-collection th:last-child, .table-collection td:nth-last-child(2) {
+	border-right: solid 1px rgba(0,0,0,0.12);
+}
+
+.table-collection td:last-child {
+	border: unset;
+}
+
+.table-collection tr {
+	border: unset;
 }
 
 .cell-delete-btn-container {
@@ -49,15 +58,6 @@
 	margin-top: 10px;
 }
 
-.button-new a {
+.button-new .btn {
 	width: 150px;
-}
-
-thead {
-	margin: 10px;
-	padding: 10px;
-}
-
-th, td {
-	padding: 15px;
 }

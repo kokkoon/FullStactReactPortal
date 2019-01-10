@@ -42,56 +42,41 @@ export default class CollectionPage extends Component {
         }
         {
           record &&
-          <Fragment>
-            <div className="col s11">
-                <table className="table-collection">
-                  <thead>
-                    <tr>
-                      { 
-                        !isEmpty(column) && 
-                        !isEmpty(tableViewConfig) &&
-                        column.map((c, i) => <th key={i}>{tableViewConfig[c].displayName}</th>) 
-                      }
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    { 
-                      record.map((r,i) => (
-                        <tr key={i}>
-                          {
-                            Object.keys(r).filter(key => column.indexOf(key) >= 0)
-                              .sort((a, b) => tableViewConfig[a].order - tableViewConfig[b].order)
-                              .map((filteredKey, idx) => (
-                                <td key={idx}>{r[filteredKey]}</td>
-                              ))
-                          }
-                        </tr>
-                      )) 
-                    }
-                  </tbody>
-                </table>
-            </div>
-            <div className="col s1 delete-button-container">
-              <table className="table-delete-button">
-                <thead><tr><th></th></tr></thead>
-                <tbody>
+          <div className="col s11">
+            <table className="table-collection">
+              <thead>
+                <tr>
                   { 
-                    record && record.map((r, i) => (
-                      <tr key={i}>
-                        <td className="cell-delete-btn-container">
-                          <span className="waves-effect waves-light btn-floating red" 
-                             onClick={e => this.deleteRecord(i)}>
-                            <i className="small material-icons">delete</i>
-                          </span>
-                        </td>
-                      </tr>
-                    ))
+                    !isEmpty(column) && 
+                    !isEmpty(tableViewConfig) &&
+                    column.map((c, i) => <th key={i}>{tableViewConfig[c].displayName}</th>) 
                   }
-                </tbody>
-              </table>
-            </div>
-          </Fragment>
+                </tr>
+              </thead>
+
+              <tbody>
+                { 
+                  record.map((r,i) => (
+                    <tr key={i}>
+                      {
+                        Object.keys(r).filter(key => column.indexOf(key) >= 0)
+                          .sort((a, b) => tableViewConfig[a].order - tableViewConfig[b].order)
+                          .map((filteredKey, idx) => (
+                            <td key={idx}>{r[filteredKey]}</td>
+                          ))
+                      }
+                      <td className="cell-delete-btn-container">
+                        <span className="waves-effect waves-light btn-floating red" 
+                           onClick={e => this.deleteRecord(i)}>
+                          <i className="small material-icons">delete</i>
+                        </span>
+                      </td>
+                    </tr>
+                  )) 
+                }
+              </tbody>
+            </table>
+          </div>
         }
         </div>
       </div>
