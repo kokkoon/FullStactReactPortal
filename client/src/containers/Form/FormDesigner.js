@@ -19,19 +19,20 @@ class FormDesigner extends Component {
 			isCollectionNameOK: false,
 			hasCollectionNameChanged: false,
 			hasFormFieldsChanged: false,
-			// see formStructure data structure at the bottom of the code
-			formStructure: { title: 'New Collection', type: "object", properties: {} },
+			formStructure: { title: 'New Collection', type: "object", properties: {} }, // see formStructure data structure at the bottom of the code
 			input: {
 				collectionName: '',
 				fieldName: '',
 				dataType: '',
-				defaultValue: ''
+				defaultValue: '',
+				arrayField: ''
 			},
 			isNewField: true,
 			currentIndex: -1,
 			isFieldNameExisted: false,
-			// see fields data structure at the bottom of the code
-			fields: [],
+			fields: [], // see fields data structure at the bottom of the code
+			arrayFields: [],
+			isFieldOfArray: false,
 			isEventCreatedSwitchOn: false,
 			isEventModifiedSwitchOn: false,
 			isURLExtWorkflowConnected: undefined,
@@ -82,7 +83,7 @@ class FormDesigner extends Component {
 				<div className="col s12 first-row-container">
 					<span className="collection-name-label"> Collection name : </span>
 					<div className="input-field inline collection-name-input">
-						<input id="collection_name" type="text" value={collectionName} onChange={(e) => this.handleInputChange('collection_name', e)}/>
+						<input id="collection_name" type="text" value={collectionName} onChange={event => this.handleInputChange('collection_name', event)}/>
 					</div>
 					<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
 						 disabled={helper.isEmptyString(collectionName) || !hasCollectionNameChanged}
@@ -145,7 +146,18 @@ class FormDesigner extends Component {
               fields && fields.map((field, index) => (
                 <tr key={index}>
                   <td className="left">{field.fieldName}</td>
-                  <td>{field.dataType}</td>
+                  <td>
+                  	{field.dataType}
+                  	{
+                  		field.dataType === 'array' 
+                  		? <i className="material-icons" 
+                  				onClick={e => this.handleShowArrayItems(field)}>
+                  				arrow_drop_down
+                  			</i> 
+                  		: ''
+                  	}
+                  	{ this.renderArrayItems(field) }
+                  </td>
                   <td>{field.defaultValue}</td>
                   <td>
                   	<label>
@@ -153,7 +165,7 @@ class FormDesigner extends Component {
 							        	type="checkbox" 
 							        	className="filled-in" 
 							        	checked={field.showInTable ? "checked" : ""} 
-							        	onChange={this.handleCheck.bind(this, index)} 
+							        	onChange={this.handleToggleShowInTable.bind(this, index)} 
 							        />
 							        <span> </span>
 							      </label>
@@ -202,6 +214,24 @@ class FormDesigner extends Component {
 		)
 	}
 
+	renderArrayItems(field) {
+		const { arrayFields } = this.state
+		const index = arrayFields.findIndex(arrField => arrField.fieldName === field.fieldName)
+		const arrayField = arrayFields[index]
+
+		if (field.dataType === 'array' && arrayField.isShowItems) {
+			return (
+				<div>
+				{
+					field.items.map((item, idx) => (
+						<p>{idx}: {item.fieldName} - {item.dataType} - {item.defaultValue} </p>
+					))
+				}
+				</div>
+			)
+		}
+	}
+
 	renderCardAddNewField () {
 		const {
 			isNewField,
@@ -221,23 +251,24 @@ class FormDesigner extends Component {
        		<div className="input-field-container col s10">
        			<div className="row zero-margin">
 							<div className="input-field col s4">
-								<input id="field_name" type="text" value={fieldName} onChange={(e) => this.handleInputChange('field_name', e)}/>
+								<input id="field_name" type="text" value={fieldName} onChange={event => this.handleInputChange('field_name', event)}/>
 			          <label htmlFor="field_name">Field name</label>
 							</div>
 							<div className="col s4">
 							  <div className="input-field">
-							    <select value={dataType} onChange={(e) => this.handleInputChange('data_type', e)}>
+							    <select value={dataType} onChange={event => this.handleInputChange('data_type', event)}>
 							      <option value="">Data type</option>
 							      <option value="string">String</option>
 							      <option value="number">Number</option>
 							      <option value="date">Date</option>
 							      <option value="boolean">Boolean</option>
 							      <option value="object">Object</option>
+							      <option value="array">Array</option>
 							    </select>
 							  </div>
 							</div>
 							<div className="input-field col s4">
-								<input id="default_value" type="text" value={defaultValue} onChange={(e) => this.handleInputChange('default_value', e)}/>
+								<input id="default_value" type="text" value={defaultValue} onChange={event => this.handleInputChange('default_value', event)}/>
 			          <label htmlFor="default_value">Default value</label>
 							</div>
 						</div>
@@ -251,7 +282,50 @@ class FormDesigner extends Component {
 				    </span>
 				  </div>
 				</div>
+			  { this.renderInputFieldOfArray() }
       </div>
+		)
+	}
+
+	renderInputFieldOfArray() {
+		const { hasArrayInFormField, isFieldOfArray, arrayFields } = this.state
+		const { dataType, arrayField } = this.state.input
+
+		return (
+			hasArrayInFormField &&
+			<div className="row">
+				<div className="col s10">
+					<div className="col s4 zero-padding">
+				  	<label>
+			        <input 
+			        	type="checkbox" 
+			        	className="filled-in" 
+			        	checked={isFieldOfArray ? "checked" : ""} 
+			        	onChange={this.handleToggleIsFieldOfArray} 
+			        />
+			        <span>{isFieldOfArray ? 'Field of array : ' : 'Field of array ?'}</span>
+			      </label>
+			  	</div>
+			  	<div className="col s4 zero-padding">
+					  <div>
+					    <select 
+					    	id="array-field-select" 
+					    	className="browser-default"
+					    	disabled={!isFieldOfArray}
+					    	value={arrayField} 
+					    	onChange={event => this.handleInputChange('array_field', event)}
+					    >
+					      <option value="" disabled>Array field</option>
+					      {
+					      	arrayFields.map((field, index) => (
+					      		<option key={index} value={field.fieldName}>{field.fieldName}</option>
+					      	))
+					      }
+					    </select>
+					  </div>
+					</div>
+				</div>
+		  </div>
 		)
 	}
 
@@ -606,7 +680,15 @@ class FormDesigner extends Component {
 		.catch(error => console.error(error))
 	}
 
-	handleCheck = (i) => {
+	handleShowArrayItems = (field) => {
+		let { arrayFields } = this.state
+		const index = arrayFields.findIndex(arrField => arrField.fieldName === field.fieldName)
+		arrayFields[index].isShowItems = !arrayFields[index].isShowItems
+
+		this.setState({ arrayFields })
+	}
+
+	handleToggleShowInTable = (i) => {
 		const { fields } = this.state
 
 		fields.map((field, idx) => {
@@ -620,14 +702,19 @@ class FormDesigner extends Component {
 	}
 
 	handleClickAction = (actionType, index) => {
-		let { fields, input } = this.state
+		let { 
+			fields,
+			arrayFields: arrayFields_state, 
+			input
+		} = this.state
+		const field = fields[index]
 
 		if (actionType === 'edit') {
 			const newInput = {
 				...input,
-				fieldName: fields[index].fieldName,
-				dataType: fields[index].dataType,
-				defaultValue: fields[index].defaultValue
+				fieldName: field.fieldName,
+				dataType: field.dataType,
+				defaultValue: field.defaultValue
 			}
 
 			// disabled all action buttons until user click update field button
@@ -642,9 +729,17 @@ class FormDesigner extends Component {
 				fields
 			})
 		} else if (actionType === 'delete') {
-			this.deleteFieldOnFormStructure(fields[index].fieldName)
+			const hasArrayInFormField = this.update_hasArrayInFormField_onDeletion(fields, field)
+			const arrayFields = this.deleteArrayField(arrayFields_state, field)
+			this.deleteFieldOnFormStructure(field.fieldName)
 			fields.splice(index, 1)
-			this.setState({ fields, hasFormFieldsChanged: true })
+
+			this.setState({ 
+				fields, 
+				hasFormFieldsChanged: true,
+				hasArrayInFormField ,
+				arrayFields
+			})
 		}
 	}
 
@@ -664,12 +759,87 @@ class FormDesigner extends Component {
 		this.setState({ formStructure })
 	}
 
-	handleAddField = () => {
-		const { fields, input } = this.state
-		const { fieldName, dataType, defaultValue } = this.state.input
+	update_hasArrayInFormField_onDeletion = (fields, deletedField) => {
+		const { hasArrayInFormField: hasArrayInFormField_state  } = this.state
+
+		if (isEmpty(fields)) return false
 		
-		// show new field onto table
-		fields.push({
+		else if (hasArrayInFormField_state && deletedField.dataType === 'array') {
+			let hasArrayInFormField = false
+
+			fields.forEach(field => {
+				if (field !== deletedField) {
+					hasArrayInFormField = hasArrayInFormField || field.dataType === 'array'
+				}
+			})
+
+			return hasArrayInFormField
+		}
+
+		return hasArrayInFormField_state
+	}
+
+	deleteArrayField = (arrayFields_state, { fieldName }) => {
+		// const index = arrayFields_state.indexOf(fieldName)
+		const index = arrayFields_state.findIndex(field => field.fieldName === fieldName)
+		const arrayFields = [...arrayFields_state]
+		arrayFields.splice(index, 1)
+		
+		return arrayFields
+	}
+
+	handleAddField = () => {
+		const { fieldName, dataType, defaultValue, arrayField } = this.state.input
+		const { 
+			fields, 
+			arrayFields,
+			hasArrayInFormField: hasArrayInFormField_state,
+			isFieldOfArray 
+		} = this.state
+
+		const newField = { fieldName, dataType, defaultValue }
+		let newFields = fields
+
+		if (isFieldOfArray && !helper.isEmptyString(arrayField)) {
+			newFields = this.addNewArrayFieldItem(fields, arrayField, newField)
+			// TODO: add update form structure method for array item in line below
+			// or could also be implemented inside this.updateFormStructure(args)
+
+		} else {
+			newFields = this.addNewFormFields(fields, newField)
+			this.updateFormStructure(fieldName, dataType, defaultValue)
+		}
+		
+		this.emptyFieldInput()
+
+		let hasArrayInFormField = false || hasArrayInFormField_state
+		let newArrayFields = arrayFields
+
+		if (dataType === 'array') {
+			hasArrayInFormField = true
+			newArrayFields = this.addNewArrayField(arrayFields, newField)
+		}
+
+		this.setState({ 
+			hasFormFieldsChanged: true,
+			hasArrayInFormField,
+			fields: newFields,
+			arrayFields: newArrayFields
+		})
+	}
+
+	addNewArrayFieldItem = (fields, arrayField, newField) => {
+		return fields.map(field => {
+			if (field.fieldName === arrayField) {
+				field.items.push(newField)
+			}
+
+			return field
+		})
+	}
+
+	addNewFormFields = (fields, { fieldName, dataType, defaultValue }) => {
+		let newField = {
 			fieldName, 
 			dataType, 
 			defaultValue, 
@@ -684,19 +854,31 @@ class FormDesigner extends Component {
 					enable: true
 				}
 			]
-		})
+		}
+
+		if (dataType === 'array') {
+			newField.items = []
+		}
+
+		return [...fields, newField]
+	}
+
+	emptyFieldInput = () => {
+		const { input } = this.state
 
 		const emptyInput = {
 			fieldName: '',
 			dataType: '',
-			defaultValue: ''
+			defaultValue: '',
+			arrayField: ''
 		}
 
-		this.updateFormStructure(fieldName, dataType, defaultValue)
 		this.setState({ 
-			hasFormFieldsChanged: true,
-			input: {...input, ...emptyInput},
-			fields 
+			isFieldOfArray: false,
+			input: {
+				...input, 
+				...emptyInput
+			}
 		})
 	}
 
@@ -721,13 +903,21 @@ class FormDesigner extends Component {
 		this.setState({ formStructure })
 	}
 
+	addNewArrayField = (arrayFields, { fieldName }) => {
+		return [
+			...arrayFields, 
+			{ fieldName, isShowItems: false }
+		]
+	}
+
 	handleUpdateField = () => {
-		let { fields } = this.state
-		const { currentIndex, input } = this.state
 		const { fieldName, dataType, defaultValue } = this.state.input
-		
-		if (fields[currentIndex].fieldName !== fieldName) {
-			this.deleteFieldOnFormStructure(fields[currentIndex].fieldName)
+		let { fields } = this.state
+		const { currentIndex, arrayFields: arrayFields_state } = this.state
+		const field = fields[currentIndex]
+
+		if (field.fieldName !== fieldName) {
+			this.deleteFieldOnFormStructure(field.fieldName)
 		}
 		this.updateFormStructure(fieldName, dataType, defaultValue)
 		
@@ -750,28 +940,32 @@ class FormDesigner extends Component {
 
 		// re-enable all action buttons
 		fields = this.toggleActionButtons(fields, true)
+		this.emptyFieldInput()
 
-		const emptyInput = {
-			fieldName: '',
-			dataType: '',
-			defaultValue: ''
+		let arrayFields = arrayFields_state
+
+		if (field.dataType === 'array' && field.dataType !== dataType) { // change data type from array to non array
+			arrayFields = this.deleteArrayField(arrayFields_state, field)
+		} 
+		else if (field.dataType !== 'array' && dataType === 'array') { // change data type from non array to array
+			arrayFields = this.addNewArrayField(arrayFields_state, field)
 		}
 
 		this.setState({
 			hasFormFieldsChanged: true,
-			input: {...input, ...emptyInput},
 			isNewField: true,
 			currentIndex: -1,
-			fields
+			fields, 
+			arrayFields
 		})
 	}
 
-	handleInputChange = (inputType, event) => {
+	handleInputChange = (inputType, {target}) => {
 		const { input, fields } = this.state
 
 		switch (inputType) {
 			case 'collection_name': 
-				input.collectionName = event.target.value
+				input.collectionName = target.value
 				this.setState({	
 					hasCollectionNameChanged: true,
 					isCollectionNameOK: false
@@ -779,24 +973,32 @@ class FormDesigner extends Component {
 				break
 
 			case 'field_name':
-				input.fieldName = event.target.value
+				input.fieldName = target.value
 				this.setState({ 
-					isFieldNameExisted: fields.map(f => f.fieldName).indexOf(event.target.value) >= 0 
+					isFieldNameExisted: fields.map(f => f.fieldName).indexOf(target.value) >= 0 
 				})
 				break
 
 			case 'data_type':
-				input.dataType = event.target.value
+				input.dataType = target.value
 				break
 
 			case 'default_value':
-				input.defaultValue = event.target.value
+				input.defaultValue = target.value
+				break
+
+			case 'array_field':
+				input.arrayField = target.value
 				break
 
 			default:
 		}
 		
 		this.setState({ input	})
+	}
+
+	handleToggleIsFieldOfArray = ({ target }) => {
+		this.setState({ isFieldOfArray: target.checked })
 	}
 
 	handleCheckCollectionName = () => {
