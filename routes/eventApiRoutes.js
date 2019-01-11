@@ -143,7 +143,8 @@ module.exports = (app) => {
           url: apiCompleteUrl, 
           method: apiMethod, 
           body: apiBodyProperties,
-          parameters: apiParameters
+          parameters: apiParameters,
+          isActive: true
         }
       }
 
