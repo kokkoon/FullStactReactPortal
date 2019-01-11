@@ -61,61 +61,59 @@ class FormDesigner extends Component {
 		return (
 			<div className="form-designer">
 				<h4 className="center">{formId ? 'Update Collection' : 'Create New Collection'}</h4>
-				<div className="row">
-					<div className="col s12 btn-form">
-					{
-						formId &&
-						(
-							<Fragment>
-								<span className="waves-effect waves-light btn" onClick={this.openModalFormEvent}>
-						    	Events
-						    </span>
-						    <span className="waves-effect waves-light btn" onClick={this.openModalEditView}>
-						    	Edit View
-						    </span>
-						    <Link className="waves-effect waves-light btn" to={`/design-form?id=${formId}`}>
-						    	Edit Form
-						    </Link>
-				    	</Fragment>
-				    )
-					}
-					</div>
-					<div className="col s12 first-row-container">
-						<span className="collection-name-label"> Collection name : </span>
-						<div className="input-field inline collection-name-input">
-							<input id="collection_name" type="text" value={collectionName} onChange={(e) => this.handleInputChange('collection_name', e)}/>
-						</div>
-						<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
-							 disabled={helper.isEmptyString(collectionName) || !hasCollectionNameChanged}
-							 data-position="right"
-							 data-tooltip="Check collection name"
-	        		 onClick={this.handleCheckCollectionName}>
-				    	Check
-				    </span>
-				    {
-				    	!formId &&
-				    	(
-				    		<span className="waves-effect waves-light btn btn-collection-templates">
-						    	Collection Templates
-						    </span>
-						  )
-				    }
-			    </div>
-			    { this.renderTableFormFields() }
-	        <div className="col s12">
-	        	<span className="waves-effect waves-light btn btn-submit right" 
-		        	 disabled={
-		        	 	isEmpty(formStructure.properties) || 
-		        	 	isEmpty(collectionName) || 
-		        	 	!isCollectionNameOK || 
-		        	 	!hasFormFieldsChanged
-		        	 } 
-	        		 onClick={this.handleCreateCollection}>
-				    	{formId ? 'Update Collection' : 'Create collection'}
-				    </span>
-	        </div>
+				<div className="col s12 btn-form">
+				{
+					formId &&
+					(
+						<Fragment>
+							<span className="waves-effect waves-light btn" onClick={this.openModalFormEvent}>
+					    	Events
+					    </span>
+					    <span className="waves-effect waves-light btn" onClick={this.openModalEditView}>
+					    	Edit View
+					    </span>
+					    <Link className="waves-effect waves-light btn" to={`/design-form?id=${formId}`}>
+					    	Edit Form
+					    </Link>
+			    	</Fragment>
+			    )
+				}
 				</div>
-        { this.renderCardAddNewField() }
+				<div className="col s12 first-row-container">
+					<span className="collection-name-label"> Collection name : </span>
+					<div className="input-field inline collection-name-input">
+						<input id="collection_name" type="text" value={collectionName} onChange={(e) => this.handleInputChange('collection_name', e)}/>
+					</div>
+					<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
+						 disabled={helper.isEmptyString(collectionName) || !hasCollectionNameChanged}
+						 data-position="right"
+						 data-tooltip="Check collection name"
+        		 onClick={this.handleCheckCollectionName}>
+			    	Check
+			    </span>
+			    {
+			    	!formId &&
+			    	(
+			    		<span className="waves-effect waves-light btn btn-collection-templates">
+					    	Collection Templates
+					    </span>
+					  )
+			    }
+		    </div>
+		    { this.renderTableFormFields() }
+        <div className="row btn-submit-container">
+        	<span className="waves-effect waves-light btn btn-submit right" 
+	        	 disabled={
+	        	 	isEmpty(formStructure.properties) || 
+	        	 	isEmpty(collectionName) || 
+	        	 	!isCollectionNameOK || 
+	        	 	!hasFormFieldsChanged
+	        	 } 
+        		 onClick={this.handleCreateCollection}>
+			    	{formId ? 'Update Collection' : 'Create collection'}
+			    </span>
+        </div>
+      	{ this.renderCardAddNewField() }
         { this.renderModalFormEvent() }
         { this.renderModalEditView() }
       </div>
@@ -218,37 +216,41 @@ class FormDesigner extends Component {
 
 		return (
 			<div className="add-new-field card-panel indigo lighten-5">
-        <h4 className="center">{isNewField ? 'Add new field' : 'Edit field'}</h4>	
-       	<div className="row">
-					<div className="input-field col s6">
-						<input id="field_name" type="text" value={fieldName} onChange={(e) => this.handleInputChange('field_name', e)}/>
-	          <label htmlFor="field_name">Field name</label>
+        <span className="title"><strong>{isNewField ? 'Add new field' : 'Edit field'}</strong></span>	
+       	<div className="row zero-margin field-input-row">
+       		<div className="input-field-container col s10">
+       			<div className="row zero-margin">
+							<div className="input-field col s4">
+								<input id="field_name" type="text" value={fieldName} onChange={(e) => this.handleInputChange('field_name', e)}/>
+			          <label htmlFor="field_name">Field name</label>
+							</div>
+							<div className="col s4">
+							  <div className="input-field">
+							    <select value={dataType} onChange={(e) => this.handleInputChange('data_type', e)}>
+							      <option value="">Data type</option>
+							      <option value="string">String</option>
+							      <option value="number">Number</option>
+							      <option value="date">Date</option>
+							      <option value="boolean">Boolean</option>
+							      <option value="object">Object</option>
+							    </select>
+							  </div>
+							</div>
+							<div className="input-field col s4">
+								<input id="default_value" type="text" value={defaultValue} onChange={(e) => this.handleInputChange('default_value', e)}/>
+			          <label htmlFor="default_value">Default value</label>
+							</div>
+						</div>
 					</div>
-					<div className="col s6">
-					  <div className="input-field col s12">
-					    <select value={dataType} onChange={(e) => this.handleInputChange('data_type', e)}>
-					      <option value="">Data type</option>
-					      <option value="string">String</option>
-					      <option value="number">Number</option>
-					      <option value="date">Date</option>
-					      <option value="boolean">Boolean</option>
-					      <option value="object">Object</option>
-					    </select>
-					  </div>
-					</div>
-					<div className="input-field col s6">
-						<input id="default_value" type="text" value={defaultValue} onChange={(e) => this.handleInputChange('default_value', e)}/>
-	          <label htmlFor="default_value">Default value</label>
-					</div>
+					<div className="col s2 btn-add-container">
+		        <span className="waves-effect waves-light btn" 
+		        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || ( isFieldNameExisted && isNewField )} 
+		        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
+		        >
+				    	{isNewField ? 'Add' : 'Update'}
+				    </span>
+				  </div>
 				</div>
-				<div className="row btn-add-container">
-	        <span className="waves-effect waves-light btn" 
-	        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || ( isFieldNameExisted && isNewField )} 
-	        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
-	        >
-			    	{isNewField ? 'Add' : 'Update'}
-			    </span>
-			  </div>
       </div>
 		)
 	}
@@ -628,8 +630,10 @@ class FormDesigner extends Component {
 				defaultValue: fields[index].defaultValue
 			}
 
-			// disabled the action buttons until user click update field button
-			fields[index].action = fields[index].action.map(action => ({ ...action, enable: false }))
+			// disabled all action buttons until user click update field button
+			fields = this.toggleActionButtons(fields, false)
+
+			document.getElementById('field_name').focus()
 
 			this.setState({ 
 				input: newInput,
@@ -642,6 +646,15 @@ class FormDesigner extends Component {
 			fields.splice(index, 1)
 			this.setState({ fields, hasFormFieldsChanged: true })
 		}
+	}
+
+	toggleActionButtons = (fields, toBeEnable) => {
+		return fields.map(field => {
+			if(field.action) {
+				field.action = field.action.map(action => ({ ...action, enable: toBeEnable }))
+			}	
+			return field
+		})
 	}
 
 	deleteFieldOnFormStructure = (fieldName) => {
@@ -709,7 +722,8 @@ class FormDesigner extends Component {
 	}
 
 	handleUpdateField = () => {
-		const { fields, formStructure, currentIndex, input } = this.state
+		let { fields } = this.state
+		const { currentIndex, input } = this.state
 		const { fieldName, dataType, defaultValue } = this.state.input
 		
 		if (fields[currentIndex].fieldName !== fieldName) {
@@ -733,6 +747,9 @@ class FormDesigner extends Component {
 				}
 			]
 		}
+
+		// re-enable all action buttons
+		fields = this.toggleActionButtons(fields, true)
 
 		const emptyInput = {
 			fieldName: '',

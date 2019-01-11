@@ -1,5 +1,9 @@
+.zero-margin {
+	margin: 0;
+}
+
 .form-designer {
-	margin: 20px 10vw 0 10vw;
+	margin: 20px 10vw 10vh 10vw;
 	text-align: left;
 }
 
@@ -57,7 +61,7 @@
 
 .table-form-fields thead, .table-form-fields th, .table-form-fields td {
 	margin: 10px;
-	padding: 10px;
+	padding: 2px;
 }
 
 .btn-action {
@@ -66,21 +70,61 @@
 	padding-left: 8px;
 }
 
+.btn-submit-container {
+	position: relative;
+	display: block;
+}
+
 .btn-submit {
 	position: relative;
 	top: 10px;
 }
 
 .add-new-field {
-	margin: 30px 10.875px 0 10.875px;
+	margin: 30px 0 0 0;
+	padding: 12px;
+}
+
+.add-new-field .title {
+	display: block;
+	text-align: center;
+	font-size: 20px;
+}
+
+.add-new-field input, .add-new-field select {
+	height: 2.5rem !important;
+	line-height: 2.5rem !important;
+}
+
+.add-new-field .field-input-row {
+	margin-bottom: 0;
+}
+
+.add-new-field .input-field {
+	margin-bottom: 0;
+}
+
+#modal-edit-field {
+	width: 80vw;
+	margin-top: 30vh;
+	overflow: visible;
+}
+
+#modal-edit-field .modal-content {
+	padding: 0;
+}
+
+#modal-edit-field .modal-content .add-new-field {
+	margin-top: 0;
 }
 
 .btn-add-container {
 	text-align: center;
+	margin-top: 14.5px;
 }
 
 .btn-add-container > .btn {
-	width: 150px;
+	width: 100%;
 }
 
 #modal-form-event {
