@@ -64,6 +64,24 @@
 	padding: 2px;
 }
 
+.table-form-fields td.left {
+	margin: 5px;
+}
+
+.table-form-fields .icon-show-array-item {
+	cursor: pointer;
+}
+
+.table-form-fields .cell-array-item {
+	margin: 5px;
+	font-style: italic;
+}
+
+.table-form-fields .cell-array-item.name-field {
+	padding-left: 30px;
+	text-align: left;
+}
+
 .btn-action {
 	margin-right: 7px;
 	width: 35px;

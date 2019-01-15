@@ -144,68 +144,72 @@ class FormDesigner extends Component {
             }
             { 
               fields && fields.map((field, index) => (
-                <tr key={index}>
-                  <td className="left">{field.fieldName}</td>
-                  <td>
-                  	{field.dataType}
+              	<Fragment>
+	                <tr key={index}>
+	                  <td className="left">
+                  	{
+                  		field.fieldName
+                  	}
                   	{
                   		field.dataType === 'array' 
-                  		? <i className="material-icons" 
+                  		? <i className="material-icons icon-show-array-item" 
                   				onClick={e => this.handleShowArrayItems(field)}>
                   				arrow_drop_down
-                  			</i> 
+                  			</i>
                   		: ''
-                  	}
-                  	{ this.renderArrayItems(field) }
-                  </td>
-                  <td>{field.defaultValue}</td>
-                  <td>
-                  	<label>
-							        <input 
-							        	type="checkbox" 
-							        	className="filled-in" 
-							        	checked={field.showInTable ? "checked" : ""} 
-							        	onChange={this.handleToggleShowInTable.bind(this, index)} 
-							        />
-							        <span> </span>
-							      </label>
-							    </td>
-							    <td>
-							    {
-							    	field.action &&
-							    	field.action.map((action, index2) => {
-							    		if (action.name === 'edit') {
-						    				return (
-						    			    <span key={index2}
-						    			    	 className={action.enable 
-						    			    							? "waves-effect waves-light btn btn-action blue lighten-2 tooltipped"
-						    			    							: "waves-effect waves-light btn btn-action blue lighten-2 disabled"}
-						    			    	 data-position="bottom" 
-						    			    	 data-tooltip="edit field"
-						    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
-						    			    >
-						    			    	<i className="material-icons">{action.name}</i>
-						    			    </span>
-						    			  )
-					    			  } else if (action.name === 'delete') {
-					    			  	return (
-						    			    <span key={index2}
-						    			    	 className={action.enable 
-						    			    							? "waves-effect waves-light btn btn-action red lighten-2 tooltipped"
-						    			    							: "waves-effect waves-light btn btn-action red lighten-2 disabled"}
-						    			    	 data-position="bottom" 
-						    			    	 data-tooltip="delete field"
-						    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
-						    			    >
-						    			    	<i className="material-icons">{action.name}</i>
-						    			    </span>
-						    			  )
-					    			  }
-					    			  return <div key={index2}/>
-							    	})
-							    }
-							    </td>
-                </tr>
+	                  }
+	                  </td>
+	                  <td>{field.dataType}</td>
+	                  <td>{field.defaultValue}</td>
+	                  <td>
+	                  	<label>
+								        <input 
+								        	type="checkbox" 
+								        	className="filled-in" 
+								        	checked={field.showInTable ? "checked" : ""} 
+								        	onChange={this.handleToggleShowInTable.bind(this, index)} 
+								        />
+								        <span> </span>
+								      </label>
+								    </td>
+								    <td>
+								    {
+								    	field.action &&
+								    	field.action.map((action, index2) => {
+								    		if (action.name === 'edit') {
+							    				return (
+							    			    <span key={index2}
+							    			    	 className={action.enable 
+							    			    							? "waves-effect waves-light btn btn-action blue lighten-2 tooltipped"
+							    			    							: "waves-effect waves-light btn btn-action blue lighten-2 disabled"}
+							    			    	 data-position="bottom" 
+							    			    	 data-tooltip="edit field"
+							    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
+							    			    >
+							    			    	<i className="material-icons">{action.name}</i>
+							    			    </span>
+							    			  )
+						    			  } else if (action.name === 'delete') {
+						    			  	return (
+							    			    <span key={index2}
+							    			    	 className={action.enable 
+							    			    							? "waves-effect waves-light btn btn-action red lighten-2 tooltipped"
+							    			    							: "waves-effect waves-light btn btn-action red lighten-2 disabled"}
+							    			    	 data-position="bottom" 
+							    			    	 data-tooltip="delete field"
+							    			    	 onClick={this.handleClickAction.bind(this, action.name, index)}
+							    			    >
+							    			    	<i className="material-icons">{action.name}</i>
+							    			    </span>
+							    			  )
+						    			  }
+						    			  return <div key={index2}/>
+								    	})
+								    }
+								    </td>
+	                </tr>
+                	{ this.renderArrayItems(field) }
+                </Fragment>
               )) 
             }
           </tbody>
@@ -220,15 +224,15 @@ class FormDesigner extends Component {
 		const arrayField = arrayFields[index]
 
 		if (field.dataType === 'array' && arrayField.isShowItems) {
-			return (
-				<div>
-				{
-					field.items.map((item, idx) => (
-						<p>{idx}: {item.fieldName} - {item.dataType} - {item.defaultValue} </p>
-					))
-				}
-				</div>
-			)
+			return field.items.map((item, idx) => (
+				<tr>
+					<td className="left cell-array-item name-field">{item.fieldName}</td>
+          <td className="cell-array-item">{item.dataType}</td>
+          <td className="cell-array-item">{item.defaultValue}</td>
+          <td></td>
+          <td></td>
+        </tr>
+			))
 		}
 	}
 
