@@ -225,7 +225,7 @@ class FormDesigner extends Component {
 		const index = arrayFields.findIndex(arrField => arrField.fieldName === field.fieldName)
 		const arrayField = arrayFields[index]
 
-		if (field.dataType === 'array' && arrayField.isShowItems) {
+		if (field.dataType === 'array' && arrayField && arrayField.isShowItems) {
 			return field.items.map((item, idx) => (
 				<tr key={idx}>
 					<td className="left cell-array-item name-field">{item.fieldName}</td>
@@ -803,10 +803,13 @@ class FormDesigner extends Component {
 		return hasArrayInFormField_state
 	}
 
-	deleteArrayField = (arrayFields_state, { fieldName }) => {
-		const index = arrayFields_state.findIndex(field => field.fieldName === fieldName)
-		const arrayFields = [...arrayFields_state]
-		arrayFields.splice(index, 1)
+	deleteArrayField = (arrayFields_state, { dataType, fieldName }) => {
+		let arrayFields = [...arrayFields_state]
+
+		if (dataType === 'array') {
+			const index = arrayFields_state.findIndex(field => field.fieldName === fieldName)
+			arrayFields.splice(index, 1)
+		}
 		
 		return arrayFields
 	}
