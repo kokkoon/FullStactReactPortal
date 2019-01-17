@@ -140,11 +140,11 @@ class FormDesigner extends Component {
 
           <tbody>
             { 
-              !fields && <p> loading .... </p>
+              !fields && <span> loading .... </span>
             }
             { 
               fields && fields.map((field, index) => (
-              	<Fragment>
+            		<Fragment key={index}>
 	                <tr key={index}>
 	                  <td className="left">
                   	{
@@ -210,7 +210,7 @@ class FormDesigner extends Component {
 	                </tr>
                 	{ this.renderArrayItems(field) }
                 </Fragment>
-              )) 
+            	))
             }
           </tbody>
         </table>
