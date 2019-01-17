@@ -28,8 +28,27 @@
 	padding: 20px;
 }
 
-.form-input .json-form button {
+.form-input .json-form .btn-info {
 	position: absolute;
 	right: 3px;
 	width: 150px;
+}
+
+.form-input .json-form i.glyphicon { display: none; }
+
+.form-input .json-form .btn-add::after { 
+	content: 'Add'; 
+	background-color: #2196f3;
+}
+
+.form-input .json-form .btn-add { 
+	background-color: #2196f3;
+}
+
+.form-input .json-form .array-item-remove::after { content: 'Remove'; }
+.form-input .json-form .array-item-move-up::after { content: 'Move Up'; }
+.form-input .json-form .array-item-move-down::after { content: 'Move Down'; }
+
+.form-input .json-form .array-item-remove {
+	background-color: #f44336;	
 }
