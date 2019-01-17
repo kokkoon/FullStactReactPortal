@@ -10,11 +10,11 @@ const db = mongoUtil.getDB();
 module.exports = (app) => {	  
   app.use(cors());
 
-  // save new record in a form colletion
+  // save record in a form colletion
   app.post('/api/record', (req, res) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
-  	const collection = db.collection(`form${formId}`)
+  	const collection = db.collection(`${formId}`)
     const newDate = new Date().toISOString()
     const userId = req.user._id
 
@@ -41,7 +41,7 @@ module.exports = (app) => {
     const url = URL.parse(req.url, true)
     const formId = url.query.id
     const recordId = url.query.record_id
-    const collection = db.collection(`form${formId}`)
+    const collection = db.collection(`${formId}`)
     const newDate = new Date().toISOString()
     const userId = req.user._id
 
@@ -51,7 +51,7 @@ module.exports = (app) => {
       modifiedBy: userId,
     }
 
-    collection.updateOne({_id: recordId}, {$set: updatedData}, (err, obj) => {
+    collection.updateOne({_id: mongodb.ObjectID(recordId)}, {$set: updatedData}, (err, obj) => {
       if (err) console.error(err)
       res.send({ message: `record ${recordId} updated`})
     })
@@ -62,10 +62,10 @@ module.exports = (app) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
     const recordId = url.query.record_id
-  	const collection = db.collection(`form${formId}`)
+  	const collection = db.collection(`${formId}`)
 
   	if (!isEmpty(recordId)) {
-	  	collection.find({ _id: recordId }).toArray((err, data) => {
+	  	collection.find({ _id: mongodb.ObjectID(recordId) }).toArray((err, data) => {
 	  		if (err) console.error(err)
 	  		res.send({ data })
 	  	})	
@@ -82,9 +82,9 @@ module.exports = (app) => {
     const url = URL.parse(req.url, true)
     const formId = url.query.form_id
     const recordId = url.query.record_id
-    const formCollection = db.collection(`form${formId}`)
+    const collection = db.collection(`${formId}`)
 
-    formCollection.deleteOne({ _id: new mongodb.ObjectId(recordId) }, (err, obj) => {
+    collection.deleteOne({ _id: mongodb.ObjectId(recordId) }, (err, obj) => {
       if (err) console.error(err)
 
       if (obj.result.n > 0) {
@@ -107,7 +107,7 @@ module.exports = (app) => {
       if (result.length === 0) {
         res.send({ isFound: false, message: 'not found' })
       } else {
-        formCollection.findOne({id}, (err, form) => {
+        formCollection.findOne({_id: mongodb.ObjectID(id)}, (err, form) => {
           if (err) console.error(err)
           if (form !== null) {
             res.send({ isFound: true, currentName: form.collectionName, message: 'found' })
@@ -119,7 +119,7 @@ module.exports = (app) => {
     })
   })
 
-  // create/update and save the new form to database
+  // create/update and save the form to database
   app.post('/api/create-form', (req, res) => {
   	const formCollection = db.collection('form')
   	const url = URL.parse(req.url, true)
@@ -154,47 +154,30 @@ module.exports = (app) => {
       if (err) console.error(err)
 
       if (result.length > 0 ) {
-        const resultIds = result.map(r => r.id).sort((a, b) => a - b)
-        const lastId = resultIds[resultIds.length - 1]
+    		formCollection.findOne({_id: mongodb.ObjectID(formId)}, (err, result2) => {
+          if (result2 != null) {
+            formCollection.updateOne({_id: mongodb.ObjectID(formId)}, {$set: formData}, (err, obj) => {
+              if (!err) res.send({ message: `${collectionName} schema updated`})
+            })
+      		} else {
+      			formCollection.insertOne(formData, (err, obj) => {
+    		  		if (err) console.error(err)
+              const unique_id = obj.ops[0]._id
+              const updatedFields = {name: `form${unique_id}`, route: `/collection?id=${unique_id}`}
+              formCollection.updateOne({id: unique_id}, {$set: updatedFields})
+    		  	})
 
-    		if (Number(formId) <= lastId && Number(formId) > 0) {
-    			const form = {
-    				...formData,
-            id: formId,
-            name: `form${formId}`,
-            route: `/collection?id=${formId}`
-    			}
-
-          formCollection.updateOne({id: formId}, {$set: form}, (err, obj) => {
-            if (err) console.error(err)
-            res.send({ message: `${collectionName} schema updated`})
-          })
-    		} else {
-          const newId = Number(lastId) + 1
-    			const form = {
-            ...formData,
-    				id: newId.toString(),
-    				name: `form${newId}`,
-    				route: `/collection?id=${newId}`
-    			}
-
-    			formCollection.insertOne(form, (err, obj) => {
-  		  		if (err) console.error(err)
-  		  	})
-
-  		  	res.send({ message: `${collectionName} schema created`})
-    		}
+    		  	res.send({ message: `${collectionName} schema created`})
+      		}
+        })
       } else {
-        const newId = 1
-        const form = {
-          ...formData,
-          id: newId.toString(),
-          name: `form${newId}`,
-          route: `/collection?id=${newId}`,
-        }
-
-        formCollection.insertOne(form, (err, obj) => {
+        formCollection.insertOne(formData, (err, obj) => {
           if (err) console.error(err)
+          else {
+            const unique_id = obj.ops[0]._id
+            const updatedFields = {name: `form${unique_id}`, route: `/collection?id=${unique_id}`}
+            formCollection.updateOne({_id: mongodb.ObjectID(unique_id)}, {$set: updatedFields})
+          }
         })
 
         res.send({ message: `${collectionName} schema created`})
@@ -216,7 +199,7 @@ module.exports = (app) => {
       }
     }
 
-    formCollection.updateOne({id}, updateFields, (err, obj) => {
+    formCollection.updateOne({_id: mongodb.ObjectID(id)}, updateFields, (err, obj) => {
       if (err) console.error(err)
         
       if (obj.result.n === 1) {
@@ -233,12 +216,12 @@ module.exports = (app) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
 
-  	formCollection.findOne({id: formId}, (err, form) => {
+  	formCollection.findOne({_id: mongodb.ObjectID(formId)}, (err, form) => {
   		if (form !== null) {
         if (form.formStructure !== null) {
   				res.send({
-            formId: formId,
-            collectionId: form.id,
+            formId: form._id,
+            collectionId: form._id,
             collectionName: form.name,
             collectionDisplayName: form.collectionName,
             collectionDescription: form.collectionDescription,
@@ -248,7 +231,11 @@ module.exports = (app) => {
             createdActionAPI: form.createdActionAPI,
             modifiedActionAPI: form.modifiedActionAPI
           })
-    		}
+    		} else {
+          res.send({ message: 'form structure not found'})
+        }
+      } else {
+        res.send({ message: 'form not found'})
       }
   	})
   })
@@ -259,10 +246,10 @@ module.exports = (app) => {
   	formCollection.find({}).toArray((err, result) => {
   		const data = result.map(r => {
   			return { 
-  				id: r.id,
+  				id: r._id,
   				name: r.collectionName, 
-  				urlDesigner: `/form-designer?id=${r.id}`,
-  				urlForm: `/data-input?id=${r.id}` 
+  				urlDesigner: `/form-designer?id=${r._id}`,
+  				urlForm: `/data-input?id=${r._id}` 
   			}
   		})
   		res.send({ data })
@@ -286,7 +273,7 @@ module.exports = (app) => {
     }
 
     formCollection.updateOne(
-      {id}, 
+      {_id: mongodb.ObjectID(id)}, 
       {$set: updatedField}, 
       (err, obj) => {
         if (err) console.error(err)
@@ -303,7 +290,7 @@ module.exports = (app) => {
     const url = URL.parse(req.url, true)
     const id = url.query.form_id
 
-    formCollection.findOne({id}, (err, result) => {
+    formCollection.findOne({_id: mongodb.ObjectID(id)}, (err, result) => {
       if (err) console.error(err)
       else if (result != null) {
         if (result.tableViewConfig) {
