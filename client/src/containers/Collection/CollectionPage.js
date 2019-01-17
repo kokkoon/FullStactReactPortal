@@ -59,10 +59,12 @@ export default class CollectionPage extends Component {
                   record.map((r,i) => (
                     <tr key={i}>
                       {
+                        // show column that exists in 'column' variable
+                        // sort the order of the filtered column based on order value in tableViewConfig
                         Object.keys(r).filter(key => column.indexOf(key) >= 0)
                           .sort((a, b) => tableViewConfig[a].order - tableViewConfig[b].order)
                           .map((filteredKey, idx) => (
-                            <td key={idx}>{r[filteredKey]}</td>
+                            <td key={idx}>{typeof(r[filteredKey]) === 'string' ? r[filteredKey] : JSON.stringify(r[filteredKey])}</td>
                           ))
                       }
                       <td className="cell-delete-btn-container">

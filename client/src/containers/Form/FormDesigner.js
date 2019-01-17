@@ -800,7 +800,6 @@ class FormDesigner extends Component {
 	}
 
 	deleteArrayField = (arrayFields_state, { fieldName }) => {
-		// const index = arrayFields_state.indexOf(fieldName)
 		const index = arrayFields_state.findIndex(field => field.fieldName === fieldName)
 		const arrayFields = [...arrayFields_state]
 		arrayFields.splice(index, 1)
@@ -827,9 +826,9 @@ class FormDesigner extends Component {
 
 		} else {
 			newFields = this.addNewFormFields(fields, newField)
-			this.updateFormStructure(fieldName, dataType, defaultValue)
 		}
-		
+
+		this.updateFormStructure(isFieldOfArray, fieldName, dataType, defaultValue)
 		this.emptyFieldInput()
 
 		let hasArrayInFormField = false || hasArrayInFormField_state
@@ -902,25 +901,45 @@ class FormDesigner extends Component {
 		})
 	}
 
-	updateFormStructure = (fieldName, dataType, defaultValue) => {
-		const { formStructure } = this.state
+	updateFormStructure = (isFieldOfArray, fieldName, dataType, defaultValue) => {
+		const newFormStructure = {...this.state.formStructure}
 
-		if (dataType === 'date') {
-			formStructure.properties[fieldName] = {
-				title: fieldName,
-				type: 'string',
-				format: dataType,
-				default: defaultValue
-			}
-		} else {
-			formStructure.properties[fieldName] = {
+		if (isFieldOfArray) {
+			const { arrayField } = this.state.input
+
+			newFormStructure.properties[arrayField].items.properties[fieldName] = {
 				title: fieldName,
 				type: dataType,
 				default: defaultValue
 			}
+		} else {
+			if (dataType === 'date') {
+				newFormStructure.properties[fieldName] = {
+					title: fieldName,
+					type: 'string',
+					format: dataType,
+					default: defaultValue
+				}
+			} else if (dataType === 'array') {
+				newFormStructure.properties[fieldName] = {
+					title: fieldName,
+					type: dataType,
+					items: {
+						title: fieldName + '-items',
+						type: 'object',
+						properties: {}
+					}
+				}
+			}	else {
+				newFormStructure.properties[fieldName] = {
+					title: fieldName,
+					type: dataType,
+					default: defaultValue
+				}
+			}
 		}
 
-		this.setState({ formStructure })
+		this.setState({ formStructure: newFormStructure })
 	}
 
 	addNewArrayField = (arrayFields, { fieldName }) => {
@@ -933,13 +952,13 @@ class FormDesigner extends Component {
 	handleUpdateField = () => {
 		const { fieldName, dataType, defaultValue } = this.state.input
 		let { fields } = this.state
-		const { currentIndex, arrayFields: arrayFields_state } = this.state
+		const { isFieldOfArray, currentIndex, arrayFields: arrayFields_state } = this.state
 		const field = fields[currentIndex]
 
 		if (field.fieldName !== fieldName) {
 			this.deleteFieldOnFormStructure(field.fieldName)
 		}
-		this.updateFormStructure(fieldName, dataType, defaultValue)
+		this.updateFormStructure(isFieldOfArray, fieldName, dataType, defaultValue)
 		
 		fields[currentIndex] = {
 			fieldName, 
