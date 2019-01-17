@@ -225,7 +225,7 @@ class FormDesigner extends Component {
 
 		if (field.dataType === 'array' && arrayField.isShowItems) {
 			return field.items.map((item, idx) => (
-				<tr>
+				<tr key={idx}>
 					<td className="left cell-array-item name-field">{item.fieldName}</td>
           <td className="cell-array-item">{item.dataType}</td>
           <td className="cell-array-item">{item.defaultValue}</td>
