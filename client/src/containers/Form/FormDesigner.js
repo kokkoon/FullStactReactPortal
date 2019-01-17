@@ -1052,6 +1052,7 @@ class FormDesigner extends Component {
 			.then(res => {
 				const { isFound, currentName } = res.data
 				let message, icon, isCollectionNameOK
+				let hasFormFieldsChanged = false
 
 				if (isFound) {
 					if (currentName === collectionName.toLowerCase()) {
@@ -1069,6 +1070,7 @@ class FormDesigner extends Component {
 					message = '<span> Name is unique, you can create new collection with it.</span>'
 					icon = '<i class="material-icons">check_circle</i>'
 					isCollectionNameOK = true
+					hasFormFieldsChanged = true
 				}
 
 				M.toast({
@@ -1076,7 +1078,7 @@ class FormDesigner extends Component {
 					displayLength: 5000,
 				})
 
-				this.setState({ isCollectionNameOK })
+				this.setState({ isCollectionNameOK, hasFormFieldsChanged })
 			})
 			.catch(e => console.error(e))
 	}
