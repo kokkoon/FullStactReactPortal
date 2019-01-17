@@ -27,6 +27,7 @@ class FormDesigner extends Component {
 				defaultValue: '',
 				arrayField: ''
 			},
+			collectionName: '',
 			isNewField: true,
 			currentIndex: -1,
 			isFieldNameExisted: false,
@@ -50,8 +51,9 @@ class FormDesigner extends Component {
 	}
 
 	render() {
-		const { collectionName } = this.state.input
+		const inputCollectionName = this.state.input.collectionName
 		const {
+			collectionName,
 			formId,
 			formStructure, 
 			hasCollectionNameChanged,
@@ -61,7 +63,7 @@ class FormDesigner extends Component {
 
 		return (
 			<div className="form-designer">
-				<h4 className="center">{formId ? 'Update Collection' : 'Create New Collection'}</h4>
+				<h4 className="center">{formId ? `Edit ${collectionName} Collection` : 'Create New Collection'}</h4>
 				<div className="col s12 btn-form">
 				{
 					formId &&
@@ -83,10 +85,10 @@ class FormDesigner extends Component {
 				<div className="col s12 first-row-container">
 					<span className="collection-name-label"> Collection name : </span>
 					<div className="input-field inline collection-name-input">
-						<input id="collection_name" type="text" value={collectionName} onChange={event => this.handleInputChange('collection_name', event)}/>
+						<input id="collection_name" type="text" value={inputCollectionName} onChange={event => this.handleInputChange('collection_name', event)}/>
 					</div>
 					<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
-						 disabled={helper.isEmptyString(collectionName) || !hasCollectionNameChanged}
+						 disabled={helper.isEmptyString(inputCollectionName) || !hasCollectionNameChanged}
 						 data-position="right"
 						 data-tooltip="Check collection name"
         		 onClick={this.handleCheckCollectionName}>
@@ -106,7 +108,7 @@ class FormDesigner extends Component {
         	<span className="waves-effect waves-light btn btn-submit right" 
 	        	 disabled={
 	        	 	isEmpty(formStructure.properties) || 
-	        	 	isEmpty(collectionName) || 
+	        	 	isEmpty(inputCollectionName) || 
 	        	 	!isCollectionNameOK || 
 	        	 	!hasFormFieldsChanged
 	        	 } 
@@ -560,6 +562,7 @@ class FormDesigner extends Component {
 			.then(res => {
 				let { input } = this.state
 				const { formId, data: formStructure, formFields: fields } = res.data
+				const collectionName = formStructure.title
 				input.collectionName = formStructure.title
 
 				// insert field to arrayFields
@@ -582,7 +585,8 @@ class FormDesigner extends Component {
 					formStructure,
 					fields,
 					arrayFields,
-					input
+					input,
+					collectionName
 				})
 			})
 			.catch(e => console.error(e))
@@ -1117,6 +1121,8 @@ class FormDesigner extends Component {
 				else this.reloadData()
 			})
 			.catch(error => console.error(error))
+
+		this.setState({ collectionName: input.collectionName })
 	}
 
 	// reset to initial state
