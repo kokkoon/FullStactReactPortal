@@ -126,6 +126,7 @@ module.exports = (app) => {
   	const formId = url.query.id
   	const { formStructure, tableColumns, formFields, defaultFields } = req.body
     const collectionName = req.body.collectionName.toLowerCase()
+    const { collectionDescription } = req.body
 
     const tableViewConfig = formFields.reduce((obj, field, index) => {
       return {
@@ -141,6 +142,7 @@ module.exports = (app) => {
     const formData = {
       icon: 'format_list_bulleted',
       collectionName,
+      collectionDescription,
       formFields,
       defaultFields,
       formStructure,
@@ -237,6 +239,7 @@ module.exports = (app) => {
   				res.send({
             formId: formId,
             collectionName: form.collectionName,
+            collectionDescription: form.collectionDescription,
             formFields: form.formFields,
             column: form.tableColumns, 
             data: form.formStructure,

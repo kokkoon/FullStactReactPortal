@@ -51,14 +51,15 @@ class FormDesigner extends Component {
 	}
 
 	render() {
-		const inputCollectionName = this.state.input.collectionName
+		const { collectionName: inputCollectionName, collectionDescription } = this.state.input
 		const {
 			collectionName,
 			formId,
 			formStructure, 
 			hasCollectionNameChanged,
 			hasFormFieldsChanged,
-			isCollectionNameOK
+			isCollectionNameOK,
+			input
 		} = this.state
 
 		return (
@@ -102,6 +103,12 @@ class FormDesigner extends Component {
 					    </span>
 					  )
 			    }
+		    </div>
+		    <div className="col s12 first-row-container">
+					<span className="collection-name-label"> Collection description : </span>
+					<div className="input-field inline collection-name-input">
+						<input id="collection_description" type="text" value={collectionDescription} onChange={event => this.handleInputChange('collection_description', event)}/>
+					</div>
 		    </div>
 		    { this.renderTableFormFields() }
         <div className="row btn-submit-container">
@@ -561,9 +568,16 @@ class FormDesigner extends Component {
 		axios.get(`${API_URL}/form?id=${formId}`)
 			.then(res => {
 				let { input } = this.state
-				const { formId, data: formStructure, formFields: fields } = res.data
-				const collectionName = formStructure.title
+				const { 
+					formId, 
+					collectionName,
+					collectionDescription,
+					data: formStructure, 
+					formFields: fields, 
+				} = res.data
+
 				input.collectionName = formStructure.title
+				input.collectionDescription = collectionDescription
 
 				// insert field to arrayFields
 				const arrayFields = fields.reduce((array, field) => {
@@ -582,11 +596,11 @@ class FormDesigner extends Component {
 
 				this.setState({
 					formId,
+					collectionName,
 					formStructure,
 					fields,
 					arrayFields,
-					input,
-					collectionName
+					input
 				})
 			})
 			.catch(e => console.error(e))
@@ -1018,6 +1032,13 @@ class FormDesigner extends Component {
 				})
 				break
 
+			case 'collection_description': 
+				input.collectionDescription = target.value
+				this.setState({
+					hasFormFieldsChanged: true
+				})
+				break
+
 			case 'field_name':
 				input.fieldName = target.value
 				this.setState({ 
@@ -1095,6 +1116,7 @@ class FormDesigner extends Component {
 			input, 
 			fields
 		} = this.state
+		const { collectionName, collectionDescription } = this.state.input
 
 		let updatedFields = fields
 
@@ -1106,10 +1128,11 @@ class FormDesigner extends Component {
 			return [...arr, { fieldName: field.fieldName, showInTable: field.showInTable }]
 		}, [])
 		
-		formStructure.title = input.collectionName
+		formStructure.title = collectionName
 
 		const data = {
-			collectionName: input.collectionName, 
+			collectionName,
+			collectionDescription,
 			tableColumns, 
 			formStructure,
 			formFields: updatedFields
