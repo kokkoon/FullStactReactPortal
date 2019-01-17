@@ -83,7 +83,7 @@ class FormDesigner extends Component {
 			    )
 				}
 				</div>
-				<div className="col s12 first-row-container">
+				<div className="col s12 first-row-container collection-details">
 					<span className="collection-name-label"> Collection name : </span>
 					<div className="input-field inline collection-name-input">
 						<input id="collection_name" type="text" value={inputCollectionName} onChange={event => this.handleInputChange('collection_name', event)}/>
@@ -104,9 +104,9 @@ class FormDesigner extends Component {
 					  )
 			    }
 		    </div>
-		    <div className="col s12 first-row-container">
+		    <div className="col s12 collection-details">
 					<span className="collection-name-label"> Collection description : </span>
-					<div className="input-field inline collection-name-input">
+					<div className="input-field inline collection-name-input collection-description">
 						<input id="collection_description" type="text" value={collectionDescription} onChange={event => this.handleInputChange('collection_description', event)}/>
 					</div>
 		    </div>
@@ -842,9 +842,6 @@ class FormDesigner extends Component {
 
 		if (isFieldOfArray && !helper.isEmptyString(arrayField)) {
 			newFields = this.addNewArrayFieldItem(fields, arrayField, newField)
-			// TODO: add update form structure method for array item in line below
-			// or could also be implemented inside this.updateFormStructure(args)
-
 		} else {
 			newFields = this.addNewFormFields(fields, newField)
 		}

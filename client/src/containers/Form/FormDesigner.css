@@ -20,6 +20,10 @@
 	width: 270px !important;
 }
 
+.collection-description {
+	width: 60vw !important;
+}
+
 .collection-name-input > input {
 	height: 2rem !important;
 	margin-bottom: 5px !important;
@@ -39,6 +43,11 @@
 
 .first-row-container {
 	position: relative;
+	margin-top: 1rem;
+}
+
+.collection-details .input-field {
+	margin: unset;
 }
 
 .btn-collection-templates {
