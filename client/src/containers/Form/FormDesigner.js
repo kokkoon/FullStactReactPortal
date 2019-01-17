@@ -293,7 +293,7 @@ class FormDesigner extends Component {
 
 	renderInputFieldOfArray() {
 		const { hasArrayInFormField, isFieldOfArray, arrayFields } = this.state
-		const { dataType, arrayField } = this.state.input
+		const { arrayField } = this.state.input
 
 		return (
 			hasArrayInFormField &&
@@ -562,10 +562,26 @@ class FormDesigner extends Component {
 				const { formId, data: formStructure, formFields: fields } = res.data
 				input.collectionName = formStructure.title
 
+				// insert field to arrayFields
+				const arrayFields = fields.reduce((array, field) => {
+					if (field.dataType === 'array') {
+						return [
+							...array,
+							{
+								fieldName: field.fieldName,
+								isShowItems: false
+							}
+						]
+					}
+
+					return array
+				}, [])
+
 				this.setState({
 					formId,
 					formStructure,
 					fields,
+					arrayFields,
 					input
 				})
 			})
