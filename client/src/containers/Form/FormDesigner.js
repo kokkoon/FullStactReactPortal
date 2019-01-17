@@ -53,7 +53,9 @@ class FormDesigner extends Component {
 	render() {
 		const { collectionName: inputCollectionName, collectionDescription } = this.state.input
 		const {
+			collectionId,
 			collectionName,
+			collectionDisplayName,
 			formId,
 			formStructure, 
 			hasCollectionNameChanged,
@@ -64,7 +66,7 @@ class FormDesigner extends Component {
 
 		return (
 			<div className="form-designer">
-				<h4 className="center">{formId ? `Edit ${collectionName} Collection` : 'Create New Collection'}</h4>
+				<h4 className="center">{formId ? `Edit ${collectionDisplayName} Collection` : 'Create New Collection'}</h4>
 				<div className="col s12 btn-form">
 				{
 					formId &&
@@ -84,9 +86,11 @@ class FormDesigner extends Component {
 				}
 				</div>
 				<div className="col s12 first-row-container collection-details">
-					<span className="collection-name-label"> Collection name : </span>
+					<span className="collection-name-label">
+						<span className="collection-detail-label">Collection display name</span> : 
+					</span>
 					<div className="input-field inline collection-name-input">
-						<input id="collection_name" type="text" value={inputCollectionName} onChange={event => this.handleInputChange('collection_name', event)}/>
+						<input id="collection_display_name" type="text" value={inputCollectionName} onChange={event => this.handleInputChange('collection_name', event)}/>
 					</div>
 					<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
 						 disabled={helper.isEmptyString(inputCollectionName) || !hasCollectionNameChanged}
@@ -105,11 +109,26 @@ class FormDesigner extends Component {
 			    }
 		    </div>
 		    <div className="col s12 collection-details">
-					<span className="collection-name-label"> Collection description : </span>
+					<span className="collection-name-label">
+						<span className="collection-detail-label">Collection description</span> : 
+					</span>
 					<div className="input-field inline collection-name-input collection-description">
 						<input id="collection_description" type="text" value={collectionDescription} onChange={event => this.handleInputChange('collection_description', event)}/>
 					</div>
 		    </div>
+		    {
+		    	formId &&
+		    	<Fragment>
+				    <div className="col s12 collection-details">
+							<span className="collection-name-label">
+								<span className="collection-detail-label">Collection name</span> : </span>{collectionName}
+				    </div>
+				    <div className="col s12 collection-details">
+							<span className="collection-name-label"> 
+								<span className="collection-detail-label">Collection id</span> : </span>{collectionId}
+				    </div>
+		    	</Fragment>
+		    }
 		    { this.renderTableFormFields() }
         <div className="row btn-submit-container">
         	<span className="waves-effect waves-light btn btn-submit right" 
@@ -135,7 +154,7 @@ class FormDesigner extends Component {
 		const { fields } = this.state
 
 		return (
-			<div className="col s12">
+			<div className="col s12 document-fields-container">
 				<span className="document-fields-label">Document fields</span>
 				<table className="table-form-fields centered responsive-table">
           <thead>
@@ -570,13 +589,15 @@ class FormDesigner extends Component {
 				let { input } = this.state
 				const { 
 					formId, 
+					collectionId,
 					collectionName,
+					collectionDisplayName,
 					collectionDescription,
 					data: formStructure, 
 					formFields: fields, 
 				} = res.data
 
-				input.collectionName = formStructure.title
+				input.collectionName = collectionDisplayName
 				input.collectionDescription = collectionDescription
 
 				// insert field to arrayFields
@@ -596,7 +617,9 @@ class FormDesigner extends Component {
 
 				this.setState({
 					formId,
+					collectionId,
 					collectionName,
+					collectionDisplayName,
 					formStructure,
 					fields,
 					arrayFields,
