@@ -1,3 +1,4 @@
+const mongodb = require('mongodb')
 const request = require('request')
 const cors = require('cors')
 const URL = require('url')
@@ -148,7 +149,7 @@ module.exports = (app) => {
         }
       }
 
-      formCollection.updateOne({id: formId}, {$set: actionAPI}, (err, obj) => {
+      formCollection.updateOne({_id: mongodb.ObjectID(formId)}, {$set: actionAPI}, (err, obj) => {
         if (err) console.error(err)
         res.send({ message: `API saved in form${formId} database`, [`${actionType}ActionAPI`]: actionAPI[`${actionType}ActionAPI`] })
       })
@@ -165,7 +166,7 @@ module.exports = (app) => {
       [`${actionType}ActionAPI.isActive`] : isActive
     }
 
-    formCollection.updateOne({id: formId}, {$set: updatedField}, (err, obj) => {
+    formCollection.updateOne({_id: mongodb.ObjectID(formId)}, {$set: updatedField}, (err, obj) => {
       if (err) console.error(err)
       else {
         const message = `${actionType} action api is ` + (isActive ? 'activated' : 'deactivated')
@@ -181,7 +182,7 @@ module.exports = (app) => {
     const formId = url.query.form_id
     const { body } = req.body
 
-    formCollection.updateOne({id: formId}, {$set: {'actionAPI.body': body}}, (err, obj) => {
+    formCollection.updateOne({_id: mongodb.ObjectID(formId)}, {$set: {'actionAPI.body': body}}, (err, obj) => {
       if (err) console.error(err)
       res.send({ message: `API body saved in form${formId} database` })
     })
@@ -194,7 +195,7 @@ module.exports = (app) => {
     const formId = url.query.form_id
     const actionType = url.query.action_type
 
-    formCollection.findOne({id: formId}, (err, form) => {
+    formCollection.findOne({_id: mongodb.ObjectID(formId)}, (err, form) => {
       if (err) console.error(err)
 
       if (form != null) {
