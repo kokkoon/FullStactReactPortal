@@ -1041,7 +1041,8 @@ class FormDesigner extends Component {
 			arrayFields = this.addNewArrayField(arrayFields_state, field)
 			fields[currentIndex].items = []
 		}
-		else if (isFieldOfArray && !isEmpty(arrayField)) {
+		
+		if (isFieldOfArray && !isEmpty(arrayField)) {
 			const index = fields.findIndex(field => field.fieldName === arrayField)
 			fields[index].items.push(newField)
 
