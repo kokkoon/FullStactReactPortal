@@ -13,7 +13,7 @@ class ExternalCollectionPage extends Component {
 
     this.state = {
       collectionName: 'External Content',
-      column: ['name', 'subject', 'description', 'created', 'status', 'workflow', 'action'],
+      column: ['name', 'subject', 'description', 'created', 'status', 'workflow'],
     	record: null,
       formSchema: { title: '', type: "object", properties: {} },
       uiSchema: {},
@@ -43,35 +43,35 @@ class ExternalCollectionPage extends Component {
         {
           record &&
           <Fragment>
-            <div className="col s11">
-                <table className="table-collection">
-                  <thead>
-                    <tr>
-                      { !isEmpty(column) && column.map((c, i) => <th key={i}>{c}</th>) }
-                    </tr>
-                  </thead>
+            <div className="col s12">
+              <table className="table-collection">
+                <thead>
+                  <tr>
+                    { !isEmpty(column) && column.map((c, i) => <th key={i}>{c}</th>) }
+                  </tr>
+                </thead>
 
-                  <tbody>
-                    { 
-                      record.map((r,i) => (
-                        <tr key={i}>
-                          {
-                            Object.keys(r).filter(k => column.indexOf(k) >= 0) // filter data based on column
-                            .sort((a, b) => (column.indexOf(a) - column.indexOf(b))) // sort data based on column order
-                            .map((k, i_2) => (
-                              <td key={i_2}>{r[k]}</td>
-                            ))
-                          }
-                          <td>
-                            <a className="modal-trigger" href="#modal-edit-record" onClick={e => this.handleEditRecord(i)}>
-                              ...
-                            </a> 
-                          </td>
-                        </tr>
-                      )) 
-                    }
-                  </tbody>
-                </table>
+                <tbody>
+                  { 
+                    record.map((r,i) => (
+                      <tr key={i}>
+                        {
+                          Object.keys(r).filter(k => column.indexOf(k) >= 0) // filter data based on column
+                          .sort((a, b) => (column.indexOf(a) - column.indexOf(b))) // sort data based on column order
+                          .map((k, i_2) => (
+                            <td key={i_2}>{r[k]}</td>
+                          ))
+                        }
+                        <td>
+                          <a className="modal-trigger" href="#modal-edit-record" onClick={e => this.handleEditRecord(i)}>
+                            <i className="small material-icons btn-action-icon">local_post_office</i>
+                          </a> 
+                        </td>
+                      </tr>
+                    )) 
+                  }
+                </tbody>
+              </table>
             </div>
           </Fragment>
         }

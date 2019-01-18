@@ -1,3 +1,8 @@
+.table-collection .btn-action-icon {
+	font-size: 1.4rem;
+	color: #82b1ff;
+}
+
 #modal-edit-record {
 	top: 3% !important;
 	max-height: 94%;
