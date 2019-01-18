@@ -144,7 +144,6 @@ module.exports = (app) => {
       collectionName,
       collectionDescription,
       formFields,
-      defaultFields,
       formStructure,
       tableColumns,
       tableViewConfig
@@ -152,29 +151,28 @@ module.exports = (app) => {
 
   	formCollection.find({}).toArray((err, result) => {
       if (err) console.error(err)
-
       if (result.length > 0 ) {
-    		formCollection.findOne({_id: mongodb.ObjectID(formId)}, (err, result2) => {
+    		formCollection.findOne({_id: formId}, (err2, result2) => {
           if (result2 != null) {
-            formCollection.updateOne({_id: mongodb.ObjectID(formId)}, {$set: formData}, (err, obj) => {
-              if (!err) res.send({ message: `${collectionName} schema updated`})
+            formCollection.updateOne({_id: mongodb.ObjectID(formId)}, {$set: formData}, (err3, obj3) => {
+              if (!err3) res.send({ message: `${collectionName} schema updated`})
             })
       		} else {
-      			formCollection.insertOne(formData, (err, obj) => {
-    		  		if (err) console.error(err)
-              const unique_id = obj.ops[0]._id
+      			formCollection.insertOne(formData, (err3, obj3) => {
+    		  		if (err3) console.error(err3)
+              const unique_id = obj3.ops[0]._id
               const updatedFields = {name: `form${unique_id}`, route: `/collection?id=${unique_id}`}
-              formCollection.updateOne({id: unique_id}, {$set: updatedFields})
+              formCollection.updateOne({_id: mongodb.ObjectID(unique_id)}, {$set: updatedFields})
     		  	})
 
-    		  	res.send({ message: `${collectionName} schema created`})
+    		  	res.send({ message: `${collectionName} schema created` })
       		}
         })
       } else {
-        formCollection.insertOne(formData, (err, obj) => {
+        formCollection.insertOne(formData, (err2, obj2) => {
           if (err) console.error(err)
           else {
-            const unique_id = obj.ops[0]._id
+            const unique_id = obj2.ops[0]._id
             const updatedFields = {name: `form${unique_id}`, route: `/collection?id=${unique_id}`}
             formCollection.updateOne({_id: mongodb.ObjectID(unique_id)}, {$set: updatedFields})
           }
