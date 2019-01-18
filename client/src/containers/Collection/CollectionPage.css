@@ -18,7 +18,7 @@
 .table-container {
 	max-width: 100%;
 	overflow-x: auto;
-	min-height: 70vh;
+	min-height: 70vh !important;
 }
 
 .table-collection {
@@ -55,6 +55,7 @@
 
 .cell-delete-btn-container {
 	padding: 5px;
+	width: 35px;
 }
 
 .cell-delete-btn-container .btn-floating {
