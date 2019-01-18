@@ -1185,7 +1185,6 @@ class FormDesigner extends Component {
 		const { 
 			formId, 
 			formStructure, 
-			input, 
 			fields
 		} = this.state
 		const { collectionName, collectionDescription } = this.state.input
