@@ -18,6 +18,7 @@ import DesignForm from './Form/DesignForm'
 import Dashboard from './Dashboard'
 import Landing from './LandingPage'
 import ProfilePage from './ProfilePage'
+import UploadForm from './UploadForm'
 
 class App extends Component {
 
@@ -39,6 +40,7 @@ class App extends Component {
           <Route exact path="/sidenav-setup" component={SidenavSetup} />
           <Route exact path="/external-collection" component={ExternalCollectionPage} />
           <Route exact path="/design-form" component={DesignForm} />
+          <Route exact path="/upload-form" component={UploadForm} />
         </div>
 
         </BrowserRouter>
