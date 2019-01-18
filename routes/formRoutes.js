@@ -152,7 +152,7 @@ module.exports = (app) => {
   	formCollection.find({}).toArray((err, result) => {
       if (err) console.error(err)
       if (result.length > 0 ) {
-    		formCollection.findOne({_id: formId}, (err2, result2) => {
+    		formCollection.findOne({_id: mongodb.ObjectID(formId)}, (err2, result2) => {
           if (result2 != null) {
             formCollection.updateOne({_id: mongodb.ObjectID(formId)}, {$set: formData}, (err3, obj3) => {
               if (!err3) res.send({ message: `${collectionName} schema updated`})

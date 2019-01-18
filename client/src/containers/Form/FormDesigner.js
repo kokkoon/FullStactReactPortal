@@ -1169,8 +1169,6 @@ class FormDesigner extends Component {
 				else this.reloadData()
 			})
 			.catch(error => console.error(error))
-
-		this.setState({ collectionName: input.collectionName })
 	}
 
 	// reset to initial state
