@@ -251,7 +251,10 @@ class FormDesigner extends Component {
 		const index = arrayFields.findIndex(arrField => arrField.fieldName === field.fieldName)
 		const arrayField = arrayFields[index]
 
-		if (field.dataType === 'array' && arrayField && arrayField.isShowItems) {
+		if ( field.dataType === 'array' && 
+				 arrayField && 
+				 arrayField.isShowItems &&
+				 field.items ) {
 			return field.items.map((item, idx) => (
 				<tr key={idx}>
 					<td className="left cell-array-item name-field">{item.fieldName}</td>
@@ -991,7 +994,7 @@ class FormDesigner extends Component {
 	}
 
 	handleUpdateField = () => {
-		const { fieldName, dataType, defaultValue } = this.state.input
+		const { fieldName, dataType, defaultValue, arrayField } = this.state.input
 		let { fields } = this.state
 		const { isFieldOfArray, currentIndex, arrayFields: arrayFields_state } = this.state
 		const field = fields[currentIndex]
@@ -1029,6 +1032,14 @@ class FormDesigner extends Component {
 		} 
 		else if (field.dataType !== 'array' && dataType === 'array') { // change data type from non array to array
 			arrayFields = this.addNewArrayField(arrayFields_state, field)
+			fields[currentIndex].items = []
+		}
+		else if (isFieldOfArray && !isEmpty(arrayField)) {
+			const newField = { fieldName, dataType, defaultValue }
+			const index = fields.findIndex(field => field.fieldName === arrayField)
+			fields[index].items.push(newField)
+
+			delete fields[currentIndex]
 		}
 
 		this.setState({
