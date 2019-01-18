@@ -66,7 +66,7 @@ class DataInput extends Component {
 						// redirect to collection page						
 						this.props.history.push(`/collection?id=${formId}`)
 					})
-					.catch(e2 => console.error(e2))
+					.catch(err2 => console.error(err2))
 				}
 			})
 			.catch(err => console.log(err))
