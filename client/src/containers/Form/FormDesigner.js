@@ -324,7 +324,7 @@ class FormDesigner extends Component {
 
 	renderInputFieldOfArray() {
 		const { hasArrayInFormField, isFieldOfArray, arrayFields } = this.state
-		const { arrayField } = this.state.input
+		const { arrayField, dataType } = this.state.input
 
 		return (
 			hasArrayInFormField &&
@@ -335,6 +335,7 @@ class FormDesigner extends Component {
 			        <input 
 			        	type="checkbox" 
 			        	className="filled-in" 
+			        	disabled={dataType === 'array'}
 			        	checked={isFieldOfArray ? "checked" : ""} 
 			        	onChange={this.handleToggleIsFieldOfArray} 
 			        />
