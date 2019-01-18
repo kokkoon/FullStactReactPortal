@@ -151,7 +151,17 @@ module.exports = (app) => {
 
   	formCollection.find({}).toArray((err, result) => {
       if (err) console.error(err)
-      if (result.length > 0 ) {
+      if (formId === 'new' || result.length < 0) {
+        formCollection.insertOne(formData, (err2, obj2) => {
+          if (err) console.error(err)
+          else {
+            const unique_id = obj2.ops[0]._id
+            const updatedFields = {name: `form${unique_id}`, route: `/collection?id=${unique_id}`}
+            formCollection.updateOne({_id: mongodb.ObjectID(unique_id)}, {$set: updatedFields})
+          }
+        })
+        res.send({ message: `${collectionName} schema created`})
+      } else if (result.length > 0 ) {
     		formCollection.findOne({_id: mongodb.ObjectID(formId)}, (err2, result2) => {
           if (result2 != null) {
             formCollection.updateOne({_id: mongodb.ObjectID(formId)}, {$set: formData}, (err3, obj3) => {
@@ -168,17 +178,6 @@ module.exports = (app) => {
     		  	res.send({ message: `${collectionName} schema created` })
       		}
         })
-      } else {
-        formCollection.insertOne(formData, (err2, obj2) => {
-          if (err) console.error(err)
-          else {
-            const unique_id = obj2.ops[0]._id
-            const updatedFields = {name: `form${unique_id}`, route: `/collection?id=${unique_id}`}
-            formCollection.updateOne({_id: mongodb.ObjectID(unique_id)}, {$set: updatedFields})
-          }
-        })
-
-        res.send({ message: `${collectionName} schema created`})
       }
 
   	}) 
