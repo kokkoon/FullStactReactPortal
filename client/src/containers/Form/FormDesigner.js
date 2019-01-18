@@ -1039,7 +1039,7 @@ class FormDesigner extends Component {
 			const index = fields.findIndex(field => field.fieldName === arrayField)
 			fields[index].items.push(newField)
 
-			delete fields[currentIndex]
+			fields.splice(currentIndex, 1)
 		}
 
 		this.setState({
