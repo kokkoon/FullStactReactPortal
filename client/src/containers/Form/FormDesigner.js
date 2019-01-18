@@ -1010,7 +1010,7 @@ class FormDesigner extends Component {
 		this.updateFormStructure(isFieldOfArray, newField, field)
 		
 		if (!isFieldOfArray) {
-			fields[currentIndex] = {
+			let field_properties = {
 				fieldName, 
 				dataType, 
 				defaultValue, 
@@ -1025,8 +1025,16 @@ class FormDesigner extends Component {
 						enable: true
 					}
 				]
+			}	
+
+			if (dataType === 'array') {
+				const { items } = field
+				field_properties = {...field_properties, items}
 			}
+
+			fields[currentIndex] = field_properties
 		}
+
 
 		// re-enable all action buttons
 		fields = this.toggleActionButtons(fields, true)
@@ -1040,8 +1048,16 @@ class FormDesigner extends Component {
 		else if (field.dataType !== 'array' && dataType === 'array') { // change data type from non array to array
 			arrayFields = this.addNewArrayField(arrayFields_state, field)
 			fields[currentIndex].items = []
+		} 
+		else if (field.dataType === 'array' && dataType === 'array') { // change array field name
+			if (field.fieldName !== fieldName) {
+				const index = arrayFields.findIndex(arrField => arrField.fieldName === field.fieldName)
+				arrayFields[index].fieldName = fieldName
+			}
 		}
 		
+		// if update is aimed to change a field to be items of other array field,
+		// move field position to be inside that array field items and remove current field
 		if (isFieldOfArray && !isEmpty(arrayField)) {
 			const index = fields.findIndex(field => field.fieldName === arrayField)
 			fields[index].items.push(newField)
