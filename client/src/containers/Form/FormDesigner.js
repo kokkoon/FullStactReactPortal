@@ -63,6 +63,9 @@ class FormDesigner extends Component {
 			isCollectionNameOK,
 			input
 		} = this.state
+		// console.log('fields = ', this.state.fields)
+		// console.log('arrayFields = ', this.state.arrayFields)
+		// console.log('formStructure = ', this.state.formStructure)
 
 		return (
 			<div className="form-designer">
@@ -787,10 +790,17 @@ class FormDesigner extends Component {
 
 			document.getElementById('field_name').focus()
 
+			// delete item in arrayFields when updating
+			if (field.dataType === 'array') {
+				const idx = arrayFields_state.findIndex(arrField => arrField.fieldName === field.fieldName)
+				arrayFields_state.splice(idx, 1)
+			}
+
 			this.setState({ 
 				input: newInput,
 				isNewField: false,
 				currentIndex: index,
+				arrayFields: arrayFields_state,
 				fields
 			})
 		} else if (actionType === 'delete') {
@@ -1042,17 +1052,25 @@ class FormDesigner extends Component {
 
 		let arrayFields = arrayFields_state
 
-		if (field.dataType === 'array' && field.dataType !== dataType) { // change data type from array to non array
-			arrayFields = this.deleteArrayField(arrayFields_state, field)
-		} 
-		else if (field.dataType !== 'array' && dataType === 'array') { // change data type from non array to array
-			arrayFields = this.addNewArrayField(arrayFields_state, field)
-			fields[currentIndex].items = []
-		} 
-		else if (field.dataType === 'array' && dataType === 'array') { // change array field name
-			if (field.fieldName !== fieldName) {
-				const index = arrayFields.findIndex(arrField => arrField.fieldName === field.fieldName)
-				arrayFields[index].fieldName = fieldName
+		// if (field.dataType === 'array' && field.dataType !== dataType) { // change data type from array to non array
+		// 	arrayFields = this.deleteArrayField(arrayFields_state, field)
+		// }
+		// else if (field.dataType !== 'array' && dataType === 'array') { // change data type from non array to array
+		// 	arrayFields = this.addNewArrayField(arrayFields_state, field)
+		// 	fields[currentIndex].items = []
+		// }
+		// else if (field.dataType === 'array' && dataType === 'array') { // change array field name
+		// 	if (field.fieldName !== fieldName) {
+		// 		const index = arrayFields.findIndex(arrField => arrField.fieldName === field.fieldName)
+		// 		arrayFields[index].fieldName = fieldName
+		// 	}
+		// }
+
+		if (dataType === 'array') { 
+			arrayFields = this.addNewArrayField(arrayFields_state, newField)
+			
+			if (field.dataType !== 'array') {
+				fields[currentIndex].items = []
 			}
 		}
 		
