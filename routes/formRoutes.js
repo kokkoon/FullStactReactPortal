@@ -156,7 +156,7 @@ module.exports = (app) => {
           if (err) console.error(err)
           else {
             const unique_id = obj2.ops[0]._id
-            const updatedFields = {name: `form${unique_id}`, route: `/collection?id=${unique_id}`}
+            const updatedFields = {name: `${unique_id}`, route: `/collection?id=${unique_id}`}
             formCollection.updateOne({_id: mongodb.ObjectID(unique_id)}, {$set: updatedFields})
           }
         })
@@ -171,7 +171,7 @@ module.exports = (app) => {
       			formCollection.insertOne(formData, (err3, obj3) => {
     		  		if (err3) console.error(err3)
               const unique_id = obj3.ops[0]._id
-              const updatedFields = {name: `form${unique_id}`, route: `/collection?id=${unique_id}`}
+              const updatedFields = {name: `${unique_id}`, route: `/collection?id=${unique_id}`}
               formCollection.updateOne({_id: mongodb.ObjectID(unique_id)}, {$set: updatedFields})
     		  	})
 
