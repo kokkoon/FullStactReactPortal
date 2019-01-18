@@ -872,7 +872,7 @@ class FormDesigner extends Component {
 			newFields = this.addNewFormFields(fields, newField)
 		}
 
-		this.updateFormStructure(isFieldOfArray, fieldName, dataType, defaultValue)
+		this.updateFormStructure(isFieldOfArray, newField)
 		this.emptyFieldInput()
 
 		let hasArrayInFormField = false || hasArrayInFormField_state
@@ -945,11 +945,14 @@ class FormDesigner extends Component {
 		})
 	}
 
-	updateFormStructure = (isFieldOfArray, fieldName, dataType, defaultValue) => {
+	updateFormStructure = (isFieldOfArray, newField, field) => {
 		const newFormStructure = {...this.state.formStructure}
+		const { fieldName, dataType, defaultValue } = newField
 
 		if (isFieldOfArray) {
 			const { arrayField } = this.state.input
+
+			if (field != null) delete newFormStructure.properties[field.fieldName]
 
 			newFormStructure.properties[arrayField].items.properties[fieldName] = {
 				title: fieldName,
@@ -998,27 +1001,30 @@ class FormDesigner extends Component {
 		let { fields } = this.state
 		const { isFieldOfArray, currentIndex, arrayFields: arrayFields_state } = this.state
 		const field = fields[currentIndex]
+		const newField = { fieldName, dataType, defaultValue }
 
 		if (field.fieldName !== fieldName) {
 			this.deleteFieldOnFormStructure(field.fieldName)
 		}
-		this.updateFormStructure(isFieldOfArray, fieldName, dataType, defaultValue)
+		this.updateFormStructure(isFieldOfArray, newField, field)
 		
-		fields[currentIndex] = {
-			fieldName, 
-			dataType, 
-			defaultValue, 
-			showInTable: true, 
-			action: [
-				{
-					name: 'edit',
-					enable: true
-				},
-				{
-					name: 'delete',
-					enable: true
-				}
-			]
+		if (!isFieldOfArray) {
+			fields[currentIndex] = {
+				fieldName, 
+				dataType, 
+				defaultValue, 
+				showInTable: true, 
+				action: [
+					{
+						name: 'edit',
+						enable: true
+					},
+					{
+						name: 'delete',
+						enable: true
+					}
+				]
+			}
 		}
 
 		// re-enable all action buttons
@@ -1035,7 +1041,6 @@ class FormDesigner extends Component {
 			fields[currentIndex].items = []
 		}
 		else if (isFieldOfArray && !isEmpty(arrayField)) {
-			const newField = { fieldName, dataType, defaultValue }
 			const index = fields.findIndex(field => field.fieldName === arrayField)
 			fields[index].items.push(newField)
 
