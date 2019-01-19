@@ -225,6 +225,7 @@ module.exports = (app) => {
             formFields: form.formFields,
             column: form.tableColumns, 
             data: form.formStructure,
+            uiSchema: form.uiSchema,
             createdActionAPI: form.createdActionAPI,
             modifiedActionAPI: form.modifiedActionAPI
           })

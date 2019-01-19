@@ -11,18 +11,20 @@ class DataInput extends Component {
 		super(props)
 
 		this.state = {
-			formStructure: { title: 'Form', type: "object", properties: {} }
+			formStructure: { title: 'Form', type: "object", properties: {} },
+			uiSchema: {}
 		}
 	}	
 
 	render() {
-		const { formStructure } = this.state
+		const { formStructure, uiSchema } = this.state
 		return (
 			<div className="form-input">
 				<h5>Input form</h5>
 				<div className="json-form">
 					<Form 
 						schema={formStructure}
+						uiSchema={uiSchema}
 	        	onSubmit={this.onSubmit.bind(this)}
 	        	ArrayFieldTemplate={this.arrayFieldTemplate}
 	        	onError={this.log("errors")} />
@@ -42,7 +44,8 @@ class DataInput extends Component {
 		axios.get(`${API_URL}/form?id=${formId}`)
 			.then(res => {
 				this.setState({
-					formStructure: res.data.data
+					formStructure: res.data.data,
+					uiSchema: res.data.uiSchema
 				})
 			})
 			.catch(e => console.error(e))
@@ -136,7 +139,7 @@ class DataInput extends Component {
 	      }
 	    </div>
 	  )
-	}	
+	}
 }
 
 const innerObjectFieldTemplate = (props) => {
