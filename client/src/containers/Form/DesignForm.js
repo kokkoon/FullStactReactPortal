@@ -149,10 +149,13 @@ export default class DesignForm extends Component {
 
 	handlePreviewSchema = () => {
 		const newSchema = this.updateSchema()
-		this.setState({ 
-			JSONSchema: newSchema.JSON,
-			uiSchema: newSchema.UI
-		})
+
+		if (!newSchema.error) {
+			this.setState({ 
+				JSONSchema: newSchema.JSON,
+				uiSchema: newSchema.UI
+			})
+		}
 	}
 
 	updateSchema = () => {
@@ -170,6 +173,7 @@ export default class DesignForm extends Component {
 			}
 		} catch (err) {
 			alert('JSON schema is not valid\nError : ' + err)
+			return {error: true}
 		} 
 		
 		return newSchema
@@ -177,17 +181,20 @@ export default class DesignForm extends Component {
 
 	handleSaveApplySchema = () => {
 		const schema = this.updateSchema()
-		this.handlePreviewSchema()
 
-		this.saveFormSchema(schema)
-		this.redirectToFormDesigner()
+		if (!schema.error) {
+			this.handlePreviewSchema()
+			this.saveFormSchema(schema)
+		}
 	}
 
 	saveFormSchema(schema) {
 		const { id } = queryString.parse(this.props.location.search)
 		axios.patch(`${API_URL}/update-form-schema?id=${id}`, schema)
-		.then(res => 
-			M.toast({ html: res.data.message }))
+		.then(res => {
+			M.toast({ html: res.data.message })
+			this.redirectToFormDesigner()
+		})
 		.catch(err => console.error(err))
 	}
 
@@ -196,7 +203,8 @@ export default class DesignForm extends Component {
 	}
 
 	redirectToFormDesigner = () => {
-		const { id } = queryString.parse(this.props.location.search)
+		const { location } = this.props
+		const { id } = queryString.parse(location.search)
 		this.props.history.push(`/form-designer?id=${id}`)
 	}
 }
