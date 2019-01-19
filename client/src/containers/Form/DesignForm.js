@@ -94,16 +94,19 @@ export default class DesignForm extends Component {
 		.then(res => {
 			const schema = res.data.data
 			const stringJSONschema = helper.stringifyPrettyJSON(schema)
+			let uiSchema = res.data.uiSchema
 			
-			const uiSchema = Object.keys(schema.properties).reduce((obj, key) => {
-				if (schema.properties[key].type !== 'boolean') {
-					/* eslint-disable-next-line */
-					return {...obj, [key] : { ['ui:widget']: 'text' }}
-				} else {
-					return {...obj, [key] : {}}
-				}
-			}, {})
-			
+			if (uiSchema == null) {
+				uiSchema = Object.keys(schema.properties).reduce((obj, key) => {
+					if (schema.properties[key].type !== 'boolean') {
+						 // eslint-disable-next-line 
+						return {...obj, [key] : { ['ui:widget']: 'text' }}
+					} else {
+						return {...obj, [key] : {}}
+					}
+				}, {})
+			}
+				
 			const stringUIschema = helper.stringifyPrettyJSON(uiSchema)
 
 			this.setState({
