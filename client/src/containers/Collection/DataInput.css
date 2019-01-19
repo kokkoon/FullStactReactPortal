@@ -52,3 +52,59 @@
 .form-input .json-form .array-item-remove {
 	background-color: #f44336;	
 }
+
+.form-input .json-form .array-object-properties-row {
+	width: 100%;
+}
+
+.form-input .json-form .array-object-properties-row label {
+	display: none;
+}
+
+.form-input .json-form .array-object-properties-row td {
+	margin: 5px;
+}
+
+.form-input .json-form .array-object-properties-row input {
+	height: 2rem;
+}
+
+.form-input .json-form tr.array-object-properties-row {
+	border: unset;
+}
+
+.form-input .json-form tr.array-object-properties-row td {
+	padding: 5px 5px 0 5px;
+}
+
+.form-input .json-form .array-item-table-head {
+	display: flex;
+}
+
+.form-input .json-form .array-item-table-head th {
+	flex: 1;
+	text-align: center;
+}
+
+.form-input .json-form .array-field-title {
+	font-weight: bold;
+}
+
+.form-input .json-form .btn-action-array-field {
+	height: 20px;
+	width: 20px;
+	display: inline-block;
+	padding: 0;
+	margin: 2px 2px;
+	font-size: 5px;
+}
+
+.form-input .json-form .btn-action-array-field i {
+	line-height: 1rem;
+	font-size: 18px;
+}
+
+.btn-actions-container {
+	width: 80px;
+	float: right;
+}
