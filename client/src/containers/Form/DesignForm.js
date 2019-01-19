@@ -112,7 +112,7 @@ export default class DesignForm extends Component {
 			const stringUIschema = helper.stringifyPrettyJSON(uiSchema)
 
 			this.setState({
-				collectionName: res.data.collectionName,
+				collectionName: res.data.collectionDisplayName,
 				JSONSchema: schema,
 				defaultJSONschema: schema,
 				uiSchema,
