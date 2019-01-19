@@ -121,11 +121,13 @@ class DataInput extends Component {
 			                <i className="material-icons">arrow_drop_up</i>
 			              </span>
 			            )}
-			            <span 
-			            	className="waves-effect waves-light btn btn-action-array-field"
-			            	onClick={element.onDropIndexClick(element.index)}>
-			              <i className="material-icons">delete</i>
-			            </span>
+			            {element.hasRemove && (
+			            	<span 
+				            	className="waves-effect waves-light btn btn-action-array-field"
+				            	onClick={element.onDropIndexClick(element.index)}>
+				              <i className="material-icons">delete</i>
+				            </span>
+			            )}			            
 			          </div>
 	            </div>
 	      		)
