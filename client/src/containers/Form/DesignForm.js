@@ -4,6 +4,7 @@ import queryString from 'query-string'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import Form from 'react-jsonschema-form'
 
+import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
 import * as helper from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import './DesignForm.css'
@@ -46,6 +47,7 @@ export default class DesignForm extends Component {
 							<Form 
 								uiSchema={uiSchema}
 								schema={JSONSchema}
+								ArrayFieldTemplate={arrayFieldTemplate}
 			        />
 			      </div>
 			  	</div>
