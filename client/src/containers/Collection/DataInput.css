@@ -53,6 +53,10 @@
 	background-color: #f44336;	
 }
 
+.form-input .json-form .array-field-container {
+	margin-top: 20px;
+}
+
 .form-input .json-form .array-object-properties-row {
 	width: 100%;
 }
@@ -79,11 +83,16 @@
 
 .form-input .json-form .array-item-table-head {
 	display: flex;
+	background-color: grey;
+	color: white;
 }
 
 .form-input .json-form .array-item-table-head th {
 	flex: 1;
 	text-align: center;
+	border-left: 1px solid white;
+	border-right: 1px solid white;
+	padding: 5px;
 }
 
 .form-input .json-form .array-field-title {

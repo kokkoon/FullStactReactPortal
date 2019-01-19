@@ -3,7 +3,7 @@ import React from 'react'
 export const arrayFieldTemplate = (props) => {
 	const innerObjectProperties = props.items[0] ? props.items[0].children.props.schema.properties : {}
   return (
-    <div>
+    <div className="array-field-container">
     	<div className="row">
 	    	<div className="col s11">
 		    	<table>
