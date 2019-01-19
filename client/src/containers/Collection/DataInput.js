@@ -76,8 +76,6 @@ class DataInput extends Component {
 		const innerObjectProperties = props.items[0] ? props.items[0].children.props.schema.properties : {}
 	  return (
 	    <div>
-	    	<fieldset>
-	    	<legend className="array-field-title">{props.schema.title}</legend>
 	    	<div className="row">
 		    	<div className="col s11">
 			    	<table>
@@ -136,7 +134,6 @@ class DataInput extends Component {
 	      		<i className="material-icons">add</i>
 	      	</span>
 	      }
-	      </fieldset>
 	    </div>
 	  )
 	}	
