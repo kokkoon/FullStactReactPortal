@@ -31,6 +31,7 @@ class FormDesigner extends Component {
 			isNewField: true,
 			currentIndex: -1,
 			fields: [], // see fields data structure at the bottom of the code
+			hasArrayInFormField: false,
 			arrayFields: [],
 			isFieldOfArray: false,
 			isEventCreatedSwitchOn: false,
@@ -620,6 +621,8 @@ class FormDesigner extends Component {
 					return array
 				}, [])
 
+				const hasArrayInFormField = arrayFields.length > 0
+
 				this.setState({
 					formId,
 					collectionId,
@@ -627,6 +630,7 @@ class FormDesigner extends Component {
 					collectionDisplayName,
 					formStructure,
 					fields,
+					hasArrayInFormField,
 					arrayFields,
 					input
 				})
