@@ -965,10 +965,19 @@ class FormDesigner extends Component {
 
 			if (field != null) delete newFormStructure.properties[field.fieldName]
 
-			newFormStructure.properties[arrayField].items.properties[fieldName] = {
-				title: fieldName,
-				type: dataType,
-				default: defaultValue
+			if (dataType === 'date') {
+				newFormStructure.properties[arrayField].items.properties[fieldName] = {
+					title: fieldName,
+					type: 'string',
+					format: dataType,
+					default: defaultValue
+				}
+			} else {
+				newFormStructure.properties[arrayField].items.properties[fieldName] = {
+					title: fieldName,
+					type: dataType,
+					default: defaultValue
+				}
 			}
 		} else {
 			if (dataType === 'date') {
