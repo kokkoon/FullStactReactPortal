@@ -317,7 +317,7 @@ class FormDesigner extends Component {
 		        	 disabled={
 		        	 	isEmpty(fieldName) || 
 		        	 	isEmpty(dataType) || 
-		        	 	isFieldOfArray && isEmpty(arrayField) ||
+		        	 	(isFieldOfArray && isEmpty(arrayField)) ||
 		        	 	( this.isFieldNameExisted(fieldName) && isNewField )} 
 		        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
 		        >
