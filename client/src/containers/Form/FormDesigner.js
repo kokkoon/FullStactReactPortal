@@ -272,13 +272,15 @@ class FormDesigner extends Component {
 
 	renderCardAddNewField () {
 		const {
-			isNewField
+			isNewField,
+			isFieldOfArray
 		} = this.state
 
 		const {
 			fieldName,
 			dataType,
-			defaultValue
+			defaultValue,
+			arrayField
 		} = this.state.input
 
 		return (
@@ -312,7 +314,11 @@ class FormDesigner extends Component {
 					</div>
 					<div className="col s2 btn-add-container">
 		        <span className="waves-effect waves-light btn" 
-		        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || ( this.isFieldNameExisted(fieldName) && isNewField )} 
+		        	 disabled={
+		        	 	isEmpty(fieldName) || 
+		        	 	isEmpty(dataType) || 
+		        	 	isFieldOfArray && isEmpty(arrayField) ||
+		        	 	( this.isFieldNameExisted(fieldName) && isNewField )} 
 		        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
 		        >
 				    	{isNewField ? 'Add' : 'Update'}
