@@ -30,7 +30,6 @@ class FormDesigner extends Component {
 			collectionName: '',
 			isNewField: true,
 			currentIndex: -1,
-			isFieldNameExisted: false,
 			fields: [], // see fields data structure at the bottom of the code
 			arrayFields: [],
 			isFieldOfArray: false,
@@ -272,8 +271,7 @@ class FormDesigner extends Component {
 
 	renderCardAddNewField () {
 		const {
-			isNewField,
-			isFieldNameExisted
+			isNewField
 		} = this.state
 
 		const {
@@ -313,7 +311,7 @@ class FormDesigner extends Component {
 					</div>
 					<div className="col s2 btn-add-container">
 		        <span className="waves-effect waves-light btn" 
-		        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || ( isFieldNameExisted && isNewField )} 
+		        	 disabled={isEmpty(fieldName) || isEmpty(dataType) || ( this.isFieldNameExisted(fieldName) && isNewField )} 
 		        	 onClick={isNewField ? this.handleAddField : this.handleUpdateField}
 		        >
 				    	{isNewField ? 'Add' : 'Update'}
@@ -1102,7 +1100,7 @@ class FormDesigner extends Component {
 	}
 
 	handleInputChange = (inputType, {target}) => {
-		const { input, fields } = this.state
+		const { input } = this.state
 
 		switch (inputType) {
 			case 'collection_name': 
@@ -1122,9 +1120,6 @@ class FormDesigner extends Component {
 
 			case 'field_name':
 				input.fieldName = target.value
-				this.setState({ 
-					isFieldNameExisted: fields.map(f => f.fieldName).indexOf(target.value) >= 0 
-				})
 				break
 
 			case 'data_type':
@@ -1143,6 +1138,25 @@ class FormDesigner extends Component {
 		}
 		
 		this.setState({ input	})
+	}
+
+	isFieldNameExisted(fieldname) {
+		const { input, fields, isFieldOfArray } = this.state
+		const { arrayField } = input
+
+		let isFieldNameExisted = fields.map(f => f.fieldName).indexOf(fieldname) >= 0
+		
+		if (isFieldOfArray) {
+			if (arrayField) {
+				// check inside array field		
+				const index = fields.findIndex(f => f.fieldName === input.arrayField)
+				isFieldNameExisted = fields[index].items.map(f => f.fieldName).indexOf(fieldname) >= 0
+			} else {
+				isFieldNameExisted = false
+			}
+		}
+
+		return isFieldNameExisted
 	}
 
 	handleToggleIsFieldOfArray = ({ target }) => {
@@ -1245,7 +1259,6 @@ class FormDesigner extends Component {
 			},
 			isNewField: true,
 			currentIndex: -1,
-			isFieldNameExisted: false,
 			fields: [], 
 		})
 	}
