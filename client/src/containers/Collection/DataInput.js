@@ -44,9 +44,16 @@ class DataInput extends Component {
 	loadFormData (formId) {
 		axios.get(`${API_URL}/form?id=${formId}`)
 			.then(res => {
+				const {
+					data: formStructure, 
+					uiSchema, 
+					createdActionAPI
+				} = res.data
+
 				this.setState({
-					formStructure: res.data.data,
-					uiSchema: res.data.uiSchema
+					formStructure,
+					uiSchema,
+					createdActionAPI
 				})
 			})
 			.catch(e => console.error(e))
@@ -55,6 +62,7 @@ class DataInput extends Component {
 	log = (type) => console.log.bind(console, type)
 
 	onSubmit = (form) => {
+		const { createdActionAPI } = this.state
 		const { location } = this.props
 		const formId = location.search.slice(4)
 		const { formData } = form
@@ -65,12 +73,16 @@ class DataInput extends Component {
 					M.toast({ html: 'Data submitted' })
 
 					// call event api after saving data to database
-					axios.post(`${API_URL}/call-events-api?form_id=${formId}&action_type=created`, formData)
-					.then(res2 => {
-						// redirect to collection page						
+					if (createdActionAPI.isActive && createdActionAPI.url) {
+						axios.post(`${API_URL}/call-events-api?form_id=${formId}&action_type=created`, formData)
+						.then(res2 => {
+							// redirect to collection page						
+							this.props.history.push(`/collection?id=${formId}`)
+						})
+						.catch(err2 => console.error(err2))
+					} else {
 						this.props.history.push(`/collection?id=${formId}`)
-					})
-					.catch(err2 => console.error(err2))
+					}
 				}
 			})
 			.catch(err => console.log(err))
