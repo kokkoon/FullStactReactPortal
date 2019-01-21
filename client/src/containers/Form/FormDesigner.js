@@ -34,6 +34,7 @@ class FormDesigner extends Component {
 			hasArrayInFormField: false,
 			arrayFields: [],
 			isFieldOfArray: false,
+			isUpdatingArrayField: '',
 			isUpdatingArrayFieldItem: false,
 			isEventCreatedSwitchOn: false,
 			isEventModifiedSwitchOn: false,
@@ -797,9 +798,12 @@ class FormDesigner extends Component {
 	}
 
 	handleShowArrayItems = (field) => {
-		let { arrayFields } = this.state
-		const index = arrayFields.findIndex(arrField => arrField.fieldName === field.fieldName)
-		arrayFields[index].isShowItems = !arrayFields[index].isShowItems
+		let { arrayFields, isUpdatingArrayField } = this.state
+
+		if (isUpdatingArrayField !== field.fieldName) {
+			const index = arrayFields.findIndex(arrField => arrField.fieldName === field.fieldName)
+			arrayFields[index].isShowItems = !arrayFields[index].isShowItems
+		}
 
 		this.setState({ arrayFields })
 	}
@@ -838,8 +842,10 @@ class FormDesigner extends Component {
 
 			document.getElementById('field_name').focus()
 
-			// delete item in arrayFields when updating
+			// delete related item in arrayFields when updating
+			let isUpdatingArrayField = ''
 			if (field.dataType === 'array') {
+				isUpdatingArrayField = field.fieldName
 				const idx = arrayFields_state.findIndex(arrField => arrField.fieldName === field.fieldName)
 				arrayFields_state.splice(idx, 1)
 			}
@@ -849,6 +855,7 @@ class FormDesigner extends Component {
 				isNewField: false,
 				currentIndex: index,
 				arrayFields: arrayFields_state,
+				isUpdatingArrayField,
 				fields
 			})
 		} else if (actionType === 'delete') {
@@ -1221,6 +1228,7 @@ class FormDesigner extends Component {
 			currentIndex: -1,
 			currentItemIndex: -1,
 			isUpdatingArrayFieldItem: false,
+			isUpdatingArrayField: '',
 			isFieldOfArray: false,
 			fields, 
 			arrayFields
