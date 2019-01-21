@@ -827,7 +827,7 @@ class FormDesigner extends Component {
 
 		if (actionType === 'edit') {
 			const newInput = {
-				...input,
+				...input, // get existing collectionName and collectionDescription
 				fieldName: field.fieldName,
 				dataType: field.dataType,
 				defaultValue: field.defaultValue
@@ -867,12 +867,13 @@ class FormDesigner extends Component {
 	}
 
 	handleClickActionArray = (actionType, arrayField, index) => {
-		let { fields } = this.state
+		let { input, fields } = this.state
 		const field_idx = fields.findIndex(field => field.fieldName === arrayField)
 		const field = fields[field_idx].items[index]
 
 		if (actionType === 'edit') {
 			const newInput = {
+				...input, // get existing collectionName and collectionDescription
 				arrayField,
 				fieldName: field.fieldName,
 				dataType: field.dataType,
