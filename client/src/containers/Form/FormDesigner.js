@@ -867,7 +867,7 @@ class FormDesigner extends Component {
 	}
 
 	handleClickActionArray = (actionType, arrayField, index) => {
-		let { fields,	input } = this.state
+		let { fields } = this.state
 		const field_idx = fields.findIndex(field => field.fieldName === arrayField)
 		const field = fields[field_idx].items[index]
 
