@@ -34,6 +34,7 @@ class FormDesigner extends Component {
 			hasArrayInFormField: false,
 			arrayFields: [],
 			isFieldOfArray: false,
+			isUpdatingArrayFieldItem: false,
 			isEventCreatedSwitchOn: false,
 			isEventModifiedSwitchOn: false,
 			isURLExtWorkflowConnected: undefined,
@@ -264,7 +265,41 @@ class FormDesigner extends Component {
           <td className="cell-array-item">{item.dataType}</td>
           <td className="cell-array-item">{item.defaultValue}</td>
           <td></td>
-          <td></td>
+          <td>
+          {
+			    	item.action &&
+			    	item.action.map((action, idx2) => {
+			    		if (action.name === 'edit') {
+		    				return (
+		    			    <span key={idx2}
+		    			    	 className={action.enable 
+		    			    							? "waves-effect waves-light btn btn-action blue lighten-2 tooltipped"
+		    			    							: "waves-effect waves-light btn btn-action blue lighten-2 disabled"}
+		    			    	 data-position="bottom" 
+		    			    	 data-tooltip="edit field"
+		    			    	 onClick={e => this.handleClickActionArray(action.name, arrayField.fieldName, idx)}
+		    			    >
+		    			    	<i className="material-icons">{action.name}</i>
+		    			    </span>
+		    			  )
+	    			  } else if (action.name === 'delete') {
+	    			  	return (
+		    			    <span key={idx2}
+		    			    	 className={action.enable 
+		    			    							? "waves-effect waves-light btn btn-action red lighten-2 tooltipped"
+		    			    							: "waves-effect waves-light btn btn-action red lighten-2 disabled"}
+		    			    	 data-position="bottom" 
+		    			    	 data-tooltip="delete field"
+		    			    	 onClick={e => this.handleClickActionArray(action.name, arrayField.fieldName, idx)}
+		    			    >
+		    			    	<i className="material-icons">{action.name}</i>
+		    			    </span>
+		    			  )
+	    			  }
+	    			  return <div key={idx2}/>
+			    	})
+			    }
+          </td>
         </tr>
 			))
 		}
@@ -331,8 +366,13 @@ class FormDesigner extends Component {
 	}
 
 	renderInputFieldOfArray() {
-		const { hasArrayInFormField, isFieldOfArray, arrayFields } = this.state
 		const { arrayField, dataType } = this.state.input
+		const { 
+			hasArrayInFormField, 
+			isFieldOfArray, 
+			arrayFields, 
+			isUpdatingArrayFieldItem 
+		} = this.state
 
 		return (
 			hasArrayInFormField &&
@@ -343,7 +383,7 @@ class FormDesigner extends Component {
 			        <input 
 			        	type="checkbox" 
 			        	className="filled-in" 
-			        	disabled={dataType === 'array'}
+			        	disabled={dataType === 'array' || isUpdatingArrayFieldItem}
 			        	checked={isFieldOfArray ? "checked" : ""} 
 			        	onChange={this.handleToggleIsFieldOfArray} 
 			        />
@@ -355,7 +395,7 @@ class FormDesigner extends Component {
 					    <select 
 					    	id="array-field-select" 
 					    	className="browser-default"
-					    	disabled={!isFieldOfArray}
+					    	disabled={!isFieldOfArray || isUpdatingArrayFieldItem}
 					    	value={arrayField} 
 					    	onChange={event => this.handleInputChange('array_field', event)}
 					    >
@@ -826,20 +866,73 @@ class FormDesigner extends Component {
 		}
 	}
 
+	handleClickActionArray = (actionType, arrayField, index) => {
+		let { fields,	input } = this.state
+		const field_idx = fields.findIndex(field => field.fieldName === arrayField)
+		const field = fields[field_idx].items[index]
+
+		if (actionType === 'edit') {
+			const newInput = {
+				arrayField,
+				fieldName: field.fieldName,
+				dataType: field.dataType,
+				defaultValue: field.defaultValue
+			}
+
+			// disabled all action buttons until user click update field button
+			fields = this.toggleActionButtons(fields, false)
+
+			document.getElementById('field_name').focus()
+
+			this.setState({
+				input: newInput,
+				isNewField: false,
+				isUpdatingArrayFieldItem: true,
+				isFieldOfArray: true,
+				fields,
+				currentIndex: field_idx,
+				currentItemIndex: index
+			})
+		} else if (actionType === 'delete') {
+			this.deleteFieldOnFormStructure(field.fieldName, arrayField)
+			fields[field_idx].items.splice(index, 1)
+
+			this.setState({ 
+				fields, 
+				hasFormFieldsChanged: true
+			})
+		}
+	}
+
 	toggleActionButtons = (fields, toBeEnable) => {
 		return fields.map(field => {
 			if(field.action) {
 				field.action = field.action.map(action => ({ ...action, enable: toBeEnable }))
 			}	
+			if (field.dataType === 'array') {
+				field.items.map(item => {
+					if(item.action) {
+						item.action = item.action.map(action => ({ ...action, enable: toBeEnable }))
+					}
+
+					return item	
+				})
+			}
 			return field
 		})
 	}
 
-	deleteFieldOnFormStructure = (fieldName) => {
+	deleteFieldOnFormStructure = (fieldName, arrayField) => {
 		const { formStructure } = this.state
-		delete formStructure.properties[fieldName]
+		const newFormStructure = {...formStructure}
 
-		this.setState({ formStructure })
+		if (arrayField === undefined) { // non-array field item
+			delete newFormStructure.properties[fieldName]
+		} else if (arrayField.length > 0 && arrayField !== '') { // array field item
+			delete newFormStructure.properties[arrayField].items.properties[fieldName]
+		}
+
+		this.setState({ formStructure: newFormStructure })
 	}
 
 	update_hasArrayInFormField_onDeletion = (fields, deletedField) => {
@@ -913,7 +1006,19 @@ class FormDesigner extends Component {
 	addNewArrayFieldItem = (fields, arrayField, newField) => {
 		return fields.map(field => {
 			if (field.fieldName === arrayField) {
-				field.items.push(newField)
+				field.items.push({
+					...newField,
+					action: [
+						{
+							name: 'edit',
+							enable: true
+						},
+						{
+							name: 'delete',
+							enable: true
+						}
+					]
+				})
 			}
 
 			return field
@@ -965,13 +1070,14 @@ class FormDesigner extends Component {
 	}
 
 	updateFormStructure = (isFieldOfArray, newField, field) => {
+		const { isUpdatingArrayFieldItem } = this.state
 		const newFormStructure = {...this.state.formStructure}
 		const { fieldName, dataType, defaultValue } = newField
 
 		if (isFieldOfArray) {
 			const { arrayField } = this.state.input
 
-			if (field != null) delete newFormStructure.properties[field.fieldName]
+			if (field != null && !isUpdatingArrayFieldItem) delete newFormStructure.properties[field.fieldName]
 
 			if (dataType === 'date') {
 				newFormStructure.properties[arrayField].items.properties[fieldName] = {
@@ -1027,31 +1133,50 @@ class FormDesigner extends Component {
 	handleUpdateField = () => {
 		const { fieldName, dataType, defaultValue, arrayField } = this.state.input
 		let { fields } = this.state
-		const { isFieldOfArray, currentIndex, arrayFields: arrayFields_state } = this.state
+		const { 
+			isFieldOfArray, 
+			currentIndex, 
+			currentItemIndex, 
+			arrayFields: arrayFields_state,
+			isUpdatingArrayFieldItem
+		} = this.state
 		const field = fields[currentIndex]
+
 		const newField = { fieldName, dataType, defaultValue }
 
-		if (field.fieldName !== fieldName) {
+		if (!isUpdatingArrayFieldItem && field.fieldName !== fieldName) {
 			this.deleteFieldOnFormStructure(field.fieldName)
+		} 
+		else if (isUpdatingArrayFieldItem) {
+			const fieldItem = field.items[currentItemIndex]
+
+			if (fieldItem.fieldName !== fieldName) {
+				this.deleteFieldOnFormStructure(fieldItem.fieldName, arrayField)
+			}
 		}
+
 		this.updateFormStructure(isFieldOfArray, newField, field)
+
+		let field_properties = { 
+			fieldName, 
+			dataType, 
+			defaultValue,
+			action: [
+				{
+					name: 'edit',
+					enable: true
+				},
+				{
+					name: 'delete',
+					enable: true
+				}
+			]
+		}
 		
 		if (!isFieldOfArray) {
-			let field_properties = {
-				fieldName, 
-				dataType, 
-				defaultValue, 
-				showInTable: true, 
-				action: [
-					{
-						name: 'edit',
-						enable: true
-					},
-					{
-						name: 'delete',
-						enable: true
-					}
-				]
+			field_properties = {
+				...field_properties, 
+				showInTable: true
 			}	
 
 			if (dataType === 'array') {
@@ -1069,20 +1194,6 @@ class FormDesigner extends Component {
 
 		let arrayFields = arrayFields_state
 
-		// if (field.dataType === 'array' && field.dataType !== dataType) { // change data type from array to non array
-		// 	arrayFields = this.deleteArrayField(arrayFields_state, field)
-		// }
-		// else if (field.dataType !== 'array' && dataType === 'array') { // change data type from non array to array
-		// 	arrayFields = this.addNewArrayField(arrayFields_state, field)
-		// 	fields[currentIndex].items = []
-		// }
-		// else if (field.dataType === 'array' && dataType === 'array') { // change array field name
-		// 	if (field.fieldName !== fieldName) {
-		// 		const index = arrayFields.findIndex(arrField => arrField.fieldName === field.fieldName)
-		// 		arrayFields[index].fieldName = fieldName
-		// 	}
-		// }
-
 		if (dataType === 'array') { 
 			arrayFields = this.addNewArrayField(arrayFields_state, newField)
 			
@@ -1093,17 +1204,23 @@ class FormDesigner extends Component {
 		
 		// if update is aimed to change a field to be items of other array field,
 		// move field position to be inside that array field items and remove current field
-		if (isFieldOfArray && !isEmpty(arrayField)) {
+		if (!isUpdatingArrayFieldItem && isFieldOfArray && !isEmpty(arrayField)) {
 			const index = fields.findIndex(field => field.fieldName === arrayField)
-			fields[index].items.push(newField)
+			fields[index].items.push(field_properties)
 
 			fields.splice(currentIndex, 1)
+		} 
+		else if (isUpdatingArrayFieldItem) {
+			fields[currentIndex].items[currentItemIndex] = field_properties
 		}
 
 		this.setState({
 			hasFormFieldsChanged: true,
 			isNewField: true,
 			currentIndex: -1,
+			currentItemIndex: -1,
+			isUpdatingArrayFieldItem: false,
+			isFieldOfArray: false,
 			fields, 
 			arrayFields
 		})
@@ -1253,24 +1370,6 @@ class FormDesigner extends Component {
 				else this.reloadData()
 			})
 			.catch(error => console.error(error))
-	}
-
-	// reset to initial state
-	resetState() {
-		this.setState({ 
-			formId: undefined,
-			isCollectionNameOK: false,
-			formStructure: { title: 'New Collection', type: "object", properties: {} },
-			input: {
-				collectionName: '',
-				fieldName: '',
-				dataType: '',
-				defaultValue: ''
-			},
-			isNewField: true,
-			currentIndex: -1,
-			fields: [], 
-		})
 	}
 
 	updateModifiedFields (fields) {
