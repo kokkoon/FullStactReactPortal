@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-// import axios from 'axios'
+import axios from 'axios'
 import Form from 'react-jsonschema-form'
-// import M from 'materialize-css/dist/js/materialize.min.js'
+import M from 'materialize-css/dist/js/materialize.min.js'
 
-// import API_URL from '../utils/api_url'
+import API_URL from '../utils/api_url'
+import { dataURLtoBlob } from '../utils/helperFunctions'
 import './UploadForm.css'
 
 class UploadForm extends Component {
@@ -11,6 +12,7 @@ class UploadForm extends Component {
 		super(props)
 
 		this.state = {
+			files: undefined,
 			formStructure: { 
 				title: 'Form', 
 				type: "object", 
@@ -26,7 +28,7 @@ class UploadForm extends Component {
 	}	
 
 	render() {
-		const { formStructure } = this.state
+		const { files, formStructure } = this.state
 
 		return (
 			<div className="form-input">
@@ -37,20 +39,75 @@ class UploadForm extends Component {
 	        	onSubmit={this.onSubmit.bind(this)}
 	        	onError={this.log("errors")} />
 	      </div>
-	      <p id="file">
-
-	      </p>
+	      {
+	      	files &&
+	      	files.map((file, index) => (
+			      <p>
+			      	<a 
+				      	href="#"
+				      	onClick={e => this.downloadFile(file.filename, file.contentType)}>
+				      	download {file.filename.slice(33)}
+				      </a>
+			      </p>
+	      	))
+	      }
 			</div>
 		)
+	}
+
+	downloadFile = (filename, contentType) => {
+		axios.get(`${API_URL}/download?filename=${filename}`, {responseType: 'arraybuffer'})
+			.then(res => {
+				const file = new Blob([res.data], { type: contentType });
+      	const fileURL = URL.createObjectURL(file);
+      	const originalName = filename.slice(33)
+
+      	downloadURI(fileURL, originalName)
+
+      	function downloadURI(uri, name) {
+				  let link = document.createElement("a");
+				  link.download = name;
+				  link.href = uri;
+				  document.body.appendChild(link);
+				  link.click();
+				  document.body.removeChild(link);
+				}
+			})
+			.catch(err => console.log(err))
+	}
+
+	componentWillMount() {
+		axios.get(`${API_URL}/files`)
+			.then(res => {
+				console.log('res = ', res)
+				this.setState({ files: res.data })
+			})
+			.catch(err => console.log(err))
+	}
+
+	componentDidMount() {
+		M.AutoInit()
 	}
 	 
 	log = (type) => console.log.bind(console, type)
 
 	onSubmit = ({ formData }) => {
 		const file = formData.file
-		const startIdx = file.indexOf('base64,') + 7
-		const content = file.slice(startIdx)
-		document.getElementById('file').innerHTML = atob(content)
+		const nameStartIdx = file.indexOf(';name=') + 6
+		const nameEndIdx = file.indexOf(';base64,')
+		const filename = file.slice(nameStartIdx, nameEndIdx)
+		const filetype = file.slice(5, nameStartIdx - 6)
+
+		const sBoundary = "---------------------------" + Date.now().toString(16)
+
+		const fd = new FormData()
+		fd.append("file", dataURLtoBlob(file), filename)
+
+		axios.post(`${API_URL}/upload`, fd, {headers: {'content-type': `multipart/form-data; boundary=${sBoundary}`}})
+			.then(res => {
+				M.toast({ html: res.data.message })
+			})
+			.catch(err => console.log(err))
 	}
 }
 

@@ -21,3 +21,21 @@ export function handleTabPressedOnJSONTextarea (event, textarea) {
 		textarea.selectionStart = textarea.selectionEnd = s + 1
 	}
 }
+
+// convert data URL base64 format to Blob
+export function dataURLtoBlob(dataURL) {
+    // convert base64 to raw binary data held in a string
+    const byteString = atob(dataURL.split(',')[1]);
+
+    // separate out the mime component
+    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to an ArrayBuffer
+    let ab = new ArrayBuffer(byteString.length);
+    let ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([ab], {type: mimeString});
+}

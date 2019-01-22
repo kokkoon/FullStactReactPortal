@@ -3,6 +3,12 @@ const mongoUtil = require( './services/mongoUtil' )
 const cookieSession = require('cookie-session')
 const passport = require('passport')
 const bodyParser = require('body-parser')
+const path = require('path')
+const crypto = require('crypto')
+const multer = require('multer')
+const GridFsStorage = require('multer-gridfs-storage')
+const Grid = require('gridfs-stream')
+const mongodb = require('mongodb')
 
 const keys = require('./config/keys')
 
@@ -11,14 +17,16 @@ mongoUtil.connectToDB(err => {
   else console.log('Fail to connect to MongoDB\nError: ', err)
     
   const app = express()
-
-  app.use(bodyParser.json())
+  
+  app.use(bodyParser.json({limit: '16000kb'}))
+  
   app.use(
     cookieSession({
       maxAge: 30 * 24 * 60 * 60 * 1000,
       keys: [keys.cookieKey]
     })
   );
+  
   app.use(passport.initialize())
   app.use(passport.session())
   require('./services/passport')
@@ -30,6 +38,34 @@ mongoUtil.connectToDB(err => {
   require('./routes/externalCollectionRoutes')(app)
   require('./routes/eventApiRoutes')(app)
   require('./routes/mongodbUtilityRoutes')(app)
+
+  // init GridFS stream
+  const db = mongoUtil.getDB()
+  let gfs = Grid(db, mongodb)
+  gfs.collection('file')
+
+  // Create storage engine
+  const storage = new GridFsStorage({
+    // url: keys.mongoURI,
+    db: db,
+    file: (req, file) => {
+      return new Promise((resolve, reject) => {
+        crypto.randomBytes(16, (err, buf) => {
+          if (err) {
+            return reject(err)
+          }
+          const filename = buf.toString('hex') + '-' + file.originalname;
+          const fileInfo = {
+            filename: filename,
+            bucketName: 'file'
+          }
+          resolve(fileInfo)
+        })
+      })
+    }
+  })
+  const upload = multer({ storage })
+  require('./routes/fileRoutes')(app, gfs, upload)
 
   if (process.env.NODE_ENV === 'production') {
     // Express will serve up production assets
