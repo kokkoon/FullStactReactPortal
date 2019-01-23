@@ -124,9 +124,14 @@ module.exports = (app) => {
   	const formCollection = db.collection('form')
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id
-  	const { formStructure, tableColumns, formFields, defaultFields } = req.body
     const collectionName = req.body.collectionName.toLowerCase()
-    const { collectionDescription } = req.body
+    const { 
+      collectionDescription, 
+      tableColumns,
+      isAllowAttachment,
+      formStructure, 
+      formFields 
+    } = req.body
 
     const tableViewConfig = formFields.reduce((obj, field, index) => {
       return {
@@ -145,6 +150,7 @@ module.exports = (app) => {
       collectionDescription,
       formFields,
       formStructure,
+      isAllowAttachment,
       tableColumns,
       tableViewConfig
     }
@@ -225,6 +231,7 @@ module.exports = (app) => {
             formFields: form.formFields,
             column: form.tableColumns, 
             data: form.formStructure,
+            isAllowAttachment: form.isAllowAttachment,
             uiSchema: form.uiSchema,
             createdActionAPI: form.createdActionAPI,
             modifiedActionAPI: form.modifiedActionAPI

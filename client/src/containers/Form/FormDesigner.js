@@ -48,21 +48,23 @@ class FormDesigner extends Component {
 			modifiedApiParameters: undefined,
 			viewConfigString: '',
 			defaultViewConfig: {}, // object
-			viewConfig: {} // object
+			viewConfig: {}, // object
+			isAllowAttachment: false
 		}
 	}
 
 	render() {
 		const { collectionName: inputCollectionName, collectionDescription } = this.state.input
 		const {
-			collectionId,
-			collectionName,
-			collectionDisplayName,
-			formId,
-			formStructure, 
 			hasCollectionNameChanged,
+			collectionDisplayName,
 			hasFormFieldsChanged,
 			isCollectionNameOK,
+			isAllowAttachment,
+			collectionName,
+			formStructure, 
+			collectionId,
+			formId,
 			input
 		} = this.state
 		// console.log('fields = ', this.state.fields)
@@ -136,6 +138,17 @@ class FormDesigner extends Component {
 		    }
 		    { this.renderTableFormFields() }
         <div className="row btn-submit-container">
+        	<span className="left allow-attachment-container">
+						<label>
+			        <input 
+			        	type="checkbox" 
+			        	className="filled-in" 
+			        	checked={isAllowAttachment ? "checked" : ""}
+			        	onChange={this.handleToggleAllowAttachment} 
+			        />
+			        <span>Allow attachment</span>
+			      </label>
+					</span>
         	<span className="waves-effect waves-light btn btn-submit right" 
 	        	 disabled={
 	        	 	isEmpty(formStructure.properties) || 
@@ -647,7 +660,8 @@ class FormDesigner extends Component {
 					collectionDisplayName,
 					collectionDescription,
 					data: formStructure, 
-					formFields: fields, 
+					formFields: fields,
+					isAllowAttachment
 				} = res.data
 
 				input.collectionName = collectionDisplayName
@@ -676,6 +690,7 @@ class FormDesigner extends Component {
 					collectionName,
 					collectionDisplayName,
 					formStructure,
+					isAllowAttachment,
 					fields,
 					hasArrayInFormField,
 					arrayFields,
@@ -795,6 +810,26 @@ class FormDesigner extends Component {
 			})
 		})
 		.catch(error => console.error(error))
+	}
+
+	handleToggleAllowAttachment = () => {
+		const { isAllowAttachment } = this.state
+		const fileField = {
+			fieldName: 'file',
+			dataType: 'file',
+			defaultValue: ''
+		}
+
+		if (!isAllowAttachment) {
+			this.updateFormStructure(false, fileField)
+		} else {
+			this.deleteFieldOnFormStructure(fileField.fieldName)
+		}
+
+		this.setState({ 
+			isAllowAttachment: !isAllowAttachment,
+			hasFormFieldsChanged: true
+		})
 	}
 
 	handleShowArrayItems = (field) => {
@@ -1119,7 +1154,13 @@ class FormDesigner extends Component {
 						properties: {}
 					}
 				}
-			}	else {
+			}	else if (dataType === 'file') {
+				newFormStructure.properties[fieldName] = {
+		      title: "Upload single file",
+					type: "string",
+		      format: "data-url"
+				}
+			} else {
 				newFormStructure.properties[fieldName] = {
 					title: fieldName,
 					type: dataType,
@@ -1344,7 +1385,8 @@ class FormDesigner extends Component {
 		const { 
 			formId, 
 			formStructure, 
-			fields
+			fields,
+			isAllowAttachment
 		} = this.state
 		const { collectionName, collectionDescription } = this.state.input
 
@@ -1364,6 +1406,7 @@ class FormDesigner extends Component {
 			collectionName,
 			collectionDescription,
 			tableColumns, 
+			isAllowAttachment,
 			formStructure,
 			formFields: updatedFields
 		}
