@@ -4,7 +4,7 @@ import Form from 'react-jsonschema-form'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
 import API_URL from '../utils/api_url'
-import { dataURLtoBlob } from '../utils/helperFunctions'
+import { dataURLtoBlob, downloadURI } from '../utils/helperFunctions'
 import './UploadForm.css'
 
 class UploadForm extends Component {
@@ -63,15 +63,6 @@ class UploadForm extends Component {
       	const originalName = filename.slice(33)
 
       	downloadURI(fileURL, originalName)
-
-      	function downloadURI(uri, name) {
-				  let link = document.createElement("a");
-				  link.download = name;
-				  link.href = uri;
-				  document.body.appendChild(link);
-				  link.click();
-				  document.body.removeChild(link);
-				}
 			})
 			.catch(err => console.log(err))
 	}
