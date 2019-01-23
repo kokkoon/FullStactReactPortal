@@ -70,6 +70,7 @@ class FormDesigner extends Component {
 		// console.log('fields = ', this.state.fields)
 		// console.log('arrayFields = ', this.state.arrayFields)
 		// console.log('formStructure = ', this.state.formStructure)
+		console.log('viewConfig = ', this.state.viewConfig)
 
 		return (
 			<div className="form-designer">
@@ -822,61 +823,14 @@ class FormDesigner extends Component {
 
 		if (!isAllowAttachment) {
 			this.updateFormStructure(false, fileField)
-			this.addAttachmentInViewConfig()
 		} else {
 			this.deleteFieldOnFormStructure(fileField.fieldName)
-			this.deleteAttachmentInViewConfig()
 		}
 
 		this.setState({ 
 			isAllowAttachment: !isAllowAttachment,
 			hasFormFieldsChanged: true
 		})
-	}
-
-	addAttachmentInViewConfig () {
-		const { id } = queryString.parse(this.props.location.search)
-		const { fields } = this.state
-		let { viewConfig } = this.state
-
-		const lastOrder = Object.keys(viewConfig).reduce((order, item) => { 
-			if (viewConfig[item].order > order) {
-				return viewConfig[item].order
-			}
-			return order
-		}, 0)
-
-		viewConfig.attachment = {
-			displayName: 'Attachment',
-			order: lastOrder + 1,
-			showInTable: true
-		}
-
-		const data = { tableViewConfig: viewConfig, formFields: fields }
-
-		axios.post(`${API_URL}/save-table-view-config?form_id=${id}`, data)
-			.then(response => {
-				this.loadViewConfig(id)
-				M.toast({ html: response.data.message })
-			})
-			.catch(error => console.error(error))
-	}
-
-	deleteAttachmentInViewConfig () {
-		const { id } = queryString.parse(this.props.location.search)
-		const { fields, viewConfig } = this.state
-		let newViewConfig = {...viewConfig}
-
-		delete newViewConfig.attachment
-
-		const data = { tableViewConfig: newViewConfig, formFields: fields }
-
-		axios.post(`${API_URL}/save-table-view-config?form_id=${id}`, data)
-			.then(response => {
-				this.loadViewConfig(id)
-				M.toast({ html: response.data.message })
-			})
-			.catch(error => console.error(error))
 	}
 
 	handleShowArrayItems = (field) => {
@@ -944,6 +898,7 @@ class FormDesigner extends Component {
 			const hasArrayInFormField = this.update_hasArrayInFormField_onDeletion(fields, field)
 			const arrayFields = this.deleteArrayField(arrayFields_state, field)
 			this.deleteFieldOnFormStructure(field.fieldName)
+			this.deleteFieldOnViewConfig(field.fieldName)
 			fields.splice(index, 1)
 
 			this.setState({ 
@@ -953,6 +908,15 @@ class FormDesigner extends Component {
 				arrayFields
 			})
 		}
+	}
+
+	deleteFieldOnViewConfig (fieldName) {
+		const { viewConfig } = this.state
+		let newViewConfig = { ...viewConfig }
+		
+		delete newViewConfig[fieldName]
+
+		this.setState({ viewConfig: newViewConfig })
 	}
 
 	handleClickActionArray = (actionType, arrayField, index) => {
@@ -1057,6 +1021,7 @@ class FormDesigner extends Component {
 	}
 
 	handleAddField = () => {
+		const { id } = queryString.parse(this.props.location.search)
 		const { fieldName, dataType, defaultValue, arrayField } = this.state.input
 		const { 
 			fields, 
@@ -1085,11 +1050,40 @@ class FormDesigner extends Component {
 			newArrayFields = this.addNewArrayField(arrayFields, newField)
 		}
 
+		// update viewConfig for exisiting collection
+		if (id !== 'new' && !isFieldOfArray) {
+			this.addFieldToViewConfig(fieldName)
+		}
+
 		this.setState({ 
 			hasFormFieldsChanged: true,
 			hasArrayInFormField,
 			fields: newFields,
 			arrayFields: newArrayFields
+		})
+	}
+
+	addFieldToViewConfig (fieldName) {
+		const { viewConfig } = this.state
+
+		const lastOrder = Object.keys(viewConfig).reduce((order, item) => { 
+      if (viewConfig[item].order > order) {
+        return viewConfig[item].order
+      }
+      return order
+    }, 0)
+
+		const newViewConfig = {
+			...viewConfig,
+			[fieldName] : {
+				displayName: fieldName,
+				order: lastOrder + 1,
+				showInTable: true
+			}
+		}
+
+		this.setState({
+			viewConfig: newViewConfig
 		})
 	}
 
@@ -1227,6 +1221,7 @@ class FormDesigner extends Component {
 	}
 
 	handleUpdateField = () => {
+		const { id } = queryString.parse(this.props.location.search)
 		const { fieldName, dataType, defaultValue, arrayField } = this.state.input
 		let { fields } = this.state
 		const { 
@@ -1305,9 +1300,14 @@ class FormDesigner extends Component {
 			fields[index].items.push(field_properties)
 
 			fields.splice(currentIndex, 1)
-		} 
+		}
 		else if (isUpdatingArrayFieldItem) {
 			fields[currentIndex].items[currentItemIndex] = field_properties
+		}
+
+		// update viewConfig for existing collection
+		if (id !== 'new' && !isFieldOfArray) {
+			this.updateViewConfig(field, fieldName)
 		}
 
 		this.setState({
@@ -1320,6 +1320,25 @@ class FormDesigner extends Component {
 			isFieldOfArray: false,
 			fields, 
 			arrayFields
+		})
+	}
+
+	updateViewConfig (field, fieldName) {
+		const { viewConfig } = this.state
+		let newViewConfig = {...viewConfig}
+
+		if (field.fieldName !== fieldName) {		
+			newViewConfig[fieldName] = {
+				displayName: fieldName,
+				order: newViewConfig[`${field.fieldName}`].order,
+				showInTable: newViewConfig[`${field.fieldName}`].showInTable
+			}
+
+			delete newViewConfig[`${field.fieldName}`]
+		}
+
+		this.setState({
+			viewConfig: newViewConfig
 		})
 	}
 
@@ -1430,16 +1449,16 @@ class FormDesigner extends Component {
 		const { location } = this.props
 		const { id } = queryString.parse(location.search)
 		const { 
-			formId, 
 			formStructure, 
 			fields,
+			viewConfig,
 			isAllowAttachment
 		} = this.state
 		const { collectionName, collectionDescription } = this.state.input
 
 		let updatedFields = fields
 
-		if (formId !== undefined) {
+		if (id !== 'new') {
 			updatedFields = this.updateModifiedFields(fields)
 		}
 
@@ -1449,13 +1468,17 @@ class FormDesigner extends Component {
 		
 		formStructure.title = collectionName
 
-		const data = {
+		let data = {
 			collectionName,
 			collectionDescription,
 			tableColumns, 
 			isAllowAttachment,
 			formStructure,
-			formFields: updatedFields
+			formFields: updatedFields,
+		}
+
+		if (id !== 'new') {
+			data = {...data, viewConfig}
 		}
 
 		axios.post(`${API_URL}/create-form?id=${id}`, data)

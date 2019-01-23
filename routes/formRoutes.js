@@ -130,29 +130,73 @@ module.exports = (app) => {
       tableColumns,
       isAllowAttachment,
       formStructure, 
-      formFields 
+      formFields,
+      viewConfig: currentTableViewConfig
     } = req.body
 
-    const tableViewConfig = formFields.reduce((obj, field, index) => {
-      return {
-        ...obj,
-        [field.fieldName] : {
-          displayName: field.fieldName,
-          order: index + 1,
-          showInTable: field.showInTable
-        }
-      }
-    }, {})
-
-    const formData = {
+    let formData = {
       icon: 'format_list_bulleted',
       collectionName,
       collectionDescription,
       formFields,
       formStructure,
       isAllowAttachment,
-      tableColumns,
-      tableViewConfig
+      tableColumns
+    }
+
+    // generate tableViewConfig field for new collection
+    if (formId === 'new') {
+      let lastOrder
+      let tableViewConfig = formFields.reduce((obj, field, index) => {
+        lastOrder = index + 1
+        return {
+          ...obj,
+          [field.fieldName] : {
+            displayName: field.fieldName,
+            order: index + 1,
+            showInTable: field.showInTable
+          }
+        }
+      }, {})
+
+      if (isAllowAttachment) {
+        tableViewConfig = {
+          ...tableViewConfig,
+          attachment: {
+            displayName: "Attachment",
+            order: lastOrder + 1,
+            showInTable: true
+          }
+        }
+      }
+
+      formData = {...formData, tableViewConfig}
+    } 
+    else {
+      let tableViewConfig = currentTableViewConfig
+
+      if (isAllowAttachment) {
+        const lastOrder = Object.keys(currentTableViewConfig).reduce((order, item) => { 
+          if (currentTableViewConfig[item].order > order) {
+            return currentTableViewConfig[item].order
+          }
+          return order
+        }, 0)
+
+        tableViewConfig = {
+          ...tableViewConfig,
+          attachment: {
+            displayName: "Attachment",
+            order: lastOrder + 1,
+            showInTable: true
+          }
+        }
+      } 
+      else if (!isAllowAttachment && currentTableViewConfig.attachment) {
+        delete tableViewConfig.attachment
+      }
+
+      formData = {...formData, tableViewConfig}
     }
 
   	formCollection.find({}).toArray((err, result) => {
