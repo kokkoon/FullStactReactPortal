@@ -873,7 +873,7 @@ class FormDesigner extends Component {
 				defaultValue: field.defaultValue
 			}
 
-			// disabled all action buttons until user click update field button
+			// disable all action buttons until user click update field button
 			fields = this.toggleActionButtons(fields, false)
 
 			document.getElementById('field_name').focus()
@@ -894,7 +894,8 @@ class FormDesigner extends Component {
 				isUpdatingArrayField,
 				fields
 			})
-		} else if (actionType === 'delete') {
+		} 
+		else if (actionType === 'delete') {
 			const hasArrayInFormField = this.update_hasArrayInFormField_onDeletion(fields, field)
 			const arrayFields = this.deleteArrayField(arrayFields_state, field)
 			this.deleteFieldOnFormStructure(field.fieldName)
@@ -903,9 +904,9 @@ class FormDesigner extends Component {
 
 			this.setState({ 
 				fields, 
-				hasFormFieldsChanged: true,
-				hasArrayInFormField ,
-				arrayFields
+				arrayFields,
+				hasArrayInFormField,
+				hasFormFieldsChanged: true
 			})
 		}
 	}
@@ -933,7 +934,7 @@ class FormDesigner extends Component {
 				defaultValue: field.defaultValue
 			}
 
-			// disabled all action buttons until user click update field button
+			// disable all action buttons until user click update field button
 			fields = this.toggleActionButtons(fields, false)
 
 			document.getElementById('field_name').focus()
@@ -1231,8 +1232,8 @@ class FormDesigner extends Component {
 			arrayFields: arrayFields_state,
 			isUpdatingArrayFieldItem
 		} = this.state
-		const field = fields[currentIndex]
 
+		const field = fields[currentIndex]
 		const newField = { fieldName, dataType, defaultValue }
 
 		if (!isUpdatingArrayFieldItem && field.fieldName !== fieldName) {

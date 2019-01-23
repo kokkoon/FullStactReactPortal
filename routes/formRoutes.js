@@ -176,9 +176,9 @@ module.exports = (app) => {
       let tableViewConfig = currentTableViewConfig
 
       if (isAllowAttachment) {
-        const lastOrder = Object.keys(currentTableViewConfig).reduce((order, item) => { 
-          if (currentTableViewConfig[item].order > order) {
-            return currentTableViewConfig[item].order
+        const lastOrder = Object.keys(tableViewConfig).reduce((order, item) => { 
+          if (tableViewConfig[item].order > order) {
+            return tableViewConfig[item].order
           }
           return order
         }, 0)
@@ -192,7 +192,7 @@ module.exports = (app) => {
           }
         }
       } 
-      else if (!isAllowAttachment && currentTableViewConfig.attachment) {
+      else if (!isAllowAttachment && tableViewConfig.attachment) {
         delete tableViewConfig.attachment
       }
 

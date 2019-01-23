@@ -43,11 +43,10 @@ class UploadForm extends Component {
 	      	files &&
 	      	files.map((file, index) => (
 			      <p>
-			      	<a 
-				      	href="#"
+			      	<span
 				      	onClick={e => this.downloadFile(file.filename, file.contentType)}>
 				      	download {file.filename.slice(33)}
-				      </a>
+				      </span>
 			      </p>
 	      	))
 	      }
@@ -87,7 +86,7 @@ class UploadForm extends Component {
 		const nameStartIdx = file.indexOf(';name=') + 6
 		const nameEndIdx = file.indexOf(';base64,')
 		const filename = file.slice(nameStartIdx, nameEndIdx)
-		const filetype = file.slice(5, nameStartIdx - 6)
+		// const filetype = file.slice(5, nameStartIdx - 6)
 
 		const sBoundary = "---------------------------" + Date.now().toString(16)
 
