@@ -53,6 +53,14 @@
 	border: unset;
 }
 
+.table-collection .download-link {
+	cursor: pointer;
+}
+
+.table-collection .download-link:hover {
+	color: blue;
+}
+
 .cell-delete-btn-container {
 	padding: 5px;
 	width: 35px;

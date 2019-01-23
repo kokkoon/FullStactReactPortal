@@ -5,6 +5,7 @@ import { isEmpty } from 'lodash'
 import queryString from 'query-string'
 
 import API_URL from '../../utils/api_url'
+import { downloadURI } from '../../utils/helperFunctions'
 import './CollectionPage.css'
 
 export default class CollectionPage extends Component {
@@ -66,6 +67,17 @@ export default class CollectionPage extends Component {
                           .map((filteredKey, idx) => (
                             <td key={idx}>{typeof(r[filteredKey]) === 'string' ? r[filteredKey] : JSON.stringify(r[filteredKey])}</td>
                           ))
+                      }
+                      {
+                        r.filename &&
+                        r.contentType &&
+                        <td>
+                          <span
+                            className="download-link"
+                            onClick={e => this.downloadFile(r.filename, r.contentType)}>
+                            {r.filename.slice(33)}
+                          </span>
+                        </td>
                       }
                       <td className="cell-delete-btn-container">
                         <span className="waves-effect waves-light btn-floating red" 
@@ -138,6 +150,18 @@ export default class CollectionPage extends Component {
         })
       })
       .catch(error => console.error(error))
+  }
+
+  downloadFile = (filename, contentType) => {
+    axios.get(`${API_URL}/download?filename=${filename}`, {responseType: 'arraybuffer'})
+      .then(res => {
+        const file = new Blob([res.data], { type: contentType });
+        const fileURL = URL.createObjectURL(file);
+        const originalName = filename.slice(33)
+
+        downloadURI(fileURL, originalName)
+      })
+      .catch(err => console.log(err))
   }
 
   deleteRecord = (index) => {

@@ -27,13 +27,14 @@ module.exports = (app, gfs, upload) => {
 
     fileCollection.insertOne(req.body, (err, obj) => {
       if (!err && obj.insertedCount === 1) {
-        res.json({ message: 'success upload'})
+        res.json({ message: 'Success upload'})
       }
     })
   })
 
   app.post('/api/upload', upload.single('file'), (req, res) => {
-    res.json({ message: 'file uploaded' })
+    const { filename, id, contentType } = req.file
+    res.json({ message: 'File uploaded', filename, fileId: id, contentType })
   })
 
   app.get('/api/download', (req, res) => {
