@@ -46,7 +46,7 @@ mongoUtil.connectToDB(err => {
 
   // Create storage engine
   const storage = new GridFsStorage({
-    // url: keys.mongoURI,
+    // url: keys.mongoURI, // if db object is not accessible, use url
     db: db,
     file: (req, file) => {
       return new Promise((resolve, reject) => {
@@ -57,7 +57,8 @@ mongoUtil.connectToDB(err => {
           const filename = buf.toString('hex') + '-' + file.originalname;
           const fileInfo = {
             filename: filename,
-            bucketName: 'file'
+            bucketName: 'file',
+            // metadata: {random: 'iqbal test'} //add additional information to metadata field
           }
           resolve(fileInfo)
         })
