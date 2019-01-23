@@ -70,7 +70,7 @@ class FormDesigner extends Component {
 		// console.log('fields = ', this.state.fields)
 		// console.log('arrayFields = ', this.state.arrayFields)
 		// console.log('formStructure = ', this.state.formStructure)
-		console.log('viewConfig = ', this.state.viewConfig)
+		// console.log('viewConfig = ', this.state.viewConfig)
 
 		return (
 			<div className="form-designer">
