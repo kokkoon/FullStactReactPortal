@@ -822,10 +822,10 @@ class FormDesigner extends Component {
 
 		if (!isAllowAttachment) {
 			this.updateFormStructure(false, fileField)
-			this.addAttachmentColumnInViewConfig()
+			this.addAttachmentInViewConfig()
 		} else {
 			this.deleteFieldOnFormStructure(fileField.fieldName)
-			this.deleteAttachmentColumnInViewConfig()
+			this.deleteAttachmentInViewConfig()
 		}
 
 		this.setState({ 
@@ -834,7 +834,7 @@ class FormDesigner extends Component {
 		})
 	}
 
-	addAttachmentColumnInViewConfig () {
+	addAttachmentInViewConfig () {
 		const { id } = queryString.parse(this.props.location.search)
 		const { fields } = this.state
 		let { viewConfig } = this.state
@@ -862,7 +862,7 @@ class FormDesigner extends Component {
 			.catch(error => console.error(error))
 	}
 
-	deleteAttachmentColumnInViewConfig () {
+	deleteAttachmentInViewConfig () {
 		const { id } = queryString.parse(this.props.location.search)
 		const { fields, viewConfig } = this.state
 		let newViewConfig = {...viewConfig}
