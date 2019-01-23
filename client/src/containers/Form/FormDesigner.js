@@ -822,14 +822,61 @@ class FormDesigner extends Component {
 
 		if (!isAllowAttachment) {
 			this.updateFormStructure(false, fileField)
+			this.addAttachmentColumnInViewConfig()
 		} else {
 			this.deleteFieldOnFormStructure(fileField.fieldName)
+			this.deleteAttachmentColumnInViewConfig()
 		}
 
 		this.setState({ 
 			isAllowAttachment: !isAllowAttachment,
 			hasFormFieldsChanged: true
 		})
+	}
+
+	addAttachmentColumnInViewConfig () {
+		const { id } = queryString.parse(this.props.location.search)
+		const { fields } = this.state
+		let { viewConfig } = this.state
+
+		const lastOrder = Object.keys(viewConfig).reduce((order, item) => { 
+			if (viewConfig[item].order > order) {
+				return viewConfig[item].order
+			}
+			return order
+		}, 0)
+
+		viewConfig.attachment = {
+			displayName: 'Attachment',
+			order: lastOrder + 1,
+			showInTable: true
+		}
+
+		const data = { tableViewConfig: viewConfig, formFields: fields }
+
+		axios.post(`${API_URL}/save-table-view-config?form_id=${id}`, data)
+			.then(response => {
+				this.loadViewConfig(id)
+				M.toast({ html: response.data.message })
+			})
+			.catch(error => console.error(error))
+	}
+
+	deleteAttachmentColumnInViewConfig () {
+		const { id } = queryString.parse(this.props.location.search)
+		const { fields, viewConfig } = this.state
+		let newViewConfig = {...viewConfig}
+
+		delete newViewConfig.attachment
+
+		const data = { tableViewConfig: newViewConfig, formFields: fields }
+
+		axios.post(`${API_URL}/save-table-view-config?form_id=${id}`, data)
+			.then(response => {
+				this.loadViewConfig(id)
+				M.toast({ html: response.data.message })
+			})
+			.catch(error => console.error(error))
 	}
 
 	handleShowArrayItems = (field) => {
