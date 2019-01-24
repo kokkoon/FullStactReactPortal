@@ -48,7 +48,7 @@ class DataInput extends Component {
             <p>Uploading: {this.countUploadProgress()}%</p>
             {
             	clientUploadProgress === 100 &&
-            	<p className="progress-info">Please wait a moment until upload process to database completed in server side and this modal will close automatically</p>
+            	<p>Please wait a moment until upload process to database completed in server side and this modal will close automatically</p>
             }
           </div>
         </div>

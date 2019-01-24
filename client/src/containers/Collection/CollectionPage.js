@@ -106,7 +106,7 @@ export default class CollectionPage extends Component {
             <h4>Download progress</h4>
             <div>
               <p>Downloading: {downloadProgress}%</p>
-              <p className="progress-info">Please wait until download completed and this modal will close automatically</p>
+              <p>Please wait until download completed and this modal will close automatically</p>
             </div>
           </div>
         </div>
