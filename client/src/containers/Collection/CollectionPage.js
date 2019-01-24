@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { isEmpty } from 'lodash'
 import queryString from 'query-string'
+import M from 'materialize-css/dist/js/materialize.min.js'
 
 import API_URL from '../../utils/api_url'
 import { downloadURI } from '../../utils/helperFunctions'
@@ -16,7 +17,8 @@ export default class CollectionPage extends Component {
       id: undefined,
       collectionName: '',
       column: [],
-    	record: null
+    	record: null,
+      downloadProgress: 0,
     }
   }
 
@@ -26,13 +28,17 @@ export default class CollectionPage extends Component {
       collectionName, 
       column, 
       record, 
-      tableViewConfig 
+      tableViewConfig,
+      downloadProgress
     } = this.state
 
     return (
       <div className="collection-page center">
         <div className="row">
         	<h5 className="collection-title">/ {collectionName}</h5>
+          <span className="download-progress">
+
+          </span>
           <span className="button-new">
             <Link className="waves-effect waves-light btn" to={`/data-input?id=${id}`}>New</Link>
           </span>
@@ -75,7 +81,7 @@ export default class CollectionPage extends Component {
                         <td>
                           <span
                             className="download-link"
-                            onClick={e => this.downloadFile(r.filename, r.contentType)}>
+                            onClick={e => this.downloadFile(r.filename, r.contentType, r.size)}>
                             {r.filename.slice(33)}
                           </span>
                         </td>
@@ -94,6 +100,16 @@ export default class CollectionPage extends Component {
           </div>
         }
         </div>
+
+        <div id="modal-download-progress" className="modal">
+          <div className="modal-content">
+            <h4>Download progress</h4>
+            <div>
+              <p>Downloading: {downloadProgress}%</p>
+              <p className="progress-info">Please wait until download completed and this modal will close automatically</p>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -107,7 +123,11 @@ export default class CollectionPage extends Component {
     this.loadTableViewConfig(id)
   }
 
-  componentDidUpdate() {
+  componentDidMount() {
+    M.AutoInit()
+  }
+
+  componentDidUpdate(prevProps, prevState) {
     const { id } = queryString.parse(this.props.location.search)
 
     if (id !== this.state.id) {
@@ -153,14 +173,31 @@ export default class CollectionPage extends Component {
       .catch(error => console.error(error))
   }
 
-  downloadFile = (filename, contentType) => {
-    axios.get(`${API_URL}/download?filename=${filename}`, {responseType: 'arraybuffer'})
+  downloadFile = (filename, contentType, size) => {
+    // open progress modal
+    let modal = document.getElementById('modal-download-progress')
+    M.Modal.getInstance(modal).open()
+
+    const config = {
+      responseType: 'arraybuffer',
+      onDownloadProgress: progressEvent => {
+        const progress = Math.round(progressEvent.loaded / size * 100)
+        this.setState({ downloadProgress: progress })
+      }
+    }
+
+    axios.get(`${API_URL}/download?filename=${filename}`, config)
       .then(res => {
         const file = new Blob([res.data], { type: contentType });
         const fileURL = URL.createObjectURL(file);
         const originalName = filename.slice(33)
 
         downloadURI(fileURL, originalName)
+
+        // close modal dowload progress and reset value
+        let modal = document.getElementById('modal-download-progress')
+        M.Modal.getInstance(modal).close()
+        this.setState({ downloadProgress: 0 })
       })
       .catch(err => console.log(err))
   }

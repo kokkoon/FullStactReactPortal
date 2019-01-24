@@ -16,12 +16,20 @@ class DataInput extends Component {
 
 		this.state = {
 			formStructure: { title: 'Form', type: "object", properties: {} },
-			uiSchema: {}
+			uiSchema: {},
+			clientUploadProgress: 0,
+			totalSize: 0,
+			second: 0
 		}
-	}	
+	}
 
 	render() {
-		const { formStructure, uiSchema } = this.state
+		const { 
+			formStructure, 
+			uiSchema,
+			clientUploadProgress
+		} = this.state
+
 		return (
 			<div className="form-input">
 				<h5>Input form</h5>
@@ -33,8 +41,27 @@ class DataInput extends Component {
 	        	ArrayFieldTemplate={arrayFieldTemplate}
 	        	onError={this.log("errors")} />
 	      </div>
+
+	      <div id="modal-upload-progress" className="modal">
+          <div className="modal-content center">
+            <h4>Upload progress</h4>
+            <p>Uploading: {this.countUploadProgress()}%</p>
+            {
+            	clientUploadProgress === 100 &&
+            	<p className="progress-info">Please wait a moment until upload process to database completed in server side and this modal will close automatically</p>
+            }
+          </div>
+        </div>
 			</div>
 		)
+	}
+
+	countUploadProgress = () => {
+		const { totalSize, second } = this.state
+
+		// used 125000bytes/second as average upload speed
+		const progress = Math.round((125000 * second) / totalSize * 100)
+		return progress < 100 ? progress : 100
 	}
 
 	componentWillMount() {
@@ -42,6 +69,14 @@ class DataInput extends Component {
 		const formId = location.search.slice(4)
 
 		this.loadFormData(formId)
+	}
+
+	componentDidMount() {
+		M.AutoInit()
+	}
+
+	componentWillUnmount() {
+		clearInterval(this.timer)
 	}
 
 	loadFormData (formId) {
@@ -76,18 +111,40 @@ class DataInput extends Component {
 			const formFile = new FormData()
 			formFile.append("file", dataURLtoBlob(file), filename)
 
+			// open progress modal
+	    let modal = document.getElementById('modal-upload-progress')
+    	M.Modal.getInstance(modal).open()
+
+    	this.timer = setInterval(() => {
+    		this.setState({ second: this.state.second + 1 })
+    	}, 1000)
+
 			// upload attachment file
-			axios.post(`${API_URL}/upload`, formFile, {headers: {'content-type': `multipart/form-data; boundary=${sBoundary}`}})
+			const config = {
+				headers: {'content-type': `multipart/form-data; boundary=${sBoundary}`},
+	    	onUploadProgress: progressEvent => {
+	    		console.log(progressEvent)
+	    		const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        	this.setState({ 
+        		totalSize: progressEvent.total,
+        		clientUploadProgress: progress
+        	})
+	    	}
+			}
+
+			axios.post(`${API_URL}/upload`, formFile, config)
 				.then(res => {
-					const { filename, fileId, contentType, message } = res.data
+					const { filename, fileId, contentType, size, message } = res.data
+
+					// close progress modal
+			    let modal = document.getElementById('modal-upload-progress')
+			    M.Modal.getInstance(modal).close()
 
 					M.toast({ html: message })
 					
 					// submit form data fields
 					let formFields = lodash.omit(formData, ['file'])
-					formFields.filename = filename
-					formFields.fileId = fileId
-					formFields.contentType = contentType
+					formFields = {...formFields, filename, fileId, contentType, size}
 					this.submitFormFields(formFields)
 				})
 				.catch(err => console.log(err))
@@ -108,7 +165,7 @@ class DataInput extends Component {
 					M.toast({ html: 'Data submitted' })
 
 					// call event api after saving data to database
-					if (createdActionAPI.isActive && createdActionAPI.url) {
+					if (createdActionAPI && createdActionAPI.isActive && createdActionAPI.url) {
 						axios.post(`${API_URL}/call-events-api?form_id=${formId}&action_type=created`, formFields)
 							.then(res2 => {
 								// redirect to collection page						

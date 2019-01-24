@@ -88,3 +88,7 @@
 .button-new .btn {
 	width: 150px;
 }
+
+.progress-info {
+	text-align: left !important;
+}

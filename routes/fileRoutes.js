@@ -33,8 +33,8 @@ module.exports = (app, gfs, upload) => {
   })
 
   app.post('/api/upload', upload.single('file'), (req, res) => {
-    const { filename, id, contentType } = req.file
-    res.json({ message: 'File uploaded', filename, fileId: id, contentType })
+    const { filename, id, contentType, size } = req.file
+    res.json({ message: 'File uploaded', filename, fileId: id, contentType, size })
   })
 
   app.get('/api/download', (req, res) => {
@@ -49,8 +49,8 @@ module.exports = (app, gfs, upload) => {
         });
       }
       
-      const readstream = gfs.createReadStream(file.filename);
-      readstream.pipe(res);
+      const readstream = gfs.createReadStream(file.filename)
+      readstream.pipe(res)
     })
   })
 
