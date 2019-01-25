@@ -151,3 +151,9 @@ export const setApp = (appName) => {
 		dispatch({ type: TYPES.SET_APP, appName })
 	}
 }
+
+export const setCollectionList = (collectionList) => {
+	return (dispatch) => {
+		dispatch({ type: TYPES.SET_COLLECTION_LIST, collectionList })
+	}
+}

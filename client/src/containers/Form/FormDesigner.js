@@ -8,6 +8,7 @@ import queryString from 'query-string'
 
 import * as helper from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
+import * as ACT from '../../actions'
 import './FormDesigner.css'
 
 class FormDesigner extends Component {
@@ -164,6 +165,7 @@ class FormDesigner extends Component {
       	{ this.renderCardAddNewField() }
         { this.renderModalFormEvent() }
         { this.renderModalEditView() }
+        { this.renderModalChooseSourceDefaultValue() }
       </div>
 		)
 	}
@@ -344,7 +346,7 @@ class FormDesigner extends Component {
 			          <label htmlFor="field_name">Field name</label>
 							</div>
 							<div className="col s4">
-							  <div className="input-field">
+								<div className="input-field">
 							    <select value={dataType} onChange={event => this.handleInputChange('data_type', event)}>
 							      <option value="">Data type</option>
 							      <option value="string">String</option>
@@ -356,9 +358,12 @@ class FormDesigner extends Component {
 							    </select>
 							  </div>
 							</div>
-							<div className="input-field col s4">
-								<input id="default_value" type="text" value={defaultValue} onChange={event => this.handleInputChange('default_value', event)}/>
-			          <label htmlFor="default_value">Default value</label>
+							<div className="col s4">
+							  <div className="input-field">
+									<input id="default_value" type="text" value={defaultValue} onChange={event => this.handleInputChange('default_value', event)}/>
+				          <label htmlFor="default_value">Default value</label>
+							  	<i className="material-icons prefix choose-default-value" onClick={this.handleChooseSourceDefaultValue}>search</i>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -619,6 +624,80 @@ class FormDesigner extends Component {
 		)
 	}
 
+	renderModalChooseSourceDefaultValue () {
+		const {
+			defaultValueSourceCategoryGroup,
+			defaultValueSourceCategory,
+			defaultValueSourceField,
+			defaultValueSourceCategories,
+			defaultValueSourceCategoryFields,
+		} = this.state
+
+		console.log('defaultValueSourceCategoryGroup = ', defaultValueSourceCategoryGroup)
+		console.log('defaultValueSourceCategory = ', defaultValueSourceCategory)
+		console.log('defaultValueSourceField = ', defaultValueSourceField)
+		console.log('defaultValueSourceCategories = ', defaultValueSourceCategories)
+		console.log('defaultValueSourceCategoryFields = ', defaultValueSourceCategoryFields)
+
+		return (
+			<div id="modal-choose-source-default-value" className="modal">
+      	<div className="modal-content">
+      		<h5 className="center title"><strong>Choose source data for default value</strong></h5>
+      		<div className="row">
+	      		<div className="col s4">
+							<div className="input-field">
+						    <select 
+						    	value={defaultValueSourceCategoryGroup}
+						    	onChange={this.handleChangeDefaultValueSourceCategoryGroup}
+						    >
+						      <option value="">Category Group</option>
+						      <option value="user">User data</option>
+						      <option value="collection">Collection data</option>
+						    </select>
+						  </div>
+						</div>
+						<div className="col s4">
+							<div className="input-field">
+						    <select 
+						    	value={defaultValueSourceCategory}
+						    	onChange={this.handleChangeDefaultValueSourceCategory}
+						    	disabled={defaultValueSourceCategoryGroup === 'user'}
+						    	className="browser-default"
+						    >
+						      <option value="">Category</option>
+						      {
+						      	defaultValueSourceCategories &&
+						      	defaultValueSourceCategories.map(field => (
+						      		<option value={field.id}>{field.name}</option>
+						      	))
+						      }
+						    </select>
+						  </div>
+						</div>
+						<div className="col s4">
+							<div className="input-field">
+						    <select 
+						    	value={defaultValueSourceField}
+						    	onChange={this.handleChangeDefaultValueSourceField}
+						    	className="browser-default"
+						    >
+						      <option value="">Field</option>
+						      {
+						      	defaultValueSourceCategoryFields &&
+						      	defaultValueSourceCategoryFields.map(field => (
+						      		<option value={field}>{field}</option>
+						      	))
+						      }
+						    </select>
+						  </div>
+						</div>
+					  <span className="btn" onClick={this.handleConfirmDefaultValueSource}>OK</span>
+					</div>
+      	</div>
+      </div>
+		)
+	}
+
 	componentWillMount() {
 		const { id: formId } = queryString.parse(this.props.location.search)
 
@@ -631,6 +710,8 @@ class FormDesigner extends Component {
 
 			this.setState({ isCollectionNameOK: true })
 		}
+
+		this.loadCollectionList()
 	}
 
 	componentDidMount() {
@@ -811,6 +892,15 @@ class FormDesigner extends Component {
 			})
 		})
 		.catch(error => console.error(error))
+	}
+
+	loadCollectionList () {
+		const { setCollectionList } = this.props
+
+		axios.get(`${API_URL}/collection-list`)
+			.then(res => {
+				setCollectionList(res.data.data)
+			})
 	}
 
 	handleToggleAllowAttachment = () => {
@@ -1446,6 +1536,83 @@ class FormDesigner extends Component {
 			.catch(e => console.error(e))
 	}
 
+	handleChooseSourceDefaultValue = () => {
+		this.openModalChooseSourceDefaultValue()
+	}
+
+	openModalChooseSourceDefaultValue () {
+		let modal = document.getElementById('modal-choose-source-default-value')
+		let instance = M.Modal.getInstance(modal)
+		instance.open()
+	}
+
+	closeModalChooseSourceDefaultValue () {
+		let modal = document.getElementById('modal-choose-source-default-value')
+		let instance = M.Modal.getInstance(modal)
+		instance.close()
+	}
+
+	handleChangeDefaultValueSourceCategoryGroup = ({ target }) => {
+		this.setCategoryGroup(target.value)
+		this.setDefaultValueSourceCategory(target.value)
+		this.setState({ defaultValueSourceCategoryGroup: target.value })
+	}
+
+	setCategoryGroup (group) {
+		if (group === 'user') {
+			const { user } = this.props
+			const defaultValueSourceCategoryFields = Object.keys(user)
+			this.setState({ defaultValueSourceCategoryFields })
+		} 
+		else if (group === 'collection') {
+			const { collectionList } = this.props
+			this.setState({ defaultValueSourceCategories: collectionList })
+		}
+	}
+
+	setDefaultValueSourceCategory (value) {
+		if (value === 'user') {
+			this.setState({ defaultValueSourceCategory: value })
+		}
+	}
+
+	handleChangeDefaultValueSourceCategory = ({ target }) => {
+		const { defaultValueSourceCategoryGroup } = this.state
+		if (defaultValueSourceCategoryGroup !== 'user') {
+			this.setDefaultValueSourceCategoryFields(target.value)
+			this.setState({ defaultValueSourceCategory: target.value })
+		}
+	}
+
+	setDefaultValueSourceCategoryFields (category) {
+		const { collectionList } = this.props
+		const index = collectionList.findIndex(collection => collection.id === category)
+		const collection = collectionList[index]
+
+		const defaultValueSourceCategoryFields = collection.fields.map(field => field.fieldName)
+		
+		this.setState({ defaultValueSourceCategoryFields })
+	}
+
+	handleChangeDefaultValueSourceField = ({ target }) => {
+		this.setState({ defaultValueSourceField: target.value })
+	}
+
+	handleConfirmDefaultValueSource = () => {
+		const { 
+			defaultValueSourceCategoryGroup,
+			defaultValueSourceCategory,
+			defaultValueSourceField,
+			input
+		} = this.state
+
+		const defaultValue = `<<${defaultValueSourceCategoryGroup}.${defaultValueSourceCategory}.${defaultValueSourceField}>>`
+		const newInput = { ...input, defaultValue }
+
+		this.setState({ input: newInput })
+		this.closeModalChooseSourceDefaultValue()
+	}
+
 	handleCreateCollection = () => {
 		const { location } = this.props
 		const { id } = queryString.parse(location.search)
@@ -1772,6 +1939,13 @@ FormDesigner.defaultProps = {
 	]
 }
 
-const mapStateToProps = ({ user }) => ({ user })
+const mapStateToProps = ({ user, form }) => ({ 
+	user, 
+	collectionList: form.collectionList
+})
 
-export default connect(mapStateToProps, null) (FormDesigner)
+const mapDispatchToProps = (dispatch) => ({
+	setCollectionList: (collections) => dispatch(ACT.setCollectionList(collections))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps) (FormDesigner)

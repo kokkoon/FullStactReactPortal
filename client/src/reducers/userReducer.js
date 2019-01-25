@@ -4,7 +4,7 @@ const initialState = {
 	isLoggedIn: false,
 }
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   switch (action.type) {
     case TYPES.FETCH_USER:
       return { ...state, ...action.payload }

@@ -145,6 +145,14 @@
 	margin-bottom: 0;
 }
 
+.add-new-field .input-field #default_value {
+	width: 90% !important;
+}
+
+.add-new-field .input-field .choose-default-value {
+	cursor: pointer;
+}
+
 #modal-edit-field {
 	width: 80vw;
 	margin-top: 30vh;
@@ -277,4 +285,8 @@
 #modal-edit-view .btn-footer-modal .btn {
 	width: 100px;
 	margin-left: 10px;
+}
+
+#modal-choose-source-default-value {
+	overflow-y: visible;
 }
