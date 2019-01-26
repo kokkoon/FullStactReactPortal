@@ -176,13 +176,17 @@ class DataInput extends Component {
 							}
 						}
 
-						return {
-							...itemObj,
+						newItemProperty = {
 							[itemKey] : {
 								...itemValue,
 								default: newItemDefaultValue
 							}
 						}
+					}
+
+					return {
+						...itemObj,
+						...newItemProperty
 					}
 				}, {})
 
