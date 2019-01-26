@@ -134,7 +134,9 @@ class DataInput extends Component {
 						const collection = collectionList[collectionIdx]
 						const fieldIdx = collection.fields.findIndex(f => f.fieldName === field)
 
-						newDefaultValue = collection.fields[fieldIdx].defaultValue
+						if (fieldIdx > -1) {
+							newDefaultValue = collection.fields[fieldIdx].defaultValue
+						}
 					}
 
 					newProperty = {
