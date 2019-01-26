@@ -1,13 +1,15 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import axios from 'axios'
 import queryString from 'query-string'
 import lodash from 'lodash'
 import Form from 'react-jsonschema-form'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
-import API_URL from '../../utils/api_url'
 import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
-import { dataURLtoBlob } from '../../utils/helperFunctions'
+import { dataURLtoBlob, getDataFromStringPattern } from '../../utils/helperFunctions'
+import API_URL from '../../utils/api_url'
+import * as ACT from '../../actions'
 import './DataInput.css'
 
 class DataInput extends Component {
@@ -56,18 +58,11 @@ class DataInput extends Component {
 		)
 	}
 
-	countUploadProgress = () => {
-		const { totalSize, second } = this.state
-
-		// used 125000bytes/second as average upload speed
-		const progress = Math.round((125000 * second) / totalSize * 100)
-		return progress < 100 ? progress : 100
-	}
-
 	componentWillMount() {
 		const { location } = this.props
 		const formId = location.search.slice(4)
 
+		this.loadCollectionList()
 		this.loadFormData(formId)
 	}
 
@@ -79,6 +74,15 @@ class DataInput extends Component {
 		clearInterval(this.timer)
 	}
 
+	loadCollectionList () {
+		const { setCollectionList } = this.props
+
+		axios.get(`${API_URL}/collection-list`)
+			.then(res => {
+				setCollectionList(res.data.data)
+			})
+	}
+
 	loadFormData (formId) {
 		axios.get(`${API_URL}/form?id=${formId}`)
 			.then(res => {
@@ -88,13 +92,67 @@ class DataInput extends Component {
 					createdActionAPI
 				} = res.data
 
+				const newFormStructure = this.replaceDefaultValueStringPatternWithData(formStructure)
+
 				this.setState({
-					formStructure,
+					formStructure: newFormStructure,
 					uiSchema,
 					createdActionAPI
 				})
 			})
 			.catch(e => console.error(e))
+	}
+
+	replaceDefaultValueStringPatternWithData (formStructure) {
+		let newFormStructure = {...formStructure}
+		const properties = newFormStructure.properties
+
+		newFormStructure.properties = Object.keys(properties).reduce((obj, key) => {
+			const value = properties[key]
+			let newProperty = {[key] : value}
+
+			console.log(value)
+
+			if (value.type !== 'array') {
+				const dataCheck = getDataFromStringPattern(value.default)
+				console.log('dataCheck = ', dataCheck)
+
+				if (dataCheck.isPatternExist) {
+					const dataPath = dataCheck.data.split('.')
+					const categoryGroup = dataPath[0]
+					const category = dataPath[1]
+					const field = dataPath[2]
+					let newDefaultValue = 'not found'
+
+					if (categoryGroup === 'user') {
+						const { user } = this.props
+						newDefaultValue = user[field]
+					} 
+					else if (categoryGroup === 'collection') {
+						const { collectionList } = this.props
+						const collectionIdx = collectionList.findIndex(collection => collection.id === category)
+						const collection = collectionList[collectionIdx]
+						const fieldIdx = collection.fields.findIndex(f => f.fieldName === field)
+
+						newDefaultValue = collection.fields[fieldIdx].defaultValue
+					}
+
+					newProperty = {
+						[key] : {
+							...value,
+							default: newDefaultValue
+						}
+					}
+				}
+			}
+
+			return {
+				...obj,
+				...newProperty
+			}
+		}, {})
+
+		return newFormStructure
 	}
 	 
 	log = (type) => console.log.bind(console, type)
@@ -179,6 +237,23 @@ class DataInput extends Component {
 			})
 			.catch(err => console.log(err))
 	}
+
+	countUploadProgress = () => {
+		const { totalSize, second } = this.state
+
+		// used 125000bytes/second as average upload speed
+		const progress = Math.round((125000 * second) / totalSize * 100)
+		return progress < 100 ? progress : 100
+	}
 }
 
-export default DataInput
+const mapStateToProps = ({ user, form }) => ({
+	user, 
+	collectionList: form.collectionList
+})
+
+const mapDispatchToProps = (dispatch) => ({
+	setCollectionList: (collections) => dispatch(ACT.setCollectionList(collections))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps) (DataInput)

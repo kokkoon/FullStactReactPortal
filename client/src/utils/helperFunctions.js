@@ -23,7 +23,7 @@ export function handleTabPressedOnJSONTextarea (event, textarea) {
 }
 
 // convert data URL base64 format to Blob
-export function dataURLtoBlob(dataURL) {
+export function dataURLtoBlob (dataURL) {
     // convert base64 to raw binary data held in a string
     const byteString = atob(dataURL.split(',')[1]);
 
@@ -41,11 +41,24 @@ export function dataURLtoBlob(dataURL) {
 }
 
 // download files from object URL
-export function downloadURI(uri, name) {
+export function downloadURI (uri, name) {
   let link = document.createElement("a");
   link.download = name;
   link.href = uri;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+export function getDataFromStringPattern (rawString) {
+  const pattern = /^<<\S+>>$/ // pattern to check double angle brackets string pattern: <<data>>
+  let data = rawString
+  let isPatternExist = false
+
+  if (pattern.test(rawString)) {
+    data = rawString.slice(2, rawString.length - 2)
+    isPatternExist = true
+  }
+
+  return { data, isPatternExist }
 }
