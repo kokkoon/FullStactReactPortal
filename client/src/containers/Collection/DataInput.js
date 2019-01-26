@@ -109,7 +109,7 @@ class DataInput extends Component {
 
 		newFormStructure.properties = Object.keys(properties).reduce((obj, key) => {
 			const value = properties[key]
-			let newProperty = {[key] : value}
+			let newProperty = { [key] : value }
 
 			if (value.type !== 'array') {
 				const dataCheck = getDataFromStringPattern(value.default)
@@ -119,7 +119,7 @@ class DataInput extends Component {
 					const categoryGroup = dataPath[0]
 					const category = dataPath[1]
 					const field = dataPath[2]
-					let newDefaultValue = 'not found'
+					let newDefaultValue = 'data not found: ' + value.default
 
 					if (categoryGroup === 'user') {
 						const { user } = this.props
@@ -141,6 +141,55 @@ class DataInput extends Component {
 							...value,
 							default: newDefaultValue
 						}
+					}
+				}
+			}
+			else if (value.type === 'array') {
+				let newItems = { ...value.items }
+				const itemProperties = newItems.properties
+
+				newItems.properties = Object.keys(itemProperties).reduce((itemObj, itemKey) => {
+					const itemValue = itemProperties[itemKey]
+					let newItemProperty = { [itemKey] : itemValue }
+
+					const dataCheck = getDataFromStringPattern(itemValue.default)
+
+					if (dataCheck.isPatternExist) {
+						const dataPath = dataCheck.data.split('.')
+						const categoryGroup = dataPath[0]
+						const category = dataPath[1]
+						const field = dataPath[2]
+						let newItemDefaultValue = 'data not found: ' + itemValue.default
+
+						if (categoryGroup === 'user') {
+							const { user } = this.props
+							newItemDefaultValue = user[field]
+						} 
+						else if (categoryGroup === 'collection') {
+							const { collectionList } = this.props
+							const collectionIdx = collectionList.findIndex(collection => collection.id === category)
+							const collection = collectionList[collectionIdx]
+							const fieldIdx = collection.fields.findIndex(f => f.fieldName === field)
+
+							if (fieldIdx > -1) {
+								newItemDefaultValue = collection.fields[fieldIdx].defaultValue
+							}
+						}
+
+						return {
+							...itemObj,
+							[itemKey] : {
+								...itemValue,
+								default: newItemDefaultValue
+							}
+						}
+					}
+				}, {})
+
+				newProperty = {
+					[key] : {
+						...value,
+						items: newItems
 					}
 				}
 			}
