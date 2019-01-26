@@ -111,11 +111,8 @@ class DataInput extends Component {
 			const value = properties[key]
 			let newProperty = {[key] : value}
 
-			console.log(value)
-
 			if (value.type !== 'array') {
 				const dataCheck = getDataFromStringPattern(value.default)
-				console.log('dataCheck = ', dataCheck)
 
 				if (dataCheck.isPatternExist) {
 					const dataPath = dataCheck.data.split('.')
@@ -183,7 +180,6 @@ class DataInput extends Component {
 			const config = {
 				headers: {'content-type': `multipart/form-data; boundary=${sBoundary}`},
 	    	onUploadProgress: progressEvent => {
-	    		console.log(progressEvent)
 	    		const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
         	this.setState({ 
         		totalSize: progressEvent.total,
