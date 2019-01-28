@@ -2,6 +2,7 @@ import React from 'react'
 
 export const arrayFieldTemplate = (props) => {
 	const innerObjectProperties = props.items[0] ? props.items[0].children.props.schema.properties : {}
+
   return (
     <div className="array-field-container">
     	<div className="row">
@@ -60,12 +61,29 @@ export const arrayFieldTemplate = (props) => {
       }
       {
       	props.canAdd && 
-      	<span className="waves-effect waves-light btn btn-floating red right" onClick={props.onAddClick}>
+      	<span 
+      		className="waves-effect waves-light btn btn-floating red right" 
+      		onClick={e => handleClickAdd(e, props)}
+      	>
       		<i className="material-icons">add</i>
       	</span>
       }
     </div>
   )
+}
+
+const handleClickAdd = (e, props) => {
+	props.onAddClick(e)
+
+	const delay = setInterval(() => {
+		const selects = document.getElementsByTagName('SELECT')
+		if (selects.length > 0) {
+			for (let i = 0; i < selects.length; i++) {
+				selects[i].classList.add('browser-default')
+			}
+		}		
+		clearInterval(delay)
+	}, 50)
 }
 
 const innerObjectFieldTemplate = (props) => {

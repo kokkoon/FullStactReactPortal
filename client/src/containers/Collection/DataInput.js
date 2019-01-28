@@ -68,6 +68,17 @@ class DataInput extends Component {
 
 	componentDidMount() {
 		M.AutoInit()
+
+		const delay = setInterval(() => {
+			const selects = document.getElementsByTagName('SELECT')
+			if (selects.length > 0) {
+				for (let i = 0; i < selects.length; i++) {
+					selects[i].classList.add('browser-default')
+					this.found = true
+				}
+			}
+			if (this.found) clearInterval(delay)
+		}, 500)
 	}
 
 	componentWillUnmount() {
@@ -168,7 +179,10 @@ class DataInput extends Component {
 					if (enum_array.length > 0) {
 						newProperty = {
 							...newProperty,
-							enum: enum_array
+							[key] : {
+								...newProperty[key],
+								enum: enum_array
+							}
 						}
 					}
 				}
