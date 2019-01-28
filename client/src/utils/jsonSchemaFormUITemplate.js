@@ -23,7 +23,7 @@ export const arrayFieldTemplate = (props) => {
       	props.items.map((element, idx1) => {
       		element.children.props.registry.ObjectFieldTemplate = innerObjectFieldTemplate
       		return (
-      			<div className="row zero-margin">
+      			<div key={idx1} className="row zero-margin">
 	      			<div className="col s11">{element.children}</div>
 	      			<div className="btn-actions-container">
 		            {element.hasMoveDown && (
