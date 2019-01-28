@@ -62,7 +62,6 @@ class DataInput extends Component {
 		const { location } = this.props
 		const formId = location.search.slice(4)
 
-		this.loadCollectionList()
 		this.loadFormData(formId)
 	}
 
@@ -72,15 +71,6 @@ class DataInput extends Component {
 
 	componentWillUnmount() {
 		clearInterval(this.timer)
-	}
-
-	loadCollectionList () {
-		const { setCollectionList } = this.props
-
-		axios.get(`${API_URL}/collection-list`)
-			.then(res => {
-				setCollectionList(res.data.data)
-			})
 	}
 
 	loadFormData (formId) {
@@ -303,12 +293,11 @@ class DataInput extends Component {
 }
 
 const mapStateToProps = ({ user, form }) => ({
-	user, 
-	collectionList: form.collectionList
+	user
 })
 
 const mapDispatchToProps = (dispatch) => ({
-	setCollectionList: (collections) => dispatch(ACT.setCollectionList(collections))
+	
 })
 
 export default connect(mapStateToProps, mapDispatchToProps) (DataInput)
