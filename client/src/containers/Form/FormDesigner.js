@@ -640,7 +640,7 @@ class FormDesigner extends Component {
       	<div className="modal-content">
       		<h5 className="center title"><strong>Choose source data for default value</strong></h5>
       		<div className="row">
-	      		<div className="col s4">
+	      		<div className="col s3">
 							<div className="input-field">
 						    <select 
 						    	value={defaultValueSourceCategoryGroup}
@@ -652,7 +652,7 @@ class FormDesigner extends Component {
 						    </select>
 						  </div>
 						</div>
-						<div className="col s4">
+						<div className="col s3">
 							<div className="input-field">
 						    <select 
 						    	value={defaultValueSourceCategory}
@@ -670,7 +670,7 @@ class FormDesigner extends Component {
 						    </select>
 						  </div>
 						</div>
-						<div className="col s4">
+						<div className="col s3">
 							<div className="input-field">
 						    <select 
 						    	value={defaultValueSourceField}
@@ -687,12 +687,13 @@ class FormDesigner extends Component {
 						    </select>
 						  </div>
 						</div>
-						<div className="col s4">
+						<div className="col s3">
 							<div className="input-field">
 						    <select 
 						    	value={defaultValueSourceValue}
 						    	onChange={this.handleChangeDefaultValueSourceValue}
 						    	className="browser-default"
+						    	disabled={defaultValueSourceCategoryGroup === 'user'}
 						    >
 						      <option value="">Value</option>
 						      {

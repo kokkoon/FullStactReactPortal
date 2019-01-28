@@ -77,6 +77,22 @@ module.exports = (app) => {
   	}
   })
 
+  // get all pair of record value and id based on specific field
+  app.get('/api/record-value-id', (req, res) => {
+    const url = URL.parse(req.url, true)
+    const { collection_id, field } = url.query
+    const collection = db.collection(`${collection_id}`)
+
+    collection.find({}).toArray((err, data) => {
+      const result = data.map(d => ({ 
+        id: d._id,
+        name: d[field]
+      }))
+
+      res.send(result)
+    })
+  })
+
   // delete record from a form collection
   app.delete('/api/record', (req, res) => {
     const url = URL.parse(req.url, true)
