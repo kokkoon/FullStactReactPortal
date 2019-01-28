@@ -649,16 +649,20 @@ class FormDesigner extends Component {
 						      <option value="">Category Group</option>
 						      <option value="user">User data</option>
 						      <option value="collection">Collection data</option>
+						      <option value="date">Date system</option>
 						    </select>
 						  </div>
 						</div>
 						<div className="col s3">
 							<div className="input-field">
 						    <select 
+						    	className="browser-default"
 						    	value={defaultValueSourceCategory}
 						    	onChange={this.handleChangeDefaultValueSourceCategory}
-						    	disabled={defaultValueSourceCategoryGroup === 'user'}
-						    	className="browser-default"
+						    	disabled={
+						    		defaultValueSourceCategoryGroup === 'user' ||
+						    		defaultValueSourceCategoryGroup === 'date'
+						    	}
 						    >
 						      <option value="">Category</option>
 						      {
@@ -673,9 +677,10 @@ class FormDesigner extends Component {
 						<div className="col s3">
 							<div className="input-field">
 						    <select 
+						    	className="browser-default"
 						    	value={defaultValueSourceField}
 						    	onChange={this.handleChangeDefaultValueSourceField}
-						    	className="browser-default"
+						    	disabled={defaultValueSourceCategoryGroup === 'date'}
 						    >
 						      <option value="">Field</option>
 						      {
@@ -690,9 +695,9 @@ class FormDesigner extends Component {
 						<div className="col s3">
 							<div className="input-field">
 						    <select 
+						    	className="browser-default"
 						    	value={defaultValueSourceValue}
 						    	onChange={this.handleChangeDefaultValueSourceValue}
-						    	className="browser-default"
 						    	disabled={defaultValueSourceCategoryGroup === 'user'}
 						    >
 						      <option value="">Value</option>
@@ -1584,6 +1589,19 @@ class FormDesigner extends Component {
 			const { collectionList } = this.props
 			this.setState({ defaultValueSourceCategories: collectionList })
 		}
+		else if (group === 'date') {
+			const dateSystemChoice = [
+				{ id: 'today:0', name: 'Today' },
+				{ id: 'today:-1', name: 'Yesterday' },
+				{ id: 'today:1', name: 'Tomorrow' },
+				{ id: 'today:7', name: 'Next week' },
+				{ id: 'today:-7', name: 'Last week' },
+				{ id: 'today:-10', name: 'Today - 10' },
+				{ id: 'today:10', name: 'Today + 10' }
+			]
+
+			this.setState({ defaultValueSourceCategoryFieldValues: dateSystemChoice })
+		}
 	}
 
 	setDefaultValueSourceCategory (value) {
@@ -1594,19 +1612,23 @@ class FormDesigner extends Component {
 
 	handleChangeDefaultValueSourceCategory = ({ target }) => {
 		const { defaultValueSourceCategoryGroup } = this.state
-		if (defaultValueSourceCategoryGroup !== 'user') {
-			this.setDefaultValueSourceCategoryFields(target.value)
-			this.setState({ defaultValueSourceCategory: target.value })
-		}
+		this.setDefaultValueSourceCategoryFields(target.value)
+		this.setState({ defaultValueSourceCategory: target.value })
 	}
 
 	setDefaultValueSourceCategoryFields (category) {
-		const { collectionList } = this.props
-		const index = collectionList.findIndex(collection => collection.id === category)
-		const collection = collectionList[index]
+		const { defaultValueSourceCategoryGroup: categoryGroup } = this.state
+		let defaultValueSourceCategoryFields = []
 
-		const defaultValueSourceCategoryFields = collection.fields.map(field => field.fieldName)
-		
+		if (categoryGroup === 'collection')
+		{
+			const { collectionList } = this.props
+			const index = collectionList.findIndex(collection => collection.id === category)
+			const collection = collectionList[index]
+
+			defaultValueSourceCategoryFields = collection.fields.map(field => field.fieldName)
+		}
+
 		this.setState({ defaultValueSourceCategoryFields })
 	}
 
@@ -1616,14 +1638,18 @@ class FormDesigner extends Component {
 	}
 
 	setDefaultValueSourceCategoryFieldValues (field) {
-		const { 
-			defaultValueSourceCategory: collectionId,
-		} = this.state
+		const { defaultValueSourceCategoryGroup } = this.state
+		
+		if (defaultValueSourceCategoryGroup === 'collection') {
+			const { 
+				defaultValueSourceCategory: collectionId,
+			} = this.state
 
-		axios.get(`${API_URL}/record-value-id?collection_id=${collectionId}&field=${field}`)
-			.then(res => {
-				this.setState({ defaultValueSourceCategoryFieldValues: res.data })
-			})
+			axios.get(`${API_URL}/record-value-id?collection_id=${collectionId}&field=${field}`)
+				.then(res => {
+					this.setState({ defaultValueSourceCategoryFieldValues: res.data })
+				})
+		}
 	}
 
 	handleChangeDefaultValueSourceValue = ({ target }) => {
@@ -1643,8 +1669,12 @@ class FormDesigner extends Component {
 		
 		if (categoryGroup === 'user') {
 			defaultValue = `<<${categoryGroup}.${category}.${field}>>`
-		} else if (categoryGroup === 'collection') {
+		} 
+		else if (categoryGroup === 'collection') {
 			defaultValue = `<<${categoryGroup}.${category}.${field}.${value}>>`
+		} 
+		else if (categoryGroup === 'date') {
+			defaultValue = `<<${categoryGroup}.${value}>>`
 		}
 
 		const newInput = { ...input, defaultValue }

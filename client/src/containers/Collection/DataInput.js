@@ -108,20 +108,45 @@ class DataInput extends Component {
 				if (dataCheck.isPatternExist) {
 					const dataPath = dataCheck.data.split('.')
 					const categoryGroup = dataPath[0]
-					const category = dataPath[1]
-					const field = dataPath[2]
 
 					let newDefaultValue = 'data not found: ' + value.default
 
 					if (categoryGroup === 'user') {
+						const field = dataPath[2]
 						const { user } = this.props
+
 						newDefaultValue = user[field]
 					} 
 					else if (categoryGroup === 'collection') {
+						const category = dataPath[1]
+						const field = dataPath[2]
 						const recordId = dataPath[3]
 
 						newDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
 							.then(res => res.data[field])
+					}
+					else if (categoryGroup === 'date') {
+						const datePattern = dataPath[1].split(':')
+
+						if (datePattern[0] === 'today') {
+							const today = new Date()
+							const offset = Number(datePattern[1])
+
+							let year = today.getYear() + 1900
+							let month = today.getMonth()
+							let date = today.getDate() + offset
+
+							const targetDate = new Date(year, month, date)
+
+							year = targetDate.getYear() + 1900
+							month = targetDate.getMonth() + 1
+							date = targetDate.getDate()
+
+							date = date < 10 ? '0' + date : date
+							month = month < 10 ? '0' + month : month
+
+							newDefaultValue = `${year}-${month}-${date}`
+						}
 					}
 
 					newProperty = {
@@ -159,6 +184,29 @@ class DataInput extends Component {
 
 							newItemDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
 								.then(res => res.data[field])
+						}
+						else if (categoryGroup === 'date') {
+							const datePattern = dataPath[1].split(':')
+
+							if (datePattern[0] === 'today') {
+								const today = new Date()
+								const offset = Number(datePattern[1])
+
+								let year = today.getYear() + 1900
+								let month = today.getMonth()
+								let date = today.getDate() + offset
+
+								const targetDate = new Date(year, month, date)
+
+								year = targetDate.getYear() + 1900
+								month = targetDate.getMonth() + 1
+								date = targetDate.getDate()
+
+								date = date < 10 ? '0' + date : date
+								month = month < 10 ? '0' + month : month
+
+								newItemDefaultValue = `${year}-${month}-${date}`
+							}
 						}
 
 						newItemProperty = {
