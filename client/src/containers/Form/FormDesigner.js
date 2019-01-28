@@ -705,7 +705,9 @@ class FormDesigner extends Component {
 						    </select>
 						  </div>
 						</div>
-					  <span className="btn" onClick={this.handleConfirmDefaultValueSource}>OK</span>
+						<div className="col s12 btn-container center-align">
+						  <span className="btn" onClick={this.handleConfirmDefaultValueSource}>OK</span>
+						</div>
 					</div>
       	</div>
       </div>

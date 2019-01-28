@@ -290,3 +290,11 @@
 #modal-choose-source-default-value {
 	overflow-y: visible;
 }
+
+#modal-choose-source-default-value .btn-container {
+	margin-top: 20px;
+}
+
+#modal-choose-source-default-value .btn {
+	width: 100px;
+}
