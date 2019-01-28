@@ -157,3 +157,14 @@ export const setCollectionList = (collectionList) => {
 		dispatch({ type: TYPES.SET_COLLECTION_LIST, collectionList })
 	}
 }
+
+export const setDummyManagerAndDepartment = () => {
+	return (dispatch) => {
+		const payload = {
+			department: 'IT (dummy department)',
+			manager: 'John The Dummy Manager'
+		}
+
+		dispatch({ type: TYPES.SET_DUMMY_MANAGER_AND_DEPARTMENT, payload })
+	}
+}

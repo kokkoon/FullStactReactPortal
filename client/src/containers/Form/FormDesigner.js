@@ -75,7 +75,7 @@ class FormDesigner extends Component {
 
 		return (
 			<div className="form-designer">
-				<h4 className="center">{formId ? `Edit ${collectionDisplayName} Collection` : 'Create New Collection'}</h4>
+				<h4 className="center">{formId ? `Edit ${collectionDisplayName} collection` : 'Create new collection'}</h4>
 				<div className="col s12 btn-form">
 				{
 					formId &&
@@ -733,6 +733,7 @@ class FormDesigner extends Component {
 		}
 
 		this.loadCollectionList()
+		this.props.setDummyManagerAndDepartment()
 	}
 
 	componentDidMount() {
@@ -1639,7 +1640,7 @@ class FormDesigner extends Component {
 
 	setDefaultValueSourceCategoryFieldValues (field) {
 		const { defaultValueSourceCategoryGroup } = this.state
-		
+
 		if (defaultValueSourceCategoryGroup === 'collection') {
 			const { 
 				defaultValueSourceCategory: collectionId,
@@ -2015,7 +2016,8 @@ const mapStateToProps = ({ user, form }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-	setCollectionList: (collections) => dispatch(ACT.setCollectionList(collections))
+	setCollectionList: (collections) => dispatch(ACT.setCollectionList(collections)),
+	setDummyManagerAndDepartment: () => dispatch(ACT.setDummyManagerAndDepartment())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps) (FormDesigner)

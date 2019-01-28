@@ -63,6 +63,11 @@ export default function (state = initialState, action) {
       return { ...state, sidenavConfig }
     }
 
+    case TYPES.SET_DUMMY_MANAGER_AND_DEPARTMENT: {
+      const { department, manager } = action.payload
+      return { ...state, department, manager }
+    }
+
     default:
       return state;
   }

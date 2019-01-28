@@ -63,6 +63,7 @@ class DataInput extends Component {
 		const formId = location.search.slice(4)
 
 		this.loadFormData(formId)
+		this.props.setDummyManagerAndDepartment()
 	}
 
 	componentDidMount() {
@@ -109,6 +110,7 @@ class DataInput extends Component {
 					const dataPath = dataCheck.data.split('.')
 					const categoryGroup = dataPath[0]
 
+					let enum_array = []
 					let newDefaultValue = 'data not found: ' + value.default
 
 					if (categoryGroup === 'user') {
@@ -122,8 +124,15 @@ class DataInput extends Component {
 						const field = dataPath[2]
 						const recordId = dataPath[3]
 
-						newDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
-							.then(res => res.data[field])
+						if (field === 'key') {
+							enum_array = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
+								.then(res => res.data.enum.map(item => item.field))
+							console.log('enum_array = ', enum_array)
+							newDefaultValue = enum_array[0]
+						} else {
+							newDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
+								.then(res => res.data[field])
+						}
 					}
 					else if (categoryGroup === 'date') {
 						const datePattern = dataPath[1].split(':')
@@ -155,6 +164,13 @@ class DataInput extends Component {
 							default: newDefaultValue
 						}
 					}
+
+					if (enum_array.length > 0) {
+						newProperty = {
+							...newProperty,
+							enum: enum_array
+						}
+					}
 				}
 			}
 			else if (value.type === 'array') {
@@ -170,20 +186,28 @@ class DataInput extends Component {
 					if (dataCheck.isPatternExist) {
 						const dataPath = dataCheck.data.split('.')
 						const categoryGroup = dataPath[0]
-						const category = dataPath[1]
-						const field = dataPath[2]
 
+						let enum_array = []
 						let newItemDefaultValue = 'data not found: ' + itemValue.default
 
 						if (categoryGroup === 'user') {
 							const { user } = this.props
+							const field = dataPath[2]
 							newItemDefaultValue = user[field]
 						} 
 						else if (categoryGroup === 'collection') {
+							const category = dataPath[1]
+							const field = dataPath[2]
 							const recordId = dataPath[3]
 
-							newItemDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
-								.then(res => res.data[field])
+							if (field === 'key') {
+								enum_array = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
+									.then(res => res.data.enum.map(item => item.field))
+								newItemDefaultValue = enum_array[0]
+							} else {
+								newItemDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
+									.then(res => res.data[field])
+							}
 						}
 						else if (categoryGroup === 'date') {
 							const datePattern = dataPath[1].split(':')
@@ -213,6 +237,16 @@ class DataInput extends Component {
 							[itemKey] : {
 								...itemValue,
 								default: newItemDefaultValue
+							}
+						}
+
+						if (enum_array.length > 0) {
+							newItemProperty = {
+								...newItemProperty,
+								[itemKey] : {
+									...newItemProperty[itemKey],
+									enum: enum_array,
+								}
 							}
 						}
 					}
@@ -345,7 +379,7 @@ const mapStateToProps = ({ user, form }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-	
+	setDummyManagerAndDepartment: () => dispatch(ACT.setDummyManagerAndDepartment())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps) (DataInput)
