@@ -65,10 +65,10 @@ module.exports = (app) => {
   	const collection = db.collection(`${formId}`)
 
   	if (!isEmpty(recordId)) {
-	  	collection.find({ _id: mongodb.ObjectID(recordId) }).toArray((err, data) => {
+	  	collection.findOne({ _id: mongodb.ObjectID(recordId) }, (err, data) => {
 	  		if (err) console.error(err)
-	  		res.send({ data })
-	  	})	
+	  		res.send(data)
+	  	})
   	} else {
   		collection.find({}).toArray((err, data) => {
 	  		if (err) console.error(err)

@@ -92,12 +92,13 @@ class DataInput extends Component {
 					createdActionAPI
 				} = res.data
 
-				const newFormStructure = this.replaceDefaultValueStringPatternWithData(formStructure)
-
-				this.setState({
-					formStructure: newFormStructure,
-					uiSchema,
-					createdActionAPI
+				const promisedStructure = this.replaceDefaultValueStringPatternWithData(formStructure)
+				promisedStructure.then(newFormStructure => {
+					this.setState({
+						formStructure: newFormStructure,
+						uiSchema,
+						createdActionAPI
+					})
 				})
 			})
 			.catch(e => console.error(e))
@@ -107,7 +108,7 @@ class DataInput extends Component {
 		let newFormStructure = {...formStructure}
 		const properties = newFormStructure.properties
 
-		newFormStructure.properties = Object.keys(properties).reduce((obj, key) => {
+		const promisedProperties = Object.keys(properties).reduce(async (obj, key) => {
 			const value = properties[key]
 			let newProperty = { [key] : value }
 
@@ -119,6 +120,7 @@ class DataInput extends Component {
 					const categoryGroup = dataPath[0]
 					const category = dataPath[1]
 					const field = dataPath[2]
+
 					let newDefaultValue = 'data not found: ' + value.default
 
 					if (categoryGroup === 'user') {
@@ -126,14 +128,10 @@ class DataInput extends Component {
 						newDefaultValue = user[field]
 					} 
 					else if (categoryGroup === 'collection') {
-						const { collectionList } = this.props
-						const collectionIdx = collectionList.findIndex(collection => collection.id === category)
-						const collection = collectionList[collectionIdx]
-						const fieldIdx = collection.fields.findIndex(f => f.fieldName === field)
+						const recordId = dataPath[3]
 
-						if (fieldIdx > -1) {
-							newDefaultValue = collection.fields[fieldIdx].defaultValue
-						}
+						newDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
+							.then(res => res.data[field])
 					}
 
 					newProperty = {
@@ -148,7 +146,7 @@ class DataInput extends Component {
 				let newItems = { ...value.items }
 				const itemProperties = newItems.properties
 
-				newItems.properties = Object.keys(itemProperties).reduce((itemObj, itemKey) => {
+				const promisedItemProperties = Object.keys(itemProperties).reduce(async (itemObj, itemKey) => {
 					const itemValue = itemProperties[itemKey]
 					let newItemProperty = { [itemKey] : itemValue }
 
@@ -159,6 +157,7 @@ class DataInput extends Component {
 						const categoryGroup = dataPath[0]
 						const category = dataPath[1]
 						const field = dataPath[2]
+
 						let newItemDefaultValue = 'data not found: ' + itemValue.default
 
 						if (categoryGroup === 'user') {
@@ -166,14 +165,10 @@ class DataInput extends Component {
 							newItemDefaultValue = user[field]
 						} 
 						else if (categoryGroup === 'collection') {
-							const { collectionList } = this.props
-							const collectionIdx = collectionList.findIndex(collection => collection.id === category)
-							const collection = collectionList[collectionIdx]
-							const fieldIdx = collection.fields.findIndex(f => f.fieldName === field)
+							const recordId = dataPath[3]
 
-							if (fieldIdx > -1) {
-								newItemDefaultValue = collection.fields[fieldIdx].defaultValue
-							}
+							newItemDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
+								.then(res => res.data[field])
 						}
 
 						newItemProperty = {
@@ -184,27 +179,36 @@ class DataInput extends Component {
 						}
 					}
 
-					return {
-						...itemObj,
+					return itemObj.then(promisedItemObj => ({
+						...promisedItemObj,
 						...newItemProperty
-					}
-				}, {})
+					}))
+				}, Promise.resolve({}))
 
-				newProperty = {
-					[key] : {
-						...value,
-						items: newItems
+				newProperty = await promisedItemProperties.then(newItemProperties => {
+					newProperty = {
+						[key] : {
+							...value,
+							items: {
+								...value.items,
+								properties: newItemProperties
+							}
+						}
 					}
-				}
+					return newProperty
+				})
 			}
 
-			return {
-				...obj,
-				...newProperty
-			}
-		}, {})
+			return obj.then(promisedObj => ({
+					...promisedObj,
+					...newProperty
+			}))
+		}, Promise.resolve({}))
 
-		return newFormStructure
+		return promisedProperties.then(newProperties => {
+			newFormStructure.properties = newProperties
+			return newFormStructure
+		})
 	}
 	 
 	log = (type) => console.log.bind(console, type)

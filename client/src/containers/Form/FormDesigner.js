@@ -629,15 +629,11 @@ class FormDesigner extends Component {
 			defaultValueSourceCategoryGroup,
 			defaultValueSourceCategory,
 			defaultValueSourceField,
+			defaultValueSourceValue,
 			defaultValueSourceCategories,
 			defaultValueSourceCategoryFields,
+			defaultValueSourceCategoryFieldValues
 		} = this.state
-
-		console.log('defaultValueSourceCategoryGroup = ', defaultValueSourceCategoryGroup)
-		console.log('defaultValueSourceCategory = ', defaultValueSourceCategory)
-		console.log('defaultValueSourceField = ', defaultValueSourceField)
-		console.log('defaultValueSourceCategories = ', defaultValueSourceCategories)
-		console.log('defaultValueSourceCategoryFields = ', defaultValueSourceCategoryFields)
 
 		return (
 			<div id="modal-choose-source-default-value" className="modal">
@@ -667,8 +663,8 @@ class FormDesigner extends Component {
 						      <option value="">Category</option>
 						      {
 						      	defaultValueSourceCategories &&
-						      	defaultValueSourceCategories.map(field => (
-						      		<option value={field.id}>{field.name}</option>
+						      	defaultValueSourceCategories.map(category => (
+						      		<option value={category.id}>{category.name}</option>
 						      	))
 						      }
 						    </select>
@@ -686,6 +682,23 @@ class FormDesigner extends Component {
 						      	defaultValueSourceCategoryFields &&
 						      	defaultValueSourceCategoryFields.map(field => (
 						      		<option value={field}>{field}</option>
+						      	))
+						      }
+						    </select>
+						  </div>
+						</div>
+						<div className="col s4">
+							<div className="input-field">
+						    <select 
+						    	value={defaultValueSourceValue}
+						    	onChange={this.handleChangeDefaultValueSourceValue}
+						    	className="browser-default"
+						    >
+						      <option value="">Value</option>
+						      {
+						      	defaultValueSourceCategoryFieldValues &&
+						      	defaultValueSourceCategoryFieldValues.map(value => (
+						      		<option value={value.id}>{value.name}</option>
 						      	))
 						      }
 						    </select>
@@ -1595,18 +1608,42 @@ class FormDesigner extends Component {
 	}
 
 	handleChangeDefaultValueSourceField = ({ target }) => {
+		this.setDefaultValueSourceCategoryFieldValues(target.value)
 		this.setState({ defaultValueSourceField: target.value })
+	}
+
+	setDefaultValueSourceCategoryFieldValues (field) {
+		const { 
+			defaultValueSourceCategory: collectionId,
+		} = this.state
+
+		axios.get(`${API_URL}/record-value-id?collection_id=${collectionId}&field=${field}`)
+			.then(res => {
+				this.setState({ defaultValueSourceCategoryFieldValues: res.data })
+			})
+	}
+
+	handleChangeDefaultValueSourceValue = ({ target }) => {
+		this.setState({ defaultValueSourceValue: target.value })
 	}
 
 	handleConfirmDefaultValueSource = () => {
 		const { 
-			defaultValueSourceCategoryGroup,
-			defaultValueSourceCategory,
-			defaultValueSourceField,
+			defaultValueSourceCategoryGroup: categoryGroup,
+			defaultValueSourceCategory: category,
+			defaultValueSourceField: field,
+			defaultValueSourceValue: value,
 			input
 		} = this.state
 
-		const defaultValue = `<<${defaultValueSourceCategoryGroup}.${defaultValueSourceCategory}.${defaultValueSourceField}>>`
+		let defaultValue = ''
+		
+		if (categoryGroup === 'user') {
+			defaultValue = `<<${categoryGroup}.${category}.${field}>>`
+		} else if (categoryGroup === 'collection') {
+			defaultValue = `<<${categoryGroup}.${category}.${field}.${value}>>`
+		}
+
 		const newInput = { ...input, defaultValue }
 
 		this.setState({ input: newInput })
