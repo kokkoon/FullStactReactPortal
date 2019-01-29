@@ -8,7 +8,7 @@
 	color: white;
 	background-color: #bcaaa4;
 	display: inline-block;
-	vertical-align: center;
+	vertical-align: middle;
 	margin: 10px;
 	position: relative;
 	border-radius: 15px;
@@ -19,6 +19,12 @@
 	display: block;
 	padding-top: 15px;
 	font-weight: 500;
+}
+
+.collection-card .collection-name .new-collection-icon {
+	margin-top: 15%;
+	font-size: 45px;
+	display: block;
 }
 
 .collection-card > a {
