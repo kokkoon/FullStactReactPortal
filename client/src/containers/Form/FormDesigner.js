@@ -1612,7 +1612,6 @@ class FormDesigner extends Component {
 	}
 
 	handleChangeDefaultValueSourceCategory = ({ target }) => {
-		const { defaultValueSourceCategoryGroup } = this.state
 		this.setDefaultValueSourceCategoryFields(target.value)
 		this.setState({ defaultValueSourceCategory: target.value })
 	}
