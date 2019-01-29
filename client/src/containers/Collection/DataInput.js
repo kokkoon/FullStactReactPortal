@@ -69,15 +69,19 @@ class DataInput extends Component {
 	componentDidMount() {
 		M.AutoInit()
 
+		// fix hidden dropdown select due to materializecss override script
+		// by adding 'browser-default' class
 		const delay = setInterval(() => {
 			const selects = document.getElementsByTagName('SELECT')
+
 			if (selects.length > 0) {
 				for (let i = 0; i < selects.length; i++) {
 					selects[i].classList.add('browser-default')
-					this.found = true
+					this.isFoundSelectElement = true
 				}
 			}
-			if (this.found) clearInterval(delay)
+
+			if (this.isFoundSelectElement) clearInterval(delay)
 		}, 500)
 	}
 
