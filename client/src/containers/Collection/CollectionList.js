@@ -22,16 +22,16 @@ class CollectionList extends Component {
 			<h3>Collection List</h3>
 				<Link to="/form-designer?id=new">
 					<div className="collection-card">
-						<span>New collection</span>
+						<span className="collection-name">New collection</span>
 					</div>
 				</Link>
 				{
 					collectionList.map((collection, i) => (
-						<Link key={i} to={collection.urlDesigner}>
-							<div className="collection-card">
-								{collection.name}
-							</div>
-						</Link>
+						<div key={i} className="collection-card">
+							<span className="collection-name">{collection.name}</span>
+							<Link className='link-open' to={collection.urlCollection}>Open</Link>
+							<Link className='link-edit' to={collection.urlDesigner}>Edit</Link>
+						</div>
 					))
 				}
 			</div>

@@ -315,7 +315,8 @@ module.exports = (app) => {
   				name: r.collectionName,
           fields: r.formFields,
   				urlDesigner: `/form-designer?id=${r._id}`,
-  				urlForm: `/data-input?id=${r._id}` 
+          urlForm: `/data-input?id=${r._id}`,
+  				urlCollection: `/collection?id=${r._id}`
   			}
   		})
   		res.send({ data })
