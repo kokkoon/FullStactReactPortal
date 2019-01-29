@@ -63,21 +63,48 @@ export const arrayFieldTemplate = (props) => {
       }
       <div className="row total-amount-container">
 	      <div className="col s11">
+	      	<span className="col s3 left right-align">Sum column :</span>
+	      	<input type="text" id="sum-column-name" className="col s3 left" onChange={e => handleChangeSumColumnName(e, props)}/>
 					<span id="total-amount-array-items" className="col s3 right total-amount-cell"></span>
 					<span className="col s3 right total-amount-cell">Total</span>
 	    	</div>
+	      {
+	      	props.canAdd && 
+	      	<div className="col s1">
+		      	<span 
+		      		className="waves-effect waves-light btn btn-floating red right" 
+		      		onClick={e => handleClickAdd(e, props)}
+		      	>
+		      		<i className="material-icons">add</i>
+		      	</span>
+		      </div>
+	      }
 	    </div>
-      {
-      	props.canAdd && 
-      	<span 
-      		className="waves-effect waves-light btn btn-floating red right" 
-      		onClick={e => handleClickAdd(e, props)}
-      	>
-      		<i className="material-icons">add</i>
-      	</span>
-      }
     </div>
   )
+}
+
+const handleChangeSumColumnName = ({ target }, props) => {
+	const total = countValuesOnCells(target.value, props)
+	const totalCell = document.getElementById('total-amount-array-items')
+	if (totalCell) totalCell.innerHTML = total
+}
+
+const countValuesOnCells = (targetProperty, props) => {
+	const properties = props.schema.items.properties
+	let total = 0
+
+	Object.keys(properties).forEach(key => {
+		if (key === targetProperty && properties[key].type === 'number') {
+			const cells = Array.prototype.slice.call(document.getElementsByClassName(`${key}-cell`))
+			cells.forEach(cell => {
+				const input = cell.children[0].children[2]
+				total += Number(input.value)
+			})
+		}
+	})
+
+	return total
 }
 
 const handleClickAdd = (e, props) => {

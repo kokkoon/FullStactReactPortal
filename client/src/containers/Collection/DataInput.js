@@ -305,7 +305,9 @@ class DataInput extends Component {
 	log = (type) => console.log.bind(console, type)
 
 	onChange = (props) => {
-		const total = this.countValuesOnCells('Amount', props)
+		const columnToSumEl = document.getElementById('sum-column-name')
+		const columnToSum = columnToSumEl ? columnToSumEl.value : ''
+		const total = this.countValuesOnCells(columnToSum, props)
 		const totalCell = document.getElementById('total-amount-array-items')
 		if (totalCell) totalCell.innerHTML = total
 	}
