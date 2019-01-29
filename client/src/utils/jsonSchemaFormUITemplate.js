@@ -25,7 +25,9 @@ export const arrayFieldTemplate = (props) => {
       		element.children.props.registry.ObjectFieldTemplate = innerObjectFieldTemplate
       		return (
       			<div key={idx1} className="row zero-margin">
-	      			<div className="col s11">{element.children}</div>
+	      			<div className="col s11">
+	      				{element.children}
+	      			</div>
 	      			<div className="btn-actions-container">
 		            {element.hasMoveDown && (
 		              <span
@@ -59,6 +61,12 @@ export const arrayFieldTemplate = (props) => {
       		)
       	})
       }
+      <div className="row total-amount-container">
+	      <div className="col s11">
+					<span id="total-amount-array-items" className="col s3 right total-amount-cell"></span>
+					<span className="col s3 right total-amount-cell">Total</span>
+	    	</div>
+	    </div>
       {
       	props.canAdd && 
       	<span 
@@ -76,14 +84,20 @@ const handleClickAdd = (e, props) => {
 	props.onAddClick(e)
 
 	const delay = setInterval(() => {
-		const selects = document.getElementsByTagName('SELECT')
-		if (selects.length > 0) {
-			for (let i = 0; i < selects.length; i++) {
-				selects[i].classList.add('browser-default')
-			}
-		}		
+		// fix hidden dropdown select due to materializecss override script
+		// by adding 'browser-default' class
+		addBrowserDefaultClassOnSelectElements() 
 		clearInterval(delay)
 	}, 50)
+}
+
+const addBrowserDefaultClassOnSelectElements = () => {
+	const selects = document.getElementsByTagName('SELECT')
+	if (selects.length > 0) {
+		for (let i = 0; i < selects.length; i++) {
+			selects[i].classList.add('browser-default')
+		}
+	}
 }
 
 const innerObjectFieldTemplate = (props) => {
@@ -93,7 +107,7 @@ const innerObjectFieldTemplate = (props) => {
 			<tr className="array-object-properties-row">
 			{
 				props.properties.map((property, idx2) => (
-					<td key={idx2}>{property.content}</td>
+					<td key={idx2} className={`${property.name}-cell`}>{property.content}</td>
 				))
 			}
 			</tr>

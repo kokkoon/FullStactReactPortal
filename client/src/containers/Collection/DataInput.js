@@ -39,8 +39,9 @@ class DataInput extends Component {
 					<Form 
 						schema={formStructure}
 						uiSchema={uiSchema}
-	        	onSubmit={this.onSubmit.bind(this)}
 	        	ArrayFieldTemplate={arrayFieldTemplate}
+	        	onChange={this.onChange.bind(this)}
+	        	onSubmit={this.onSubmit.bind(this)}
 	        	onError={this.log("errors")} />
 	      </div>
 
@@ -302,6 +303,33 @@ class DataInput extends Component {
 	}
 	 
 	log = (type) => console.log.bind(console, type)
+
+	onChange = (props) => {
+		const total = this.countValuesOnCells('Amount', props)
+		const totalCell = document.getElementById('total-amount-array-items')
+		if (totalCell) totalCell.innerHTML = total
+	}
+
+	countValuesOnCells = (targetProperty, props) => {
+		const properties = props.schema.properties
+		let total = 0
+
+		Object.keys(properties).forEach(key => {
+			if (properties[key].type === 'array') {
+				Object.keys(properties[key].items.properties).forEach(key2 => {
+					if (key2 === targetProperty && properties[key].items.properties[key2].type === 'number') {
+						const cells = Array.prototype.slice.call(document.getElementsByClassName(`${key2}-cell`))
+						cells.forEach(cell => {
+							const input = cell.children[0].children[2]
+							total += Number(input.value)
+						})
+					}
+				})
+			}
+		})
+
+		return total
+	}
 
 	onSubmit = ({ formData }) => {
 		if (formData.file) {
