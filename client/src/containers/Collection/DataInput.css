@@ -137,3 +137,14 @@
 .array-object-properties-row select {
 	height: 2rem;
 }
+
+.form-input .rjsf fieldset > div.form-group.field.field-string {
+	float: left;
+  width: 50%;
+  padding: 0 1rem;
+}
+
+.form-input .rjsf fieldset > div.form-group.field.field-array {
+	float: left;
+  width: 100%;
+}
