@@ -65,4 +65,20 @@ module.exports = (app) => {
   		res.send({ result })
   	})
   })
+
+  // example for inline (non-nested) mongodb query call
+  app.get('/api/test-collection', async (req, res) => {
+    const url = URL.parse(req.url, true)
+    const name = url.query.name
+    const collection = db.collection(name)
+
+    const promise = new Promise((resolve, reject) => {
+      collection.find({}).toArray((err, result) => {
+        resolve(result)
+      })
+    })
+
+    const result = await promise.then(res => res)
+    res.send(result)
+  })
 }
