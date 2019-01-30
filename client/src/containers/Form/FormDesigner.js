@@ -510,7 +510,7 @@ class FormDesigner extends Component {
 			<div className="row bordered-container event-container">
 	  		<div className="col s10 zero-padding">
 	    		<span>
-	    			Starts when documents are created
+	    			Starts when documents are {actionType}
 	    		</span>
 	    	</div>
 	    	<div className="col s2 right zero-padding">
