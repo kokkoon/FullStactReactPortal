@@ -134,7 +134,7 @@ class DataInput extends Component {
 						const { user } = this.props
 
 						newDefaultValue = user[field]
-					} 
+					}
 					else if (categoryGroup === 'collection') {
 						const category = dataPath[1]
 						const field = dataPath[2]
@@ -143,7 +143,7 @@ class DataInput extends Component {
 						if (field === 'key') {
 							enum_array = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
 								.then(res => res.data.enum.map(item => item.field))
-							console.log('enum_array = ', enum_array)
+
 							newDefaultValue = enum_array[0]
 						} else {
 							newDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
@@ -322,8 +322,8 @@ class DataInput extends Component {
 					if (key2 === targetProperty && properties[key].items.properties[key2].type === 'number') {
 						const cells = Array.prototype.slice.call(document.getElementsByClassName(`${key2}-cell`))
 						cells.forEach(cell => {
-							const input = cell.children[0].children[2]
-							total += Number(input.value)
+							const input = cell.children[0].children[0].children[0].children[2]
+							if (input) total += Number(input.value)
 						})
 					}
 				})
