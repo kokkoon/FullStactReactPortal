@@ -37,27 +37,30 @@ module.exports = (app) => {
   })
 
   // update record in a form collection
-  app.post('api/update-record', (req, res) => {
+  app.post('/api/update-record', (req, res) => {
     const url = URL.parse(req.url, true)
-    const formId = url.query.id
-    const recordId = url.query.record_id
-    const collection = db.collection(`${formId}`)
+    const { form_id, record_id } = url.query
+    const collection = db.collection(`${form_id}`)
     const newDate = new Date().toISOString()
     const userId = req.user._id
 
-    const updatedData = { 
+    let updatedData = { 
       ...req.body,
       modifiedTime: newDate,
       modifiedBy: userId,
     }
+    updatedData = lodash.omit(updatedData, ['_id'])
 
-    collection.updateOne({_id: mongodb.ObjectID(recordId)}, {$set: updatedData}, (err, obj) => {
-      if (err) console.error(err)
-      res.send({ message: `record ${recordId} updated`})
+    collection.updateOne({ _id: mongodb.ObjectID(record_id) }, {$set: updatedData}, (err, obj) => {
+      if (err) {
+        res.send({ success: false, message: `fail to update record ${record_id}` })
+      } else {
+        res.send({ success: true, message: `record ${record_id} updated` })
+      }
     })
   })
 
-  // get the record of form instance by form id & instanceId from DB
+  // get the record of form instance by form id & record id from DB
   app.get('/api/record', (req, res) => {
   	const url = URL.parse(req.url, true)
   	const formId = url.query.id

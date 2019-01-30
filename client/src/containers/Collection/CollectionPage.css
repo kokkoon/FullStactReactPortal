@@ -61,18 +61,20 @@
 	color: blue;
 }
 
-.cell-delete-btn-container {
+.cell-action-btn-container {
 	padding: 5px;
 	width: 35px;
 }
 
-.cell-delete-btn-container .btn-floating {
+.cell-action-btn-container .btn-floating {
 	width: 25px;
 	height: 25px;
 	line-height: 32px;
+	margin-left: 5px;
+	margin-bottom: 5px;
 }
 
-.cell-delete-btn-container .btn-floating i.material-icons {
+.cell-action-btn-container .btn-floating i.material-icons {
 	font-size: 1.2rem;
 	line-height: 0;
 }

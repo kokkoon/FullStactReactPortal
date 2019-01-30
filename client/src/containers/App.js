@@ -10,6 +10,7 @@ import Settings from './Admin/Settings'
 import DataInput from './Collection/DataInput'
 import SampleCollectionPage from '../components/SampleCollectionPage'
 import CollectionPage from './Collection/CollectionPage'
+import RecordPage from './Collection/RecordPage'
 import CollectionList from './Collection/CollectionList'
 import ExternalCollectionPage from './Collection/ExternalCollectionPage'
 import SidenavSetup from './Sidenav/SidenavSetup'
@@ -34,6 +35,7 @@ class App extends Component {
           <Route exact path="/data-input" component={DataInput} />
           <Route exact path="/sample-collection" component={SampleCollectionPage} />
           <Route exact path="/collection" component={CollectionPage} />
+          <Route exact path="/record" component={RecordPage} />
           <Route exact path="/collection-list" component={CollectionList} />
           <Route exact path="/form-designer" component={FormDesigner} />
           <Route exact path="/profile" component={ProfilePage} />

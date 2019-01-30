@@ -86,7 +86,11 @@ export default class CollectionPage extends Component {
                           </span>
                         </td>
                       }
-                      <td className="cell-delete-btn-container">
+                      <td className="cell-action-btn-container">
+                        <span className="waves-effect waves-light btn-floating orange" 
+                           onClick={e => this.openRecord(i)}>
+                          <i className="small material-icons">folder_open</i>
+                        </span>
                         <span className="waves-effect waves-light btn-floating red" 
                            onClick={e => this.deleteRecord(i)}>
                           <i className="small material-icons">delete</i>
@@ -211,5 +215,12 @@ export default class CollectionPage extends Component {
         this.loadRecord(formId)
       })
       .catch(error => console.error(error))
+  }
+
+  openRecord = (index) => {
+    const { record } = this.state
+    const { formId, _id: recordId } = record[index]
+
+    this.props.history.push(`/record?form_id=${formId}&record_id=${recordId}`)
   }
 }
