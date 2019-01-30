@@ -150,23 +150,71 @@ class RecordPage extends Component {
 					let newItemProperty = { [itemKey] : itemValue }
 
 					const dataCheck = getDataFromStringPattern(itemValue.default)
-					const dataPath = dataCheck.data.split('.')
-					const categoryGroup = dataPath[0]
-					const category = dataPath[1]
-					const field = dataPath[2]
-					const recordId = dataPath[3]
 
-					if (dataCheck.isPatternExist && categoryGroup === 'collection' && field === 'key') {
+					if (dataCheck.isPatternExist) {
+						const dataPath = dataCheck.data.split('.')
+						const categoryGroup = dataPath[0]
+
 						let enum_array = []
+						let newItemDefaultValue = 'data not found: ' + itemValue.default
 
-						enum_array = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
-							.then(res => res.data.enum.map(item => item.field))
+						if (categoryGroup === 'user') {
+							const { user } = this.props
+							const field = dataPath[2]
+							newItemDefaultValue = user[field]
+						} 
+						else if (categoryGroup === 'collection') {
+							const category = dataPath[1]
+							const field = dataPath[2]
+							const recordId = dataPath[3]
+
+							if (field === 'key') {
+								enum_array = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
+									.then(res => res.data.enum.map(item => item.field))
+								newItemDefaultValue = enum_array[0]
+							} else {
+								newItemDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
+									.then(res => res.data[field])
+							}
+						}
+						else if (categoryGroup === 'date') {
+							const datePattern = dataPath[1].split(':')
+
+							if (datePattern[0] === 'today') {
+								const today = new Date()
+								const offset = Number(datePattern[1])
+
+								let year = today.getYear() + 1900
+								let month = today.getMonth()
+								let date = today.getDate() + offset
+
+								const targetDate = new Date(year, month, date)
+
+								year = targetDate.getYear() + 1900
+								month = targetDate.getMonth() + 1
+								date = targetDate.getDate()
+
+								date = date < 10 ? '0' + date : date
+								month = month < 10 ? '0' + month : month
+
+								newItemDefaultValue = `${year}-${month}-${date}`
+							}
+						}
 
 						newItemProperty = {
 							[itemKey] : {
 								...itemValue,
-								default: enum_array[0],
-								enum: enum_array
+								default: newItemDefaultValue
+							}
+						}
+
+						if (enum_array.length > 0) {
+							newItemProperty = {
+								...newItemProperty,
+								[itemKey] : {
+									...newItemProperty[itemKey],
+									enum: enum_array,
+								}
 							}
 						}
 					}
