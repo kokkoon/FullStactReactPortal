@@ -50,7 +50,8 @@ class FormDesigner extends Component {
 			viewConfigString: '',
 			defaultViewConfig: {}, // object
 			viewConfig: {}, // object
-			isAllowAttachment: false
+			isAllowAttachment: false,
+			disableSubmitButton: false
 		}
 	}
 
@@ -60,6 +61,7 @@ class FormDesigner extends Component {
 			hasCollectionNameChanged,
 			collectionDisplayName,
 			hasFormFieldsChanged,
+			disableSubmitButton,
 			isCollectionNameOK,
 			isAllowAttachment,
 			collectionName,
@@ -156,7 +158,8 @@ class FormDesigner extends Component {
 	        	 	isEmpty(formStructure.properties) || 
 	        	 	isEmpty(inputCollectionName) || 
 	        	 	!isCollectionNameOK || 
-	        	 	!hasFormFieldsChanged
+	        	 	!hasFormFieldsChanged ||
+	        	 	disableSubmitButton
 	        	 } 
         		 onClick={this.handleCreateCollection}>
 			    	{formId ? 'Update Collection' : 'Create collection'}
@@ -999,6 +1002,7 @@ class FormDesigner extends Component {
 			}
 
 			this.setState({ 
+				disableSubmitButton: true,
 				input: newInput,
 				isNewField: false,
 				currentIndex: index,
@@ -1052,6 +1056,7 @@ class FormDesigner extends Component {
 			document.getElementById('field_name').focus()
 
 			this.setState({
+				disableSubmitButton: true,
 				input: newInput,
 				isNewField: false,
 				isUpdatingArrayFieldItem: true,
@@ -1424,6 +1429,7 @@ class FormDesigner extends Component {
 		}
 
 		this.setState({
+			disableSubmitButton: false,
 			hasFormFieldsChanged: true,
 			isNewField: true,
 			currentIndex: -1,
