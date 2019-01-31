@@ -3,6 +3,7 @@ import axios from 'axios'
 import Form from 'react-jsonschema-form'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
+import { arrayFieldTemplate } from '../utils/jsonSchemaFormUITemplate'
 import API_URL from '../utils/api_url'
 import { dataURLtoBlob, downloadURI } from '../utils/helperFunctions'
 import './UploadForm.css'
@@ -17,12 +18,71 @@ class UploadForm extends Component {
 				title: 'Form', 
 				type: "object", 
 				properties: {
-					"file": {
-			      "type": "string",
-			      "format": "data-url",
-			      "title": "Single file"
-			    },
-				} 
+					"Claimant": {
+              "title": "Claimant",
+              "type": "string",
+              "default": "<<user.user.fullname>>"
+          },
+          jobTitle: {
+          	title: "Job title",
+          	type: "string",
+          	enum: ['frontend', 'backend', 'fullstack'],
+          	default: 'fullstack'
+          },
+          "Department": {
+              "title": "Department",
+              "type": "string",
+              "default": "<<user.user.department>>"
+          },
+          "Manager": {
+              "title": "Manager",
+              "type": "string",
+              "default": "<<user.user.manager>>"
+          },
+          "Date": {
+              "title": "Date",
+              "type": "string",
+              "format": "date",
+              "default": "<<date.today:0>>"
+          },
+          "Expenses": {
+              "title": "Expenses",
+              "type": "array",
+              "items": {
+                  "title": "Expenses-items",
+                  "type": "object",
+                  "properties": {
+                      "Date": {
+                          "title": "Date",
+                          "type": "string",
+                          "format": "date",
+                          "default": "<<date.today:-10>>"
+                      },
+                      "Description": {
+                          "title": "Description",
+                          "type": "string",
+                          "default": ""
+                      },
+                      "Type": {
+                          "title": "Type",
+                          "type": "number",
+                          enum: [1, 2, 3],
+                          "default": 1
+                      },
+                      "Amount": {
+                          "title": "Amount",
+                          "type": "number",
+                          "default": ""
+                      }
+                  }
+              }
+          },
+					file: {
+			      type: "string",
+			      format: "data-url",
+			      title: "Single file"
+			    }
+				}
 			}
 		}
 	}	
@@ -36,6 +96,7 @@ class UploadForm extends Component {
 				<div className="json-form">
 					<Form 
 						schema={formStructure}
+						ArrayFieldTemplate={arrayFieldTemplate}
 	        	onSubmit={this.onSubmit.bind(this)}
 	        	onError={this.log("errors")} />
 	      </div>
@@ -67,12 +128,13 @@ class UploadForm extends Component {
 	}
 
 	componentWillMount() {
-		axios.get(`${API_URL}/files`)
-			.then(res => {
-				console.log('res = ', res)
-				this.setState({ files: res.data })
-			})
-			.catch(err => console.log(err))
+		// download all file list stored in mongodb
+		// axios.get(`${API_URL}/files`)
+		// 	.then(res => {
+		// 		console.log('res = ', res)
+		// 		this.setState({ files: res.data })
+		// 	})
+		// 	.catch(err => console.log(err))
 	}
 
 	componentDidMount() {
