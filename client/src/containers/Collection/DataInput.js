@@ -7,7 +7,11 @@ import Form from 'react-jsonschema-form'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
 import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
-import { dataURLtoBlob, getDataFromStringPattern } from '../../utils/helperFunctions'
+import { 
+	dataURLtoBlob, 
+	getDataFromStringPattern,
+	replaceDefaultValueStringPatternWithData
+} from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
 import './DataInput.css'
@@ -99,7 +103,7 @@ class DataInput extends Component {
 					createdActionAPI
 				} = res.data
 
-				const promisedStructure = this.replaceDefaultValueStringPatternWithData(formStructure)
+				const promisedStructure = replaceDefaultValueStringPatternWithData(formStructure, this.props.user)
 				promisedStructure.then(newFormStructure => {
 					this.setState({
 						formStructure: newFormStructure,
@@ -109,197 +113,6 @@ class DataInput extends Component {
 				})
 			})
 			.catch(e => console.error(e))
-	}
-
-	replaceDefaultValueStringPatternWithData (formStructure) {
-		let newFormStructure = {...formStructure}
-		const properties = newFormStructure.properties
-
-		const promisedProperties = Object.keys(properties).reduce(async (obj, key) => {
-			const value = properties[key]
-			let newProperty = { [key] : value }
-
-			if (value.type !== 'array') {
-				const dataCheck = getDataFromStringPattern(value.default)
-
-				if (dataCheck.isPatternExist) {
-					const dataPath = dataCheck.data.split('.')
-					const categoryGroup = dataPath[0]
-
-					let enum_array = []
-					let newDefaultValue = 'data not found: ' + value.default
-
-					if (categoryGroup === 'user') {
-						const field = dataPath[2]
-						const { user } = this.props
-
-						newDefaultValue = user[field]
-					}
-					else if (categoryGroup === 'collection') {
-						const category = dataPath[1]
-						const field = dataPath[2]
-						const recordId = dataPath[3]
-
-						if (field === 'key') {
-							enum_array = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
-								.then(res => res.data.enum.map(item => item.field))
-
-							newDefaultValue = enum_array[0]
-						} else {
-							newDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
-								.then(res => res.data[field])
-						}
-					}
-					else if (categoryGroup === 'date') {
-						const datePattern = dataPath[1].split(':')
-
-						if (datePattern[0] === 'today') {
-							const today = new Date()
-							const offset = Number(datePattern[1])
-
-							let year = today.getYear() + 1900
-							let month = today.getMonth()
-							let date = today.getDate() + offset
-
-							const targetDate = new Date(year, month, date)
-
-							year = targetDate.getYear() + 1900
-							month = targetDate.getMonth() + 1
-							date = targetDate.getDate()
-
-							date = date < 10 ? '0' + date : date
-							month = month < 10 ? '0' + month : month
-
-							newDefaultValue = `${year}-${month}-${date}`
-						}
-					}
-
-					newProperty = {
-						[key] : {
-							...value,
-							default: newDefaultValue
-						}
-					}
-
-					if (enum_array.length > 0) {
-						newProperty = {
-							...newProperty,
-							[key] : {
-								...newProperty[key],
-								enum: enum_array
-							}
-						}
-					}
-				}
-			}
-			else if (value.type === 'array') {
-				let newItems = { ...value.items }
-				const itemProperties = newItems.properties
-
-				const promisedItemProperties = Object.keys(itemProperties).reduce(async (itemObj, itemKey) => {
-					const itemValue = itemProperties[itemKey]
-					let newItemProperty = { [itemKey] : itemValue }
-
-					const dataCheck = getDataFromStringPattern(itemValue.default)
-
-					if (dataCheck.isPatternExist) {
-						const dataPath = dataCheck.data.split('.')
-						const categoryGroup = dataPath[0]
-
-						let enum_array = []
-						let newItemDefaultValue = 'data not found: ' + itemValue.default
-
-						if (categoryGroup === 'user') {
-							const { user } = this.props
-							const field = dataPath[2]
-							newItemDefaultValue = user[field]
-						} 
-						else if (categoryGroup === 'collection') {
-							const category = dataPath[1]
-							const field = dataPath[2]
-							const recordId = dataPath[3]
-
-							if (field === 'key') {
-								enum_array = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
-									.then(res => res.data.enum.map(item => item.field))
-								newItemDefaultValue = enum_array[0]
-							} else {
-								newItemDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
-									.then(res => res.data[field])
-							}
-						}
-						else if (categoryGroup === 'date') {
-							const datePattern = dataPath[1].split(':')
-
-							if (datePattern[0] === 'today') {
-								const today = new Date()
-								const offset = Number(datePattern[1])
-
-								let year = today.getYear() + 1900
-								let month = today.getMonth()
-								let date = today.getDate() + offset
-
-								const targetDate = new Date(year, month, date)
-
-								year = targetDate.getYear() + 1900
-								month = targetDate.getMonth() + 1
-								date = targetDate.getDate()
-
-								date = date < 10 ? '0' + date : date
-								month = month < 10 ? '0' + month : month
-
-								newItemDefaultValue = `${year}-${month}-${date}`
-							}
-						}
-
-						newItemProperty = {
-							[itemKey] : {
-								...itemValue,
-								default: newItemDefaultValue
-							}
-						}
-
-						if (enum_array.length > 0) {
-							newItemProperty = {
-								...newItemProperty,
-								[itemKey] : {
-									...newItemProperty[itemKey],
-									enum: enum_array,
-								}
-							}
-						}
-					}
-
-					return itemObj.then(promisedItemObj => ({
-						...promisedItemObj,
-						...newItemProperty
-					}))
-				}, Promise.resolve({}))
-
-				newProperty = await promisedItemProperties.then(newItemProperties => {
-					newProperty = {
-						[key] : {
-							...value,
-							items: {
-								...value.items,
-								properties: newItemProperties
-							}
-						}
-					}
-					return newProperty
-				})
-			}
-
-			return obj.then(promisedObj => ({
-					...promisedObj,
-					...newProperty
-			}))
-		}, Promise.resolve({}))
-
-		return promisedProperties.then(newProperties => {
-			newFormStructure.properties = newProperties
-			return newFormStructure
-		})
 	}
 	 
 	log = (type) => console.log.bind(console, type)
