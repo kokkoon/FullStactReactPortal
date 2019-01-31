@@ -10,7 +10,9 @@ import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
 import { 
 	dataURLtoBlob, 
 	getDataFromStringPattern,
-	replaceDefaultValueStringPatternWithData
+	replaceDefaultValueStringPatternWithData,
+	mathCalculation, 
+	computeValueByFormula 
 } from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
@@ -22,6 +24,7 @@ class DataInput extends Component {
 
 		this.state = {
 			formStructure: { title: 'Form', type: "object", properties: {} },
+			formData: {},
 			formStyleColumnAmount: '',
 			uiSchema: {},
 			clientUploadProgress: 0,
@@ -32,6 +35,7 @@ class DataInput extends Component {
 
 	render() {
 		const { 
+			formData,
 			formStructure, 
 			formStyleColumnAmount,
 			uiSchema,
@@ -43,6 +47,7 @@ class DataInput extends Component {
 				<h5>Input form</h5>
 				<div className={`json-form form-column-${formStyleColumnAmount}`}>
 					<Form 
+						formData={formData}
 						schema={formStructure}
 						uiSchema={uiSchema}
 	        	ArrayFieldTemplate={arrayFieldTemplate}
@@ -121,16 +126,24 @@ class DataInput extends Component {
 	 
 	log = (type) => console.log.bind(console, type)
 
-	onChange = (props) => {
+	onChange = ({ schema, formData }) => {
+		const { properties } = schema
+		
+		this.updateTotalCell(properties)
+		
+		const newFormData = computeValueByFormula(properties, formData)
+		this.setState({ formData: newFormData })
+	}
+
+	updateTotalCell (properties) {
 		const columnToSumEl = document.getElementById('sum-column-name')
 		const columnToSum = columnToSumEl ? columnToSumEl.value : ''
-		const total = this.countValuesOnCells(columnToSum, props)
+		const total = this.countValuesOnCells(columnToSum, properties)
 		const totalCell = document.getElementById('total-amount-array-items')
 		if (totalCell) totalCell.innerHTML = total
 	}
 
-	countValuesOnCells = (targetProperty, props) => {
-		const properties = props.schema.properties
+	countValuesOnCells = (targetProperty, properties) => {
 		let total = 0
 
 		Object.keys(properties).forEach(key => {

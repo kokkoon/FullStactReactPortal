@@ -5,7 +5,7 @@ import M from 'materialize-css/dist/js/materialize.min.js'
 
 import { arrayFieldTemplate } from '../utils/jsonSchemaFormUITemplate'
 import API_URL from '../utils/api_url'
-import { dataURLtoBlob, downloadURI } from '../utils/helperFunctions'
+import { dataURLtoBlob, downloadURI, mathCalculation, computeValueByFormula } from '../utils/helperFunctions'
 import './UploadForm.css'
 
 class UploadForm extends Component {
@@ -14,7 +14,188 @@ class UploadForm extends Component {
 
 		this.state = {
 			files: undefined,
+			formData: {},
 			formStructure: { 
+				title: 'Form', 
+				type: "object", 
+				properties: {
+					"title": {
+              "title": "Title",
+              "type": "string",
+              enum: ['Mr.', 'Mrs.', 'Ms.'],
+              "default": ""
+          },
+					"firstname": {
+              "title": "firstname",
+              "type": "string",
+              "default": ""
+          },
+          "lastname": {
+              "title": "lastname",
+              "type": "string",
+              "default": ""
+          },
+          "fullname": {
+              "title": "fullname",
+              "type": "string",
+              "formula": "firstname+lastname"
+          },
+          "completename": {
+              "title": "completename",
+              "type": "string",
+              "formula": "title+firstname+lastname"
+          },
+          "order": {
+              "title": "order",
+              "type": "array",
+              "items": {
+                  "title": "order-items",
+                  "type": "object",
+                  "properties": {
+                      "item": {
+                          "title": "item",
+                          "type": "string",
+                          "default": ""
+                      },
+                      "price": {
+                          "title": "price",
+                          "type": "number",
+                          "default": ""
+                      },
+                      "quantity": {
+                          "title": "quantity",
+                          "type": "number",
+                          "default": ""
+                      },
+                      "totalPrice": {
+                          "title": "totalPrice",
+                          "type": "number",
+                          "formula": "price*quantity"
+                      },
+                      "processTime": {
+                          "title": "processTime",
+                          "type": "number",
+                          "default": ""
+                      },
+                      "deliveryTime": {
+                          "title": "deliveryTime",
+                          "type": "number",
+                          "default": ""
+                      },
+                      "totalTime": {
+                          "title": "totalTime",
+                          "type": "number",
+                          "formula": "processTime+deliveryTime"
+                      },
+                      "timeDifference": {
+                          "title": "timeDifference",
+                          "type": "number",
+                          "formula": "processTime-deliveryTime"
+                      },
+                      "unitPrice": {
+                          "title": "unitPrice",
+                          "type": "number",
+                          "formula": "price/quantity"
+                      }
+                  }
+              }
+          }
+				}
+			}
+		}
+	}	
+
+	render() {
+		const { files, formStructure, formData } = this.state
+		console.log('state formdata = ', formData)
+		return (
+			<div className="form-input">
+				<h5>Input form</h5>
+				<div className="json-form">
+					<Form 
+						schema={formStructure}
+						ArrayFieldTemplate={arrayFieldTemplate}
+						formData={formData}
+						onChange={this.onChange}
+	        	onSubmit={this.onSubmit.bind(this)}
+	        	onError={this.log("errors")} />
+	      </div>
+	      {
+	      	files &&
+	      	files.map((file, index) => (
+			      <p>
+			      	<span
+				      	onClick={e => this.downloadFile(file.filename, file.contentType)}>
+				      	download {file.filename.slice(33)}
+				      </span>
+			      </p>
+	      	))
+	      }
+			</div>
+		)
+	}
+
+	downloadFile = (filename, contentType) => {
+		axios.get(`${API_URL}/download?filename=${filename}`, {responseType: 'arraybuffer'})
+			.then(res => {
+				const file = new Blob([res.data], { type: contentType });
+      	const fileURL = URL.createObjectURL(file);
+      	const originalName = filename.slice(33)
+
+      	downloadURI(fileURL, originalName)
+			})
+			.catch(err => console.log(err))
+	}
+
+	componentWillMount() {
+		// download all file list stored in mongodb
+		// axios.get(`${API_URL}/files`)
+		// 	.then(res => {
+		// 		console.log('res = ', res)
+		// 		this.setState({ files: res.data })
+		// 	})
+		// 	.catch(err => console.log(err))
+	}
+
+	componentDidMount() {
+		M.AutoInit()
+	}
+	 
+	log = (type) => console.log.bind(console, type)
+
+	onChange = (props) => {
+		const { schema, formData } = props
+		const newFormData = computeValueByFormula(schema.properties, formData)
+		this.setState({ formData: newFormData })
+	}
+
+	onSubmit = ({ formData }) => {
+		console.log('formData = ', formData)
+		// const file = formData.file
+		// const nameStartIdx = file.indexOf(';name=') + 6
+		// const nameEndIdx = file.indexOf(';base64,')
+		// const filename = file.slice(nameStartIdx, nameEndIdx)
+		// // const filetype = file.slice(5, nameStartIdx - 6)
+
+		// const sBoundary = "---------------------------" + Date.now().toString(16)
+
+		// const fd = new FormData()
+		// fd.append("file", dataURLtoBlob(file), filename)
+
+		// axios.post(`${API_URL}/upload`, fd, {headers: {'content-type': `multipart/form-data; boundary=${sBoundary}`}})
+		// 	.then(res => {
+		// 		M.toast({ html: res.data.message })
+		// 	})
+		// 	.catch(err => console.log(err))
+	}
+}
+
+export default UploadForm;
+
+
+/* 
+// formStructure for testing form style (with array items)
+formStructure: { 
 				title: 'Form', 
 				type: "object", 
 				properties: {
@@ -85,82 +266,4 @@ class UploadForm extends Component {
 				}
 			}
 		}
-	}	
-
-	render() {
-		const { files, formStructure } = this.state
-
-		return (
-			<div className="form-input">
-				<h5>Input form</h5>
-				<div className="json-form">
-					<Form 
-						schema={formStructure}
-						ArrayFieldTemplate={arrayFieldTemplate}
-	        	onSubmit={this.onSubmit.bind(this)}
-	        	onError={this.log("errors")} />
-	      </div>
-	      {
-	      	files &&
-	      	files.map((file, index) => (
-			      <p>
-			      	<span
-				      	onClick={e => this.downloadFile(file.filename, file.contentType)}>
-				      	download {file.filename.slice(33)}
-				      </span>
-			      </p>
-	      	))
-	      }
-			</div>
-		)
-	}
-
-	downloadFile = (filename, contentType) => {
-		axios.get(`${API_URL}/download?filename=${filename}`, {responseType: 'arraybuffer'})
-			.then(res => {
-				const file = new Blob([res.data], { type: contentType });
-      	const fileURL = URL.createObjectURL(file);
-      	const originalName = filename.slice(33)
-
-      	downloadURI(fileURL, originalName)
-			})
-			.catch(err => console.log(err))
-	}
-
-	componentWillMount() {
-		// download all file list stored in mongodb
-		// axios.get(`${API_URL}/files`)
-		// 	.then(res => {
-		// 		console.log('res = ', res)
-		// 		this.setState({ files: res.data })
-		// 	})
-		// 	.catch(err => console.log(err))
-	}
-
-	componentDidMount() {
-		M.AutoInit()
-	}
-	 
-	log = (type) => console.log.bind(console, type)
-
-	onSubmit = ({ formData }) => {
-		const file = formData.file
-		const nameStartIdx = file.indexOf(';name=') + 6
-		const nameEndIdx = file.indexOf(';base64,')
-		const filename = file.slice(nameStartIdx, nameEndIdx)
-		// const filetype = file.slice(5, nameStartIdx - 6)
-
-		const sBoundary = "---------------------------" + Date.now().toString(16)
-
-		const fd = new FormData()
-		fd.append("file", dataURLtoBlob(file), filename)
-
-		axios.post(`${API_URL}/upload`, fd, {headers: {'content-type': `multipart/form-data; boundary=${sBoundary}`}})
-			.then(res => {
-				M.toast({ html: res.data.message })
-			})
-			.catch(err => console.log(err))
-	}
-}
-
-export default UploadForm;
+*/

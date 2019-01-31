@@ -130,20 +130,33 @@ export function replaceDefaultValueStringPatternWithData (formStructure, user) {
             newDefaultValue = `${year}-${month}-${date}`
           }
         }
+        else if (categoryGroup === 'formula') {
+          const formula = dataPath[1]
 
-        newProperty = {
-          [key] : {
-            ...value,
-            default: newDefaultValue
+          newProperty = {
+            [key] : {
+              ...value,
+              formula,
+              default: ''
+            }
           }
         }
 
-        if (enum_array.length > 0) {
+        if (categoryGroup !== 'formula') {
           newProperty = {
-            ...newProperty,
             [key] : {
-              ...newProperty[key],
-              enum: enum_array
+              ...value,
+              default: newDefaultValue
+            }
+          }
+
+          if (enum_array.length > 0) {
+            newProperty = {
+              ...newProperty,
+              [key] : {
+                ...newProperty[key],
+                enum: enum_array
+              }
             }
           }
         }
@@ -151,99 +164,13 @@ export function replaceDefaultValueStringPatternWithData (formStructure, user) {
     }
     else if (value.type === 'array') {
       let newItems = { ...value.items }
-      const itemProperties = newItems.properties
 
-      const promisedItemProperties = Object.keys(itemProperties).reduce(async (itemObj, itemKey) => {
-        const itemValue = itemProperties[itemKey]
-        let newItemProperty = { [itemKey] : itemValue }
-
-        const dataCheck = getDataFromStringPattern(itemValue.default)
-
-        if (dataCheck.isPatternExist) {
-          const dataPath = dataCheck.data.split('.')
-          const categoryGroup = dataPath[0]
-
-          let enum_array = []
-          let newItemDefaultValue = 'data not found: ' + itemValue.default
-
-          if (categoryGroup === 'user') {
-            const field = dataPath[2]
-            newItemDefaultValue = user[field]
-          } 
-          else if (categoryGroup === 'collection') {
-            const category = dataPath[1]
-            const field = dataPath[2]
-            const recordId = dataPath[3]
-
-            if (field === 'key') {
-              enum_array = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
-                .then(res => res.data.enum.map(item => item.field))
-              newItemDefaultValue = enum_array[0]
-            } else {
-              newItemDefaultValue = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
-                .then(res => res.data[field])
-            }
-          }
-          else if (categoryGroup === 'date') {
-            const datePattern = dataPath[1].split(':')
-
-            if (datePattern[0] === 'today') {
-              const today = new Date()
-              const offset = Number(datePattern[1])
-
-              let year = today.getYear() + 1900
-              let month = today.getMonth()
-              let date = today.getDate() + offset
-
-              const targetDate = new Date(year, month, date)
-
-              year = targetDate.getYear() + 1900
-              month = targetDate.getMonth() + 1
-              date = targetDate.getDate()
-
-              date = date < 10 ? '0' + date : date
-              month = month < 10 ? '0' + month : month
-
-              newItemDefaultValue = `${year}-${month}-${date}`
-            }
-          }
-
-          newItemProperty = {
-            [itemKey] : {
-              ...itemValue,
-              default: newItemDefaultValue
-            }
-          }
-
-          if (enum_array.length > 0) {
-            newItemProperty = {
-              ...newItemProperty,
-              [itemKey] : {
-                ...newItemProperty[itemKey],
-                enum: enum_array,
-              }
-            }
-          }
+      newProperty = {
+        [key] : {
+          ...value,
+          items: await replaceDefaultValueStringPatternWithData(newItems).then(newItemsStructure => newItemsStructure)
         }
-
-        return itemObj.then(promisedItemObj => ({
-          ...promisedItemObj,
-          ...newItemProperty
-        }))
-      }, Promise.resolve({}))
-
-      newProperty = await promisedItemProperties.then(newItemProperties => {
-        newProperty = {
-          [key] : {
-            ...value,
-            items: {
-              ...value.items,
-              properties: newItemProperties
-            }
-          }
-        }
-        return newProperty
-      })
+      }
     }
 
     return obj.then(promisedObj => ({
@@ -256,4 +183,101 @@ export function replaceDefaultValueStringPatternWithData (formStructure, user) {
     newFormStructure.properties = newProperties
     return newFormStructure
   })
+}
+
+// recursive function to do math calculation on string formula input
+// use case: mathCalculation("1 * 2 + 4 / 2 - 6")
+export function mathCalculation (formula) {
+  const plusOperator = '+'
+  const minusOperator = '-'
+  const multiplyOperator = '*'
+  const divideOperator = '/'
+  
+  if (formula.indexOf(plusOperator) > 0) {
+    const operands = formula.split(plusOperator)
+    let total = 0
+
+    operands.forEach(operand => {
+      total = total + mathCalculation(operand)
+    })
+
+    return total
+  }
+  
+  else if (formula.indexOf(minusOperator) > 0) {
+    const operands = formula.split(minusOperator)
+    let total = 0
+
+    operands.forEach((operand, index) => {
+      if (index === 0) {
+        total = mathCalculation(operand)
+      } 
+      else {
+        total = total - mathCalculation(operand)
+      }
+    })
+
+    return total
+  }
+  
+  else if (formula.indexOf(multiplyOperator) > 0) {
+    const operands = formula.split(multiplyOperator)
+    let total = 1
+
+    operands.forEach(operand => {
+      total = total * mathCalculation(operand)
+    })
+
+    return total
+  }
+  
+  else if (formula.indexOf(divideOperator) > 0) {
+    const operands = formula.split(divideOperator)
+    let total = 1
+
+    operands.forEach((operand, index) => {
+      if (index === 0) {
+        total = mathCalculation(operand)
+      }
+      else {
+        total = total / mathCalculation(operand)
+      }
+    })
+
+    return total
+  }
+
+  return Number(formula)
+}
+
+// compute field value based on value of other fields
+export function computeValueByFormula (properties, formData) {
+  let newFormData = {...formData}
+
+  Object.keys(properties).forEach(key => {
+    if (properties[key].formula) {
+      const formula = properties[key].formula
+      
+      let operands = formula.replace(/\+|\-|\*|\//g, ' ').split(' ')
+      operands = operands.map(operand => formData[operand])
+
+      if (properties[key].type === 'number') {
+        const operators = formula.replace(/\w/g, '').split('')
+        const updatedFormula = operands.map(operand => operators.length > 0 ? operand + operators.shift() : operand).join('')
+        newFormData[key] = mathCalculation(updatedFormula)
+      } 
+      else if (properties[key].type === 'string'){
+        newFormData[key] = operands.join(' ')
+      }
+    }
+    else if (properties[key].type === 'array') {
+      if (formData[key] !== undefined) {
+        newFormData[key] = formData[key].map((item, childKey) => 
+          computeValueByFormula(properties[key].items.properties, formData[key][childKey])
+        )
+      }
+    }
+  })
+
+  return newFormData
 }
