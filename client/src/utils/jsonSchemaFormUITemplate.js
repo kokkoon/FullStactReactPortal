@@ -84,6 +84,22 @@ export const arrayFieldTemplate = (props) => {
   )
 }
 
+const innerObjectFieldTemplate = (props) => {
+	return (
+		<table>
+		<tbody>
+			<tr className="array-object-properties-row">
+			{
+				props.properties.map((property, idx2) => (
+					<td key={idx2} className={`${property.name}-cell`}>{property.content}</td>
+				))
+			}
+			</tr>
+		</tbody>
+		</table>
+	)
+}
+
 const handleChangeSumColumnName = ({ target }, props) => {
 	const total = countValuesOnCells(target.value, props)
 	const totalCell = document.getElementById('total-amount-array-items')
@@ -125,20 +141,4 @@ const addBrowserDefaultClassOnSelectElements = () => {
 			selects[i].classList.add('browser-default')
 		}
 	}
-}
-
-const innerObjectFieldTemplate = (props) => {
-	return (
-		<table>
-		<tbody>
-			<tr className="array-object-properties-row">
-			{
-				props.properties.map((property, idx2) => (
-					<td key={idx2} className={`${property.name}-cell`}>{property.content}</td>
-				))
-			}
-			</tr>
-		</tbody>
-		</table>
-	)
 }
