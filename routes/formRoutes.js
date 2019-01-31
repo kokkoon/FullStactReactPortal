@@ -160,7 +160,10 @@ module.exports = (app) => {
       formFields,
       formStructure,
       isAllowAttachment,
-      tableColumns
+      tableColumns,
+      formStyle: {
+        columnAmount: '1'
+      }
     }
 
     // generate tableViewConfig field for new collection

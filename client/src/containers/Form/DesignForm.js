@@ -214,7 +214,7 @@ class DesignForm extends Component {
 						uiSchema,
 						defaultUIschema: uiSchema,
 						stringUIschema,
-						formStyleColumnAmount: formStyle.columnAmount
+						formStyleColumnAmount: formStyle ? formStyle.columnAmount : '1'
 					})
 				})
 			})

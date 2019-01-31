@@ -112,7 +112,7 @@ class DataInput extends Component {
 						formStructure: newFormStructure,
 						uiSchema,
 						createdActionAPI,
-						formStyleColumnAmount: formStyle.columnAmount
+						formStyleColumnAmount: formStyle ? formStyle.columnAmount : '1'
 					})
 				})
 			})
