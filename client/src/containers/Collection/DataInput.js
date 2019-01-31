@@ -22,6 +22,7 @@ class DataInput extends Component {
 
 		this.state = {
 			formStructure: { title: 'Form', type: "object", properties: {} },
+			formStyleColumnAmount: '',
 			uiSchema: {},
 			clientUploadProgress: 0,
 			totalSize: 0,
@@ -32,6 +33,7 @@ class DataInput extends Component {
 	render() {
 		const { 
 			formStructure, 
+			formStyleColumnAmount,
 			uiSchema,
 			clientUploadProgress
 		} = this.state
@@ -39,7 +41,7 @@ class DataInput extends Component {
 		return (
 			<div className="form-input">
 				<h5>Input form</h5>
-				<div className="json-form">
+				<div className={`json-form form-column-${formStyleColumnAmount}`}>
 					<Form 
 						schema={formStructure}
 						uiSchema={uiSchema}
@@ -100,7 +102,8 @@ class DataInput extends Component {
 				const {
 					data: formStructure, 
 					uiSchema, 
-					createdActionAPI
+					createdActionAPI,
+					formStyle
 				} = res.data
 
 				const promisedStructure = replaceDefaultValueStringPatternWithData(formStructure, this.props.user)
@@ -108,7 +111,8 @@ class DataInput extends Component {
 					this.setState({
 						formStructure: newFormStructure,
 						uiSchema,
-						createdActionAPI
+						createdActionAPI,
+						formStyleColumnAmount: formStyle.columnAmount
 					})
 				})
 			})

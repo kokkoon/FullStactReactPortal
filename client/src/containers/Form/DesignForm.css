@@ -45,6 +45,7 @@
 
 .design-form-page-json-form label {
 	text-align: left;
+	font-weight: bold;
 }
 
 .design-form-page-json-form p {
@@ -66,4 +67,34 @@
 	position: absolute;
 	right: 3px;
 	width: 150px;
+}
+
+#modal-form-style {
+	top: 5% !important;
+	max-height: 90vh !important;
+	width: 80vw;
+}
+
+#modal-form-style .title {
+	font-weight: bold;
+}
+
+#modal-form-style .subcontent {
+	margin-top: 24px;
+}
+
+#modal-form-style .subcontent .subtitle {
+	font-weight: bold;
+}
+
+#modal-form-style .subcontent .form-radio-container {
+	margin-top: 10px;
+}
+
+#modal-form-style .form-style-column .radio-option {
+	display: block;
+}
+
+#modal-form-style .btn-container .btn {
+	width: 100px;
 }

@@ -276,6 +276,28 @@ module.exports = (app) => {
     })
   })
 
+  app.patch('/api/update-form-style', (req, res) => {
+    const formCollection = db.collection('form')
+    const url = URL.parse(req.url, true)
+    const { id } = url.query
+    
+    const updatedFields = {
+      $set: { 
+        formStyle: req.body
+      }
+    }
+
+    formCollection.updateOne({_id: mongodb.ObjectID(id)}, updatedFields, (err, obj) => {
+      if (err) console.error(err)
+        
+      if (obj.result.n === 1) {
+        res.send({ message: 'form style updated'})
+      } else {
+        res.send({ message: 'fail to update form style'})
+      }
+    })
+  })
+
   // get form schema to be rendered in jsonschema-form
   app.get('/api/form', (req, res) => {
   	const formCollection = db.collection('form')
@@ -297,7 +319,8 @@ module.exports = (app) => {
             isAllowAttachment: form.isAllowAttachment,
             uiSchema: form.uiSchema,
             createdActionAPI: form.createdActionAPI,
-            modifiedActionAPI: form.modifiedActionAPI
+            modifiedActionAPI: form.modifiedActionAPI,
+            formStyle: form.formStyle
           })
     		} else {
           res.send({ message: 'form structure not found'})

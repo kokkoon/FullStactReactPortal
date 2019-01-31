@@ -113,34 +113,48 @@
 	font-size: 18px;
 }
 
-.btn-actions-container {
+.form-input .rjsf .btn-actions-container {
 	width: 80px;
 	float: right;
 }
 
-.total-amount-container {
+.form-input .rjsf .total-amount-container {
 	margin-top: 20px;
 }
 
-.total-amount-cell {
+.form-input .rjsf .total-amount-cell {
 	text-align: right;
 }
 
-#total-amount-array-items {
+.form-input .rjsf #total-amount-array-items {
 	border-bottom: solid 1px #9e9e9e;
 }
 
-#sum-column-name {
+.form-input .rjsf #sum-column-name {
 	height: 1.5rem;
 }
 
-.array-object-properties-row select {
+.form-input .rjsf .array-object-properties-row select {
 	height: 2rem;
 }
 
-.form-input .rjsf fieldset > div.form-group.field.field-string {
+.form-column-1 .rjsf fieldset > div.form-group.field.field-string {
+	width: 100%;
+}
+
+.form-column-2 .rjsf fieldset > div.form-group.field.field-string {
 	float: left;
   width: 50%;
+  padding: 0 1rem;
+}
+
+.form-column-2 .rjsf fieldset > div.form-group.field.field-string:only-of-type {
+	width: 100% !important;
+}
+
+.form-column-3 .rjsf fieldset > div.form-group.field.field-string {
+	float: left;
+	width: 33.33%;
   padding: 0 1rem;
 }
 

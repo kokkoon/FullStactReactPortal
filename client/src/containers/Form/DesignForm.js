@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import axios from 'axios'
 import queryString from 'query-string'
 import M from 'materialize-css/dist/js/materialize.min.js'
@@ -7,9 +8,10 @@ import Form from 'react-jsonschema-form'
 import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
 import * as helper from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
+import * as ACT from '../../actions'
 import './DesignForm.css'
 
-export default class DesignForm extends Component {
+class DesignForm extends Component {
 	constructor(props) {
 		super(props)
 
@@ -23,7 +25,8 @@ export default class DesignForm extends Component {
 			uiSchema: {},
 			stringFormData: '',
 			defaultFormData: {},
-			formData: {}
+			formData: {},
+			formStyleColumnAmount: '',
 		}
 
 		this.textareaUIschema = React.createRef()
@@ -39,7 +42,8 @@ export default class DesignForm extends Component {
 			stringFormData,
 			JSONSchema,
 			uiSchema,
-			formData
+			formData,
+			formStyleColumnAmount: columnAmount
 		} = this.state
 
 	  return (
@@ -49,6 +53,7 @@ export default class DesignForm extends Component {
 				</div>
 				<div className="col s6 btn-actions right-align">
 					<span className="waves-effect waves-light btn" onClick={this.handleCancel}>Cancel</span>
+					<span className="waves-effect waves-light btn" onClick={this.handleOpenModalFormStyle}>Style</span>
 					<span className="waves-effect waves-light btn" onClick={this.handleDefaultSchema}>Default</span>
 					<span className="waves-effect waves-light btn" onClick={this.handlePreviewSchema}>Preview</span>
 					<span className="waves-effect waves-light btn" onClick={this.handleSaveApplySchema}>Save & Apply</span>
@@ -86,7 +91,7 @@ export default class DesignForm extends Component {
 				</div>
 				<div className="col s6">
 					<div id="form-preview">
-			  		<div className="design-form-page-json-form">
+			  		<div className={`design-form-page-json-form json-form form-column-${columnAmount}`}>
 							<Form 
 								uiSchema={uiSchema}
 								schema={JSONSchema}
@@ -97,11 +102,78 @@ export default class DesignForm extends Component {
 			      </div>
 			  	</div>
 				</div>
+
+				{ this.renderModalFormStyle() }
 			</div>
 	  )
 	}
 
+	renderModalFormStyle () {
+		const { formStyleColumnAmount: columnAmount } = this.state
+		// console.log('columnAmount = ', columnAmount)
+		return (
+			<div id="modal-form-style" className="modal">
+        <div className="modal-content center">
+          <h5 className="title">Choose form style</h5>
+          <div className="row left-align">
+          	<div className="col s12 subcontent form-style-column">
+          		<span className="subtitle">Amount of column</span>
+          		<form onChange={this.handleChangeFormStyleColumnAmount} className="form-radio-container">
+          			<span className="radio-option">
+						      <label>
+						        <input 
+						        	type="radio" 
+						        	name="form-style-column" 
+						        	className="with-gap" 
+						        	checked={columnAmount === "1"}
+						        	value="1"
+						        />
+						        <span>1</span>
+						      </label>
+					      </span>
+          			<span className="radio-option">
+						      <label>
+						        <input 
+						        	type="radio" 
+						        	name="form-style-column" 
+						        	className="with-gap" 
+						        	checked={columnAmount === "2"}
+						        	value="2"
+						        />
+						        <span>2</span>
+						      </label>
+					      </span>
+          			<span className="radio-option">
+						      <label>
+						        <input 
+						        	type="radio" 
+						        	className="with-gap" 
+						        	name="form-style-column" 
+						        	checked={columnAmount === "3"}
+						        	value="3"
+						        />
+						        <span>3</span>
+						      </label>
+						    </span>
+          		</form>
+          	</div>
+          	<div className="col s12 subcontent">
+          		<span className="subtitle">Array field template</span>
+          	</div>
+          	<div className="col s12 subcontent">
+          		<span className="subtitle">Object field template</span>
+          	</div>
+          	<div className="col s12 btn-container right-align">
+						  <span className="btn" onClick={this.handleConfirmFormStyle}>OK</span>
+						</div>
+          </div>
+        </div>
+      </div>
+		)
+	}
+
 	componentWillMount() {
+		this.props.setDummyManagerAndDepartment()
 		this.loadData()
 	}
 
@@ -114,35 +186,39 @@ export default class DesignForm extends Component {
 		const formId = location.search.slice(4)
 
 		axios.get(`${API_URL}/form?id=${formId}`)
-		.then(res => {
-			const schema = res.data.data
-			const stringJSONschema = helper.stringifyPrettyJSON(schema)
-			let uiSchema = res.data.uiSchema
-			
-			if (uiSchema == null) {
-				uiSchema = Object.keys(schema.properties).reduce((obj, key) => {
-					if (schema.properties[key].type !== 'boolean') {
-						 // eslint-disable-next-line 
-						return {...obj, [key] : { ['ui:widget']: 'text' }}
-					} else {
-						return {...obj, [key] : {}}
-					}
-				}, {})
-			}
-				
-			const stringUIschema = helper.stringifyPrettyJSON(uiSchema)
+			.then(res => {
+				const promisedSchema = helper.replaceDefaultValueStringPatternWithData(res.data.data, this.props.user)
 
-			this.setState({
-				collectionName: res.data.collectionDisplayName,
-				JSONSchema: schema,
-				defaultJSONschema: schema,
-				uiSchema,
-				defaultUIschema: uiSchema,
-				stringJSONschema,
-				stringUIschema
+				promisedSchema.then(schema => {
+					const { formStyle } = res.data
+					let uiSchema = res.data.uiSchema
+					const stringUIschema = helper.stringifyPrettyJSON(uiSchema)
+					const stringJSONschema = helper.stringifyPrettyJSON(schema)
+
+					if (uiSchema == null) {
+						uiSchema = Object.keys(schema.properties).reduce((obj, key) => {
+							if (schema.properties[key].type !== 'boolean') {
+								 // eslint-disable-next-line 
+								return {...obj, [key] : { ['ui:widget']: 'text' }}
+							} else {
+								return {...obj, [key] : {}}
+							}
+						}, {})
+					}
+
+					this.setState({ 
+						JSONSchema: schema, 
+						defaultJSONschema: schema,
+						stringJSONschema,
+						collectionName: res.data.collectionDisplayName,
+						uiSchema,
+						defaultUIschema: uiSchema,
+						stringUIschema,
+						formStyleColumnAmount: formStyle.columnAmount
+					})
+				})
 			})
-		})
-		.catch(e => console.error(e))
+			.catch(e => console.error(e))
 	}
 
 	log = (type) => console.log.bind(console, type)
@@ -223,22 +299,47 @@ export default class DesignForm extends Component {
 	}
 
 	handleSaveApplySchema = () => {
+		const { 
+			formStyleColumnAmount: columnAmount, 
+			// formStyleArrayFieldTemplate: arrayFieldTemplate,
+			// formStyleObjectFieldTemplate: objectFieldTemplate
+		} = this.state
+
+		const style = {
+			columnAmount,
+			// arrayFieldTemplate,
+			// objectFieldTemplate
+		}
+
 		const schema = this.updateSchema()
 
 		if (!schema.error) {
 			this.handlePreviewSchema()
 			this.saveFormSchema(schema)
+			this.saveFormStyle(style)
 		}
 	}
 
 	saveFormSchema(schema) {
 		const { id } = queryString.parse(this.props.location.search)
+
 		axios.patch(`${API_URL}/update-form-schema?id=${id}`, schema)
-		.then(res => {
-			M.toast({ html: res.data.message })
-			this.redirectToFormDesigner()
-		})
-		.catch(err => console.error(err))
+			.then(res => {
+				M.toast({ html: res.data.message })
+				this.redirectToFormDesigner()
+			})
+			.catch(err => console.error(err))
+	}
+
+	saveFormStyle(style) {
+		const { id } = queryString.parse(this.props.location.search)
+
+		axios.patch(`${API_URL}/update-form-style?id=${id}`, style)
+			.then(res => {
+				M.toast({ html: res.data.message })
+				this.redirectToFormDesigner()
+			})
+			.catch(err => console.error(err))
 	}
 
 	handleCancel = () => {
@@ -250,4 +351,32 @@ export default class DesignForm extends Component {
 		const { id } = queryString.parse(location.search)
 		this.props.history.push(`/form-designer?id=${id}`)
 	}
+
+	handleOpenModalFormStyle = () => {
+		this.openCloseModalFormStyle('open')
+	}
+
+	openCloseModalFormStyle (action) {
+		const modal = document.getElementById('modal-form-style')
+		if (action === 'open') M.Modal.getInstance(modal).open()
+		else if (action === 'close') M.Modal.getInstance(modal).close()
+	}
+
+	handleChangeFormStyleColumnAmount = ({ target }) => {
+		this.setState({ formStyleColumnAmount: target.value })
+	}
+
+	handleConfirmFormStyle = () => {
+		this.openCloseModalFormStyle('close')
+	}
 }
+
+const mapStateToProps = ({ user, form }) => ({
+	user
+})
+
+const mapDispatchToProps = (dispatch) => ({
+	setDummyManagerAndDepartment: () => dispatch(ACT.setDummyManagerAndDepartment())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps) (DesignForm)
