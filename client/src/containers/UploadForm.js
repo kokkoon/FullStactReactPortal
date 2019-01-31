@@ -5,7 +5,10 @@ import M from 'materialize-css/dist/js/materialize.min.js'
 
 import { arrayFieldTemplate } from '../utils/jsonSchemaFormUITemplate'
 import API_URL from '../utils/api_url'
-import { dataURLtoBlob, downloadURI, mathCalculation, computeValueByFormula } from '../utils/helperFunctions'
+import { 
+	// dataURLtoBlob, 
+	downloadURI, 
+	computeValueByFormula } from '../utils/helperFunctions'
 import './UploadForm.css'
 
 class UploadForm extends Component {

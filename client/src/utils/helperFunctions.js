@@ -258,7 +258,7 @@ export function computeValueByFormula (properties, formData) {
     if (properties[key].formula) {
       const formula = properties[key].formula
       
-      let operands = formula.replace(/\+|\-|\*|\//g, ' ').split(' ')
+      let operands = formula.replace(/\+|-|\*|\//g, ' ').split(' ')
       operands = operands.map(operand => formData[operand])
 
       if (properties[key].type === 'number') {

@@ -9,9 +9,7 @@ import M from 'materialize-css/dist/js/materialize.min.js'
 import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
 import { 
 	dataURLtoBlob, 
-	getDataFromStringPattern,
 	replaceDefaultValueStringPatternWithData,
-	mathCalculation, 
 	computeValueByFormula 
 } from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
