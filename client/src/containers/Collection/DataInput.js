@@ -152,7 +152,7 @@ class DataInput extends Component {
 					if (key2 === targetProperty && properties[key].items.properties[key2].type === 'number') {
 						const cells = Array.prototype.slice.call(document.getElementsByClassName(`${key2}-cell`))
 						cells.forEach(cell => {
-							const input = cell.children[0].children[0].children[0].children[2]
+							const input = cell.children[0].children[0].children[0].children[0].children[2]
 							if (input) total += Number(input.value)
 						})
 					}

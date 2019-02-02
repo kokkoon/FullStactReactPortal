@@ -114,7 +114,7 @@ const countValuesOnCells = (targetProperty, props) => {
 		if (key === targetProperty && properties[key].type === 'number') {
 			const cells = Array.prototype.slice.call(document.getElementsByClassName(`${key}-cell`))
 			cells.forEach(cell => {
-				const input = cell.children[0].children[0].children[0].children[2]
+				const input = cell.children[0].children[0].children[0].children[0].children[2]
 				if (input) total += Number(input.value)
 			})
 		}
