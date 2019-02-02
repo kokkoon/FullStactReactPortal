@@ -24,7 +24,7 @@ class DataInput extends Component {
 		this.state = {
 			formStructure: { title: 'Form', type: "object", properties: {} },
 			formData: {},
-			formStyleColumnAmount: '',
+			formStyleTheme: '',
 			uiSchema: {},
 			clientUploadProgress: 0,
 			totalSize: 0,
@@ -36,7 +36,7 @@ class DataInput extends Component {
 		const { 
 			formData,
 			formStructure, 
-			formStyleColumnAmount,
+			formStyleTheme,
 			uiSchema,
 			clientUploadProgress
 		} = this.state
@@ -44,7 +44,7 @@ class DataInput extends Component {
 		return (
 			<div className="form-input">
 				<h5>Input form</h5>
-				<div className={`json-form form-column-${formStyleColumnAmount}`}>
+				<div className={`json-form ${formStyleTheme}`}>
 					<Form 
 						formData={formData}
 						schema={formStructure}
@@ -117,7 +117,7 @@ class DataInput extends Component {
 						formStructure: newFormStructure,
 						uiSchema,
 						createdActionAPI,
-						formStyleColumnAmount: formStyle ? formStyle.columnAmount : '1'
+						formStyleTheme: formStyle ? formStyle.theme : ''
 					})
 				})
 			})

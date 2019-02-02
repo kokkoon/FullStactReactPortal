@@ -144,27 +144,33 @@
 	margin: 0;
 }
 
-.form-column-1 .rjsf fieldset > div.form-group.field.field-string {
-	width: 100%;
+.bootstrap .rjsf label {
+	color: black;
+	font-size: 12px;
 }
 
-.form-column-2 .rjsf fieldset > div.form-group.field.field-string {
-	float: left;
-  width: 50%;
-  padding: 0 1rem;
+.bootstrap .rjsf input {
+	margin-top: 5px !important;
+	padding: 2px 5px !important;
+	border: 1px solid #9e9e9e !important;
+	height: 2rem !important;
+	border-radius: 5px  !important;
 }
 
-.form-column-2 .rjsf fieldset > div.form-group.field.field-string:only-of-type {
-	width: 100% !important;
+.bootstrap select {
+	margin-top: 5px !important;
+	border: 1px solid #9e9e9e !important;
+	padding: 2px 5px !important;
+	height: 2rem !important;
+	border-radius: 5px  !important;
 }
 
-.form-column-3 .rjsf fieldset > div.form-group.field.field-string {
-	float: left;
-	width: 33.33%;
-  padding: 0 1rem;
-}
-
-.form-input .rjsf fieldset > div.form-group.field.field-array {
-	float: left;
-  width: 100%;
+.bootstrap .array-field-container input, select {
+	margin-top: unset !important;
+	padding: unset !important;
+	padding-bottom: 5px !important;
+	border: unset !important;
+	border-bottom: 1px solid #9e9e9e !important;
+	height: unset !important;
+	border-radius: unset !important;
 }

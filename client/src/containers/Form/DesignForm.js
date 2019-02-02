@@ -27,7 +27,7 @@ class DesignForm extends Component {
 			stringFormData: '',
 			defaultFormData: {},
 			formData: {},
-			formStyleColumnAmount: '',
+			formStyleTheme: '',
 		}
 
 		this.textareaUIschema = React.createRef()
@@ -44,7 +44,7 @@ class DesignForm extends Component {
 			JSONSchema,
 			uiSchema,
 			formData,
-			formStyleColumnAmount: columnAmount
+			formStyleTheme
 		} = this.state
 
 	  return (
@@ -92,7 +92,7 @@ class DesignForm extends Component {
 				</div>
 				<div className="col s6">
 					<div id="form-preview">
-			  		<div className={`design-form-page-json-form json-form form-column-${columnAmount}`}>
+			  		<div className={`design-form-page-json-form ${formStyleTheme}`}>
 							<Form 
 								uiSchema={uiSchema}
 								fields={customFields}
@@ -111,7 +111,7 @@ class DesignForm extends Component {
 	}
 
 	renderModalFormStyle () {
-		const { formStyleColumnAmount: columnAmount } = this.state
+		const { formStyleTheme } = this.state
 		// console.log('columnAmount = ', columnAmount)
 		return (
 			<div id="modal-form-style" className="modal">
@@ -119,51 +119,33 @@ class DesignForm extends Component {
           <h5 className="title">Choose form style</h5>
           <div className="row left-align">
           	<div className="col s12 subcontent form-style-column">
-          		<span className="subtitle">Amount of column</span>
-          		<form onChange={this.handleChangeFormStyleColumnAmount} className="form-radio-container">
+          		<span className="subtitle">Theme</span>
+          		<form onChange={this.handleChangeFormStyleTheme} className="form-radio-container">
           			<span className="radio-option">
 						      <label>
 						        <input 
 						        	type="radio" 
-						        	name="form-style-column" 
+						        	name="form-style-theme" 
 						        	className="with-gap" 
-						        	checked={columnAmount === "1"}
-						        	value="1"
+						        	checked={formStyleTheme === "materialize"}
+						        	value="materialize"
 						        />
-						        <span>1</span>
+						        <span>materialize</span>
 						      </label>
 					      </span>
           			<span className="radio-option">
 						      <label>
 						        <input 
 						        	type="radio" 
-						        	name="form-style-column" 
+						        	name="form-style-theme" 
 						        	className="with-gap" 
-						        	checked={columnAmount === "2"}
-						        	value="2"
+						        	checked={formStyleTheme === "bootstrap"}
+						        	value="bootstrap"
 						        />
-						        <span>2</span>
+						        <span>bootstrap</span>
 						      </label>
 					      </span>
-          			<span className="radio-option">
-						      <label>
-						        <input 
-						        	type="radio" 
-						        	className="with-gap" 
-						        	name="form-style-column" 
-						        	checked={columnAmount === "3"}
-						        	value="3"
-						        />
-						        <span>3</span>
-						      </label>
-						    </span>
           		</form>
-          	</div>
-          	<div className="col s12 subcontent">
-          		<span className="subtitle">Array field template</span>
-          	</div>
-          	<div className="col s12 subcontent">
-          		<span className="subtitle">Object field template</span>
           	</div>
           	<div className="col s12 btn-container right-align">
 						  <span className="btn" onClick={this.handleConfirmFormStyle}>OK</span>
@@ -193,6 +175,7 @@ class DesignForm extends Component {
 
 				promisedSchema.then(schema => {
 					const { formStyle } = res.data
+					console.log(formStyle)
 					let uiSchema = res.data.uiSchema
 					const stringUIschema = helper.stringifyPrettyJSON(uiSchema)
 					const stringJSONschema = helper.stringifyPrettyJSON(schema)
@@ -216,7 +199,7 @@ class DesignForm extends Component {
 						uiSchema,
 						defaultUIschema: uiSchema,
 						stringUIschema,
-						formStyleColumnAmount: formStyle ? formStyle.columnAmount : '1'
+						formStyleTheme: formStyle ? formStyle.theme : ''
 					})
 				})
 			})
@@ -301,16 +284,10 @@ class DesignForm extends Component {
 	}
 
 	handleSaveApplySchema = () => {
-		const { 
-			formStyleColumnAmount: columnAmount, 
-			// formStyleArrayFieldTemplate: arrayFieldTemplate,
-			// formStyleObjectFieldTemplate: objectFieldTemplate
-		} = this.state
+		const { formStyleTheme } = this.state
 
 		const style = {
-			columnAmount,
-			// arrayFieldTemplate,
-			// objectFieldTemplate
+			theme: formStyleTheme
 		}
 
 		const schema = this.updateSchema()
@@ -364,8 +341,8 @@ class DesignForm extends Component {
 		else if (action === 'close') M.Modal.getInstance(modal).close()
 	}
 
-	handleChangeFormStyleColumnAmount = ({ target }) => {
-		this.setState({ formStyleColumnAmount: target.value })
+	handleChangeFormStyleTheme = ({ target }) => {
+		this.setState({ formStyleTheme: target.value })
 	}
 
 	handleConfirmFormStyle = () => {

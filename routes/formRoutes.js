@@ -162,7 +162,7 @@ module.exports = (app) => {
       isAllowAttachment,
       tableColumns,
       formStyle: {
-        columnAmount: '1'
+        theme: ''
       }
     }
 
