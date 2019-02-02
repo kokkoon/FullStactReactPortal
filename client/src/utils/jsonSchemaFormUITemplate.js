@@ -135,6 +135,16 @@ const handleClickAdd = (e, props) => {
 }
 
 const addBrowserDefaultClassOnSelectElements = () => {
+	// hide input dropdown materialize default
+	const selectwrapper = Array.prototype.slice.call(document.getElementsByClassName('select-wrapper'))
+	selectwrapper.forEach(el => {
+		const select = el.getElementsByClassName('select-dropdown')[0]
+		const svg = el.getElementsByTagName('svg')[0]
+		select.style.display = 'none'
+		svg.style.display = 'none'
+	})
+
+	// show browser-default select element
 	const selects = document.getElementsByTagName('SELECT')
 	if (selects.length > 0) {
 		for (let i = 0; i < selects.length; i++) {
