@@ -4,12 +4,20 @@ import Form from 'react-jsonschema-form'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
 import { arrayFieldTemplate } from '../utils/jsonSchemaFormUITemplate'
+import fields from '../utils/RJSFCustomFields'
 import API_URL from '../utils/api_url'
 import { 
 	// dataURLtoBlob, 
 	downloadURI, 
 	computeValueByFormula } from '../utils/helperFunctions'
 import './UploadForm.css'
+
+
+const uiSchema = {
+  title: { column: '12' },
+  firstname: { column: '6' },
+  lastname: { column: '6' }
+}
 
 class UploadForm extends Component {
 	constructor(props) {
@@ -18,8 +26,8 @@ class UploadForm extends Component {
 		this.state = {
 			files: undefined,
 			formData: {},
-			formStructure: { 
-				title: 'Form', 
+			formStructure: {
+				title: 'Form Upload Title', 
 				type: "object", 
 				properties: {
 					"title": {
@@ -117,6 +125,8 @@ class UploadForm extends Component {
 				<div className="json-form">
 					<Form 
 						schema={formStructure}
+						uiSchema={uiSchema}
+						fields={fields}
 						ArrayFieldTemplate={arrayFieldTemplate}
 						formData={formData}
 						onChange={this.onChange}

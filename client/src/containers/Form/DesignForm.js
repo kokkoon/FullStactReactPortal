@@ -6,6 +6,7 @@ import M from 'materialize-css/dist/js/materialize.min.js'
 import Form from 'react-jsonschema-form'
 
 import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
+import customFields from '../../utils/RJSFCustomFields'
 import * as helper from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
@@ -94,6 +95,7 @@ class DesignForm extends Component {
 			  		<div className={`design-form-page-json-form json-form form-column-${columnAmount}`}>
 							<Form 
 								uiSchema={uiSchema}
+								fields={customFields}
 								schema={JSONSchema}
 								formData={formData}
 								ArrayFieldTemplate={arrayFieldTemplate}

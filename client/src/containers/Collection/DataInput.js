@@ -10,8 +10,9 @@ import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
 import { 
 	dataURLtoBlob, 
 	replaceDefaultValueStringPatternWithData,
-	computeValueByFormula 
+	computeValueByFormula
 } from '../../utils/helperFunctions'
+import customFields from '../../utils/RJSFCustomFields'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
 import './DataInput.css'
@@ -49,6 +50,7 @@ class DataInput extends Component {
 						schema={formStructure}
 						uiSchema={uiSchema}
 	        	ArrayFieldTemplate={arrayFieldTemplate}
+	        	fields={customFields}
 	        	onChange={this.onChange.bind(this)}
 	        	onSubmit={this.onSubmit.bind(this)}
 	        	onError={this.log("errors")} />

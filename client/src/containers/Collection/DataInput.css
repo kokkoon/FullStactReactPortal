@@ -138,6 +138,12 @@
 	height: 2rem;
 }
 
+.rjsf fieldset {
+	border-color: transparent;
+	padding: 0 !important;
+	margin: 0;
+}
+
 .form-column-1 .rjsf fieldset > div.form-group.field.field-string {
 	width: 100%;
 }
