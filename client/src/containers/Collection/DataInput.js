@@ -212,8 +212,24 @@ class DataInput extends Component {
 				})
 				.catch(err => console.log(err))
 		} else {
-			this.submitFormFields(formData)
+			const newFormData = this.replaceUndefinedValueWithEmptyString(formData)
+			this.submitFormFields(newFormData)
 		}
+	}
+
+	replaceUndefinedValueWithEmptyString (object) {
+		return Object.keys(object).reduce((obj, key) => {
+			let value = ''
+
+			if (object[key] !== undefined) {
+				value = object[key]
+			}
+
+			return {
+				...obj,
+				[key] : value
+			}
+		}, {})
 	}
 
 	submitFormFields (formFields) {
