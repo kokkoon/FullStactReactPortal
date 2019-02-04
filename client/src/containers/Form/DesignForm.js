@@ -4,6 +4,7 @@ import axios from 'axios'
 import queryString from 'query-string'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import Form from 'react-jsonschema-form'
+import { isEqual } from 'lodash'
 
 import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
 import customFields from '../../utils/RJSFCustomFields'
@@ -21,6 +22,7 @@ class DesignForm extends Component {
 			stringJSONschema: '',
 			defaultJSONschema: { title: 'Form', type: "object", properties: {} },
 			JSONSchema: { title: 'Form', type: "object", properties: {} },
+			JSONSchemaPreview: { title: 'Form', type: "object", properties: {} },
 			stringUIschema: '',
 			defaultUIschema: {},
 			uiSchema: {},
@@ -41,7 +43,7 @@ class DesignForm extends Component {
 			stringJSONschema,
 			stringUIschema,
 			stringFormData,
-			JSONSchema,
+			JSONSchemaPreview,
 			uiSchema,
 			formData,
 			formStyleTheme
@@ -96,7 +98,7 @@ class DesignForm extends Component {
 							<Form 
 								uiSchema={uiSchema}
 								fields={customFields}
-								schema={JSONSchema}
+								schema={JSONSchemaPreview}
 								formData={formData}
 								ArrayFieldTemplate={arrayFieldTemplate}
 								onChange={this.handleChangeFormPreviewData}
@@ -112,7 +114,7 @@ class DesignForm extends Component {
 
 	renderModalFormStyle () {
 		const { formStyleTheme } = this.state
-		// console.log('columnAmount = ', columnAmount)
+
 		return (
 			<div id="modal-form-style" className="modal">
         <div className="modal-content center">
@@ -171,29 +173,26 @@ class DesignForm extends Component {
 
 		axios.get(`${API_URL}/form?id=${formId}`)
 			.then(res => {
-				const promisedSchema = helper.replaceDefaultValueStringPatternWithData(res.data.data, this.props.user)
+				const { data: baseSchema } = res.data
+				const { formStyle } = res.data
+				let uiSchema = res.data.uiSchema
+				const stringUIschema = helper.stringifyPrettyJSON(uiSchema)
+				const stringJSONschema = helper.stringifyPrettyJSON(baseSchema)
 
-				promisedSchema.then(schema => {
-					const { formStyle } = res.data
-					console.log(formStyle)
-					let uiSchema = res.data.uiSchema
-					const stringUIschema = helper.stringifyPrettyJSON(uiSchema)
-					const stringJSONschema = helper.stringifyPrettyJSON(schema)
+				if (uiSchema == null) {
+					uiSchema = Object.keys(baseSchema.properties).reduce((obj, key) => {
+						if (baseSchema.properties[key].type !== 'boolean') {
+							 // eslint-disable-next-line 
+							return {...obj, [key] : { ['ui:widget']: 'text' }}
+						} else {
+							return {...obj, [key] : {}}
+						}
+					}, {})
+				}
 
-					if (uiSchema == null) {
-						uiSchema = Object.keys(schema.properties).reduce((obj, key) => {
-							if (schema.properties[key].type !== 'boolean') {
-								 // eslint-disable-next-line 
-								return {...obj, [key] : { ['ui:widget']: 'text' }}
-							} else {
-								return {...obj, [key] : {}}
-							}
-						}, {})
-					}
-
-					this.setState({ 
-						JSONSchema: schema, 
-						defaultJSONschema: schema,
+				this.setState({
+						JSONSchema: baseSchema, 
+						defaultJSONschema: baseSchema,
 						stringJSONschema,
 						collectionName: res.data.collectionDisplayName,
 						uiSchema,
@@ -201,6 +200,10 @@ class DesignForm extends Component {
 						stringUIschema,
 						formStyleTheme: formStyle ? formStyle.theme : ''
 					})
+
+				const promisedSchema = helper.replaceDefaultValueStringPatternWithData(baseSchema, this.props.user)
+				promisedSchema.then(schema => {
+					this.setState({ JSONSchemaPreview: schema })
 				})
 			})
 			.catch(e => console.error(e))
@@ -237,6 +240,7 @@ class DesignForm extends Component {
 	}
 
 	handlePreviewSchema = () => {
+		const { JSONSchema } = this.state
 		const newSchema = this.updateSchema()
 
 		if (!newSchema.error) {
@@ -244,6 +248,15 @@ class DesignForm extends Component {
 				JSONSchema: newSchema.JSON,
 				uiSchema: newSchema.UI,
 				formData: newSchema.formData
+			})
+
+			const promisedSchema = helper.replaceDefaultValueStringPatternWithData(newSchema.JSON, this.props.user)
+			promisedSchema.then(schema => {
+				this.setState({ JSONSchemaPreview: schema })
+
+				if (!isEqual(JSONSchema, newSchema.JSON)) {
+					this.setState({ formData: this.state.defaultFormData })
+				}
 			})
 		}
 	}
@@ -260,15 +273,25 @@ class DesignForm extends Component {
 
 		let newSchema = { JSON: defaultJSONschema, UI: defaultUIschema, formData: defaultFormData }
 		try {
-			newSchema = { 
-				JSON: JSON.parse(stringJSONschema), 
-				UI: JSON.parse(stringUIschema),
-				formData: JSON.parse(stringFormData)
-			}
+			newSchema.JSON = JSON.parse(stringJSONschema)
 		} catch (err) {
 			alert('JSON schema is not valid\nError : ' + err)
 			return {error: true}
-		} 
+		}
+
+		try {
+			newSchema.UI = JSON.parse(stringUIschema)
+		} catch (err) {
+			alert('UI schema is not valid\nError : ' + err)
+			return {error: true}
+		}
+
+		try {
+			newSchema.formData = JSON.parse(stringFormData)
+		} catch (err) {
+			alert('Form data is not valid\nError : ' + err)
+			return {error: true}
+		}
 		
 		return newSchema
 	}
