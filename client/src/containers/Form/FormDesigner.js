@@ -50,6 +50,7 @@ class FormDesigner extends Component {
 			viewConfigString: '',
 			defaultViewConfig: {}, // object
 			viewConfig: {}, // object
+			isShowSystemFields: false,
 			isAllowAttachment: false,
 			disableSubmitButton: false
 		}
@@ -175,11 +176,29 @@ class FormDesigner extends Component {
 
 	renderTableFormFields () {
 		const { documentFieldsTableHeader } = this.props
-		const { fields } = this.state
+		const { isShowSystemFields } = this.state
+		let { fields } = this.state
+
+		fields = this.showHideSystemFields(fields, isShowSystemFields)
 
 		return (
-			<div className="col s12 document-fields-container">
-				<span className="document-fields-label">Document fields</span>
+			<div className="row document-fields-container">
+				<div className="col s9 zero-padding">
+					<span className="document-fields-label">Document fields</span>
+				</div>
+				<div className="col s3 zero-padding">
+	        <div className="switch right-align">
+				    <label>
+				    	Show system fields
+				      <input 
+				      	id="created-api-switch" 
+				      	type="checkbox" 
+				      	checked={isShowSystemFields}
+				      	onChange={this.handleToggleShowSystemFields} />
+				      <span className="lever"></span>
+				    </label>
+				  </div>
+				</div>
 				<table className="table-form-fields centered responsive-table">
           <thead>
             <tr>
@@ -932,6 +951,16 @@ class FormDesigner extends Component {
 			.then(res => {
 				setCollectionList(res.data.data)
 			})
+	}
+
+	handleToggleShowSystemFields = () => {
+		const { isShowSystemFields } = this.state
+		this.setState({ isShowSystemFields: !isShowSystemFields })
+	}
+
+	showHideSystemFields = (fields, isShowSystemFields) => {
+		const systemFields = ['createdTime', 'createdBy', 'modifiedTime', 'modifiedBy']
+		return isShowSystemFields ? fields : [...fields].filter(field => systemFields.indexOf(field.fieldName) === -1)
 	}
 
 	handleToggleAllowAttachment = () => {
