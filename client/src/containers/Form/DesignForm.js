@@ -130,6 +130,7 @@ class DesignForm extends Component {
 						        	name="form-style-theme" 
 						        	className="with-gap" 
 						        	checked={formStyleTheme === "materialize"}
+						        	onChange={this.handleChangeFormStyleTheme}
 						        	value="materialize"
 						        />
 						        <span>materialize</span>
@@ -142,6 +143,7 @@ class DesignForm extends Component {
 						        	name="form-style-theme" 
 						        	className="with-gap" 
 						        	checked={formStyleTheme === "bootstrap"}
+						        	onChange={this.handleChangeFormStyleTheme}
 						        	value="bootstrap"
 						        />
 						        <span>bootstrap</span>
@@ -328,7 +330,6 @@ class DesignForm extends Component {
 		axios.patch(`${API_URL}/update-form-schema?id=${id}`, schema)
 			.then(res => {
 				M.toast({ html: res.data.message })
-				this.redirectToFormDesigner()
 			})
 			.catch(err => console.error(err))
 	}
@@ -339,7 +340,7 @@ class DesignForm extends Component {
 		axios.patch(`${API_URL}/update-form-style?id=${id}`, style)
 			.then(res => {
 				M.toast({ html: res.data.message })
-				this.redirectToFormDesigner()
+				helper.openCloseModal('modal-edit-form', 'close')
 			})
 			.catch(err => console.error(err))
 	}

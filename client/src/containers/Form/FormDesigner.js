@@ -23,6 +23,7 @@ class FormDesigner extends Component {
 			formStructure: { title: 'New Collection', type: "object", properties: {} }, // see formStructure data structure at the bottom of the code
 			input: {
 				collectionName: '',
+				collectionDescription: '',
 				fieldName: '',
 				dataType: '',
 				defaultValue: '',
@@ -643,9 +644,9 @@ class FormDesigner extends Component {
 			<div id="modal-edit-view" className="modal">
       	<div className="modal-content">
       		<h5 className="center title"><strong>Edit view</strong></h5>
-      		<ul class="tabs">
-		        <li class="tab col s3"><a href="#view-config">View config</a></li>
-		        <li class="tab col s3"><a href="#view-designer">View designer</a></li>
+      		<ul className="tabs">
+		        <li className="tab col s3"><a href="#view-config">View config</a></li>
+		        <li className="tab col s3"><a href="#view-designer">View designer</a></li>
 		      </ul>
 		      <div id="view-config">
 	      		<textarea 
