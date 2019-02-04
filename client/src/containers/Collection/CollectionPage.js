@@ -70,9 +70,22 @@ export default class CollectionPage extends Component {
                         // sort the order of the filtered column based on order value in tableViewConfig
                         Object.keys(r).filter(key => column.indexOf(key) >= 0)
                           .sort((a, b) => tableViewConfig[a].order - tableViewConfig[b].order)
-                          .map((filteredKey, idx) => (
-                            <td key={idx}>{typeof(r[filteredKey]) === 'string' ? r[filteredKey] : JSON.stringify(r[filteredKey])}</td>
-                          ))
+                          .map((filteredKey, idx) => {
+                            let content = typeof(r[filteredKey]) === 'string' ? r[filteredKey] : JSON.stringify(r[filteredKey])
+                            const config = tableViewConfig[filteredKey]
+
+                            // replace with icon if specified on valueToIcon field
+                            if (config.valueToIcon && Object.keys(config.valueToIcon).indexOf(content) > -1) {
+                              content = <i className="material-icons">{config.valueToIcon[content]}</i>
+                            } else {
+                              // limit characters up to maxLength if field showSummary true
+                              content = config.showSummary && content.length > config.maxLength ? 
+                                content.slice(0, tableViewConfig[filteredKey].maxLength) + ' ...' :
+                                content
+                            }
+
+                            return <td key={idx}>{content}</td>
+                          })
                       }
                       {
                         r.filename &&
