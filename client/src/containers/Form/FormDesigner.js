@@ -213,17 +213,20 @@ class FormDesigner extends Component {
 	                  </td>
 	                  <td>{field.dataType}</td>
 	                  <td>{field.defaultValue}</td>
-	                  <td>
-	                  	<label>
-								        <input 
-								        	type="checkbox" 
-								        	className="filled-in" 
-								        	checked={field.showInTable ? "checked" : ""} 
-								        	onChange={this.handleToggleShowInTable.bind(this, index)} 
-								        />
-								        <span> </span>
-								      </label>
-								    </td>
+	                  {
+	                  	false && // 2019-02-04 https://trello.com/c/JLFf8VUH/96-remove-the-show-in-table-column
+		                  <td>
+		                  	<label>
+									        <input 
+									        	type="checkbox" 
+									        	className="filled-in" 
+									        	checked={field.showInTable ? "checked" : ""} 
+									        	onChange={this.handleToggleShowInTable.bind(this, index)} 
+									        />
+									        <span> </span>
+									      </label>
+									    </td>
+	                  }
 								    <td>
 								    {
 								    	field.action &&
@@ -1970,50 +1973,51 @@ class FormDesigner extends Component {
 }
 
 FormDesigner.defaultProps = {
-	documentFieldsTableHeader: [ 'Name', 'Data Type', 'Default Value', 'Show in Table', 'Action' ],
-
-	//data structure
-	formStructure: {
-	  title: "New Collection",
-	  type: "object",
-	  properties: {
-	    name: { type: "string", title: "Name", default: "A new task" },
-	    date: { type: "string", format: "date" },
-	    due: { type: "string", format: "date" },
-	    reminder: { type: "string", format: "date" },
-	    assignedTo: { type: "string", title: "Assigned to" },
-	    place: { type: "string", title: "Place" },
-	    taskOwner: { type: "string", title: "Task owner" },
-	    done: { type: "boolean", title: "Done?", default: false }
-  	}
-	},
-
-	fields: [
-		{ 
-			fieldName: 'Title', 
-			dataType: 'String', 
-			defaultValue: 'test', 
-			showInTable: false, 
-			action: ['edit', 'delete'] 
-		},
-		{
-			fieldName: 'Description', 
-			dataType: 'String', 
-			defaultValue: 'yes', 
-			showInTable: true, 
-			action: [
-				{
-					name: 'edit',
-					enable: true
-				},
-				{
-					name: 'delete',
-					enable: true
-				}
-			] 
-		},
-	]
+	documentFieldsTableHeader: [ 'Name', 'Data Type', 'Default Value', 'Action' ],
 }
+
+/*
+// data structure
+formStructure: {
+  title: "New Collection",
+  type: "object",
+  properties: {
+    name: { type: "string", title: "Name", default: "A new task" },
+    date: { type: "string", format: "date" },
+    due: { type: "string", format: "date" },
+    reminder: { type: "string", format: "date" },
+    assignedTo: { type: "string", title: "Assigned to" },
+    place: { type: "string", title: "Place" },
+    taskOwner: { type: "string", title: "Task owner" },
+    done: { type: "boolean", title: "Done?", default: false }
+	}
+},
+
+fields: [
+	{ 
+		fieldName: 'Title', 
+		dataType: 'String', 
+		defaultValue: 'test', 
+		showInTable: false, 
+		action: ['edit', 'delete'] 
+	},
+	{
+		fieldName: 'Description', 
+		dataType: 'String', 
+		defaultValue: 'yes', 
+		showInTable: true, 
+		action: [
+			{
+				name: 'edit',
+				enable: true
+			},
+			{
+				name: 'delete',
+				enable: true
+			}
+		] 
+	},
+] */
 
 const mapStateToProps = ({ user, form }) => ({ 
 	user, 
