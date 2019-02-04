@@ -670,7 +670,16 @@ class FormDesigner extends Component {
 		return (
 			<div className="modal" id="modal-edit-form">
 				<div className="modal-content zero-padding">
-					<DesignForm location={this.props.location} />
+					<ul className="tabs">
+		        <li className="tab col s3"><a href="#json-schema">Schema view</a></li>
+		        <li className="tab col s3"><a href="#form-designer">Designer view</a></li>
+		      </ul>
+		      <div id="json-schema">
+						<DesignForm location={this.props.location} />
+		      </div>
+		      <div id="form-designer">
+		      	<p>form designer coming soon</p>
+		      </div>
 				</div>
 			</div>
 		)

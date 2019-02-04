@@ -297,16 +297,16 @@
 	margin-left: 10px;
 }
 
-#modal-edit-view ul.tabs {
+.modal-content ul.tabs {
 	background: unset;
 }
 
-#modal-edit-view div.active {
+.modal-content div.active {
 	background: unset;
 }
 
 #modal-edit-form {
-	top: 20% !important;
+	top: 6% !important;
 	width: 100vw !important;
 	height: 100vh !important;
 	max-height: unset !important;
