@@ -1046,9 +1046,12 @@ class FormDesigner extends Component {
 		let { 
 			fields,
 			arrayFields: arrayFields_state, 
-			input
+			input,
+			isShowSystemFields
 		} = this.state
-		const field = fields[index]
+
+		const fieldIndex = isShowSystemFields ? index : index + 4
+		const field = fields[fieldIndex]
 
 		if (actionType === 'edit') {
 			const newInput = {
@@ -1075,7 +1078,7 @@ class FormDesigner extends Component {
 				disableSubmitButton: true,
 				input: newInput,
 				isNewField: false,
-				currentIndex: index,
+				currentIndex: fieldIndex,
 				arrayFields: arrayFields_state,
 				isUpdatingArrayField,
 				fields
@@ -1086,7 +1089,7 @@ class FormDesigner extends Component {
 			const arrayFields = this.deleteArrayField(arrayFields_state, field)
 			this.deleteFieldOnFormStructure(field.fieldName)
 			this.deleteFieldOnViewConfig(field.fieldName)
-			fields.splice(index, 1)
+			fields.splice(fieldIndex, 1)
 
 			this.setState({ 
 				fields, 
