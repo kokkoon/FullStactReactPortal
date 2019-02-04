@@ -287,7 +287,10 @@ class FormDesigner extends Component {
 					<td className="left cell-array-item name-field">{item.fieldName}</td>
           <td className="cell-array-item">{item.dataType}</td>
           <td className="cell-array-item">{item.defaultValue}</td>
-          <td></td>
+          {
+          	false && // 2019-02-04 https://trello.com/c/JLFf8VUH/96-remove-the-show-in-table-column
+          	<td></td> 
+          }
           <td>
           {
 			    	item.action &&
