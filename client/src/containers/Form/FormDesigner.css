@@ -287,6 +287,22 @@
 	margin-left: 10px;
 }
 
+#modal-edit-view ul.tabs {
+	background: unset;
+}
+
+#modal-edit-view div.active {
+	background: unset;
+}
+
+#modal-edit-form {
+	top: 20% !important;
+	width: 100vw !important;
+	height: 100vh !important;
+	max-height: unset !important;
+	bottom: 0;
+}
+
 #modal-choose-source-default-value {
 	overflow-y: visible;
 }

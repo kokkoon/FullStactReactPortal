@@ -322,13 +322,7 @@ class DesignForm extends Component {
 	}
 
 	handleCancel = () => {
-		this.redirectToFormDesigner()
-	}
-
-	redirectToFormDesigner = () => {
-		const { location } = this.props
-		const { id } = queryString.parse(location.search)
-		this.props.history.push(`/form-designer?id=${id}`)
+		helper.openCloseModal('modal-edit-form', 'close')
 	}
 
 	handleOpenModalFormStyle = () => {

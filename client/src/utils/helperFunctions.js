@@ -1,5 +1,6 @@
 import axios from 'axios'
 import API_URL from './api_url'
+import M from 'materialize-css/dist/js/materialize.min.js'
 
 // check whether a string is empty or only contain whitespaces
 export function isEmptyString (string) {
@@ -280,4 +281,12 @@ export function computeValueByFormula (properties, formData) {
   })
 
   return newFormData
+}
+
+// open and close materialize css modal with input id
+export function openCloseModal (id, action) {
+  let modal = document.getElementById(id)
+  let instance = M.Modal.getInstance(modal)
+  if (action === 'open') instance.open()
+  else if (action === 'close') instance.close()
 }

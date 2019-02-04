@@ -10,6 +10,7 @@ import * as helper from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
 import './FormDesigner.css'
+import DesignForm from './DesignForm'
 
 class FormDesigner extends Component {
 	constructor(props) {
@@ -90,9 +91,12 @@ class FormDesigner extends Component {
 					    <span className="waves-effect waves-light btn" onClick={this.openModalEditView}>
 					    	Edit View
 					    </span>
-					    <Link className="waves-effect waves-light btn" to={`/design-form?id=${formId}`}>
+					    <span className="waves-effect waves-light btn" onClick={e => this.openCloseModal('modal-edit-form', 'open')}>
 					    	Edit Form
-					    </Link>
+					    </span>
+					    <span className="waves-effect waves-light btn" onClick={e => this.openCloseModal('modal-permission', 'open')}>
+					    	Permission
+					    </span>
 			    	</Fragment>
 			    )
 				}
@@ -169,6 +173,8 @@ class FormDesigner extends Component {
       	{ this.renderCardAddNewField() }
         { this.renderModalFormEvent() }
         { this.renderModalEditView() }
+        { this.renderModalEditForm() }
+        { this.renderModalPermission() }
         { this.renderModalChooseSourceDefaultValue() }
       </div>
 		)
@@ -638,17 +644,46 @@ class FormDesigner extends Component {
 			<div id="modal-edit-view" className="modal">
       	<div className="modal-content">
       		<h5 className="center title"><strong>Edit view</strong></h5>
-      		<textarea 
-      			id="textarea-edit-view" 
-      			value={viewConfigString}
-      			onChange={this.changeViewConfig}/>
-      		<div className="btn-footer-modal">
-	      		<span className="waves-effect waves-light btn" onClick={this.setDefaultTableView}>Default</span>
-	      		<span className="waves-effect waves-light btn" onClick={this.closeModalEditView}>Cancel</span>
-	      		<span className="waves-effect waves-light btn" onClick={this.saveTableView}>Save</span>
-      		</div>
+      		<ul class="tabs">
+		        <li class="tab col s3"><a href="#view-config">View config</a></li>
+		        <li class="tab col s3"><a href="#view-designer">View designer</a></li>
+		      </ul>
+		      <div id="view-config">
+	      		<textarea 
+	      			id="textarea-edit-view" 
+	      			value={viewConfigString}
+	      			onChange={this.changeViewConfig}/>
+	      		<div className="btn-footer-modal">
+		      		<span className="waves-effect waves-light btn" onClick={this.setDefaultTableView}>Default</span>
+		      		<span className="waves-effect waves-light btn" onClick={this.closeModalEditView}>Cancel</span>
+		      		<span className="waves-effect waves-light btn" onClick={this.saveTableView}>Save</span>
+	      		</div>
+	      	</div>
+	      	<div id="view-designer">
+	      		<p>view designer page</p>
+	      	</div>
       	</div>
       </div>
+		)
+	}
+
+	renderModalEditForm () {
+		return (
+			<div className="modal" id="modal-edit-form">
+				<div className="modal-content zero-padding">
+					<DesignForm location={this.props.location} />
+				</div>
+			</div>
+		)
+	}
+
+	renderModalPermission () {
+		return (
+			<div className="modal" id="modal-permission">
+				<div className="modal-content">
+					<h5 className="center">Set permission (coming soon)</h5>
+				</div>
+			</div>
 		)
 	}
 
@@ -2001,6 +2036,13 @@ class FormDesigner extends Component {
 		.catch(error => console.error(error))
 
 		this.setState({ viewConfig })
+	}
+
+	openCloseModal (id, action) {
+		let modal = document.getElementById(id)
+		let instance = M.Modal.getInstance(modal)
+		if (action === 'open') instance.open()
+		else if (action === 'close') instance.close()
 	}
 }
 
