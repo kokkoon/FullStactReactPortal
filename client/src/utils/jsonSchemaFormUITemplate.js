@@ -62,15 +62,18 @@ export const arrayFieldTemplate = (props) => {
       	})
       }
       <div className="row total-amount-container">
-	      <div className="col s11">
-	      	<span className="col s3 left right-align">Sum column :</span>
-	      	<input type="text" id="sum-column-name" className="col s3 left" onChange={e => handleChangeSumColumnName(e, props)}/>
-					<span id="total-amount-array-items" className="col s3 right total-amount-cell"></span>
-					<span className="col s3 right total-amount-cell">Total</span>
-	    	</div>
+	      {
+	      	props.schema.showTotalCell &&
+		      <div className="col s11">
+		      	<span className="col s3 left right-align">Sum column :</span>
+		      	<input type="text" id="sum-column-name" className="col s3 left" onChange={e => handleChangeSumColumnName(e, props)}/>
+						<span id="total-amount-array-items" className="col s3 right total-amount-cell"></span>
+						<span className="col s3 right total-amount-cell">Total</span>
+		    	</div>
+	      }
 	      {
 	      	props.canAdd && 
-	      	<div className="col s1">
+	      	<div className="col s1 right">
 		      	<span 
 		      		className="waves-effect waves-light btn btn-floating red right" 
 		      		onClick={e => handleClickAdd(e, props)}
