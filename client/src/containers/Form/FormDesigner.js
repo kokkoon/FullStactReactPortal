@@ -68,7 +68,6 @@ class FormDesigner extends Component {
 			isAllowAttachment,
 			collectionName,
 			formStructure, 
-			collectionId,
 			formId,
 			input
 		} = this.state
@@ -101,20 +100,33 @@ class FormDesigner extends Component {
 			    )
 				}
 				</div>
-				<div className="col s12 first-row-container collection-details">
-					<span className="collection-name-label">
-						<span className="collection-detail-label">Collection display name</span> : 
-					</span>
-					<div className="input-field inline collection-name-input">
-						<input id="collection_display_name" type="text" value={inputCollectionName} onChange={event => this.handleInputChange('collection_name', event)}/>
-					</div>
-					<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
-						 disabled={helper.isEmptyString(inputCollectionName) || !hasCollectionNameChanged}
-						 data-position="right"
-						 data-tooltip="Check collection name"
-        		 onClick={this.handleCheckCollectionName}>
-			    	Check
-			    </span>
+				<div className="row first-row-container collection-details">
+					<div className="col s8 zero-padding">
+						<span className="collection-name-label">
+							<span className="collection-detail-label">Collection display name</span> : 
+						</span>
+						<div className="input-field inline collection-name-input">
+							<input id="collection_display_name" type="text" value={inputCollectionName} onChange={event => this.handleInputChange('collection_name', event)}/>
+						</div>
+						<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
+							 disabled={helper.isEmptyString(inputCollectionName) || !hasCollectionNameChanged}
+							 data-position="right"
+							 data-tooltip="Check collection name"
+	        		 onClick={this.handleCheckCollectionName}>
+				    	Check
+				    </span>
+				  </div>
+			    {
+			    	formId &&
+				    <div className="col s4 zero-padding collection-name-container right-align">
+				    	<div className="collection-name">
+								<span className="collection-name-label">
+									<span className="collection-detail-label collection-detail-collection-label">Collection name</span> : 
+								</span>
+								{collectionName}
+				    	</div>
+				    </div>
+			    }
 			    {
 			    	!formId &&
 			    	(
@@ -132,19 +144,6 @@ class FormDesigner extends Component {
 						<input id="collection_description" type="text" value={collectionDescription} onChange={event => this.handleInputChange('collection_description', event)}/>
 					</div>
 		    </div>
-		    {
-		    	formId &&
-		    	<Fragment>
-				    <div className="col s12 collection-details">
-							<span className="collection-name-label">
-								<span className="collection-detail-label">Collection name</span> : </span>{collectionName}
-				    </div>
-				    <div className="col s12 collection-details">
-							<span className="collection-name-label"> 
-								<span className="collection-detail-label">Collection id</span> : </span>{collectionId}
-				    </div>
-		    	</Fragment>
-		    }
 		    { this.renderTableFormFields() }
         <div className="row btn-submit-container">
         	<span className="left allow-attachment-container">
@@ -822,7 +821,6 @@ class FormDesigner extends Component {
 				let { input } = this.state
 				const { 
 					formId, 
-					collectionId,
 					collectionName,
 					collectionDisplayName,
 					collectionDescription,
@@ -853,7 +851,6 @@ class FormDesigner extends Component {
 
 				this.setState({
 					formId,
-					collectionId,
 					collectionName,
 					collectionDisplayName,
 					formStructure,

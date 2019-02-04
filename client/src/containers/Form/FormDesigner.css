@@ -21,7 +21,7 @@
 }
 
 .collection-description {
-	width: 40vw !important;
+	width: 65vw !important;
 }
 
 .collection-name-input > input {
@@ -44,6 +44,11 @@
 .first-row-container {
 	position: relative;
 	margin-top: 1rem;
+	margin-bottom: 0;
+}
+
+.collection-name-container {
+	margin-top: 7px;
 }
 
 .collection-details .input-field {
@@ -51,8 +56,13 @@
 }
 
 .collection-detail-label {
+	text-align: left;
 	display: inline-block;
-	width: 200px;
+	width: 170px;
+}
+
+.collection-detail-collection-label {
+	width: 120px;
 }
 
 .btn-collection-templates {
