@@ -19,7 +19,7 @@ module.exports = (app) => {
 
           return { 
     				name: collectionName,
-    				route: r.route,
+            route: `/collection?id=${r._id}`,
     				icon: r.icon,
     				text: collectionName
     			}

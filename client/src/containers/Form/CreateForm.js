@@ -8,10 +8,10 @@ import queryString from 'query-string'
 import * as helper from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
-import './FormDesigner.css'
+import './CreateForm.css'
 import DesignForm from './DesignForm'
 
-class FormDesigner extends Component {
+class CreateForm extends Component {
 	constructor(props) {
 		super(props);
 
@@ -2055,7 +2055,7 @@ class FormDesigner extends Component {
 	}
 }
 
-FormDesigner.defaultProps = {
+CreateForm.defaultProps = {
 	documentFieldsTableHeader: [ 'Name', 'Data Type', 'Default Value', 'Action' ],
 }
 
@@ -2112,4 +2112,4 @@ const mapDispatchToProps = (dispatch) => ({
 	setDummyManagerAndDepartment: () => dispatch(ACT.setDummyManagerAndDepartment())
 })
 
-export default connect(mapStateToProps, mapDispatchToProps) (FormDesigner)
+export default connect(mapStateToProps, mapDispatchToProps) (CreateForm)
