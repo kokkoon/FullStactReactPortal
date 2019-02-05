@@ -26,6 +26,7 @@ class Sidenav extends Component {
 			groupLinks = initialSidenavConfig.groupLinks
 		}
 
+		// hide sidenav setup link for user with role_id < 3
 		if (user.role_id < 3) {
 			groupLinks = groupLinks.map(groupLink => {
 				if (groupLink.header === 'Setup') {
