@@ -8,16 +8,15 @@
 
 .form-designer #form-control {
 	height: 90vh;
-	border-right: 2px dashed #9e9e9e;
 }
 
 .form-designer #form-canvas {
-	height: 90vh;
+	height: 88vh;
+	border: 2px dashed #9e9e9e;
 }
 
 .form-designer #control-properties {
 	height: 90vh;
-	border-left: 2px dashed #9e9e9e;
 }
 
 .form-designer #form-control .control-item {
