@@ -11,9 +11,9 @@ import customFields from '../../utils/RJSFCustomFields'
 import * as helper from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
-import './DesignForm.css'
+import './FormSchemaDesign.css'
 
-class DesignForm extends Component {
+class FormSchemaDesign extends Component {
 	constructor(props) {
 		super(props)
 
@@ -50,7 +50,7 @@ class DesignForm extends Component {
 		} = this.state
 
 	  return (
-			<div className="row design-form-page">
+			<div className="row form-schema-design">
 				<div className="col s6 title left-align">
 					<h5 className="zero-margin">Design {collectionName} form</h5>
 				</div>
@@ -94,7 +94,7 @@ class DesignForm extends Component {
 				</div>
 				<div className="col s6">
 					<div id="form-preview">
-			  		<div className={`design-form-page-json-form ${formStyleTheme}`}>
+			  		<div className={`form-schema-design-json-form ${formStyleTheme}`}>
 							<Form 
 								uiSchema={uiSchema}
 								fields={customFields}
@@ -171,7 +171,7 @@ class DesignForm extends Component {
 
 	loadData() {
 		const { location } = this.props
-		const formId = location.search.slice(4)
+		const formId = queryString.parse(location.search).id
 
 		axios.get(`${API_URL}/form?id=${formId}`)
 			.then(res => {
@@ -376,4 +376,4 @@ const mapDispatchToProps = (dispatch) => ({
 	setDummyManagerAndDepartment: () => dispatch(ACT.setDummyManagerAndDepartment())
 })
 
-export default connect(mapStateToProps, mapDispatchToProps) (DesignForm)
+export default connect(mapStateToProps, mapDispatchToProps) (FormSchemaDesign)

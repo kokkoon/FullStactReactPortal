@@ -20,7 +20,7 @@ class CollectionList extends Component {
 		return (
 			<div className="collection-list">
 			<h3>Collection List</h3>
-				<Link to="/form-designer?id=new">
+				<Link to="/create-form?id=new">
 					<div className="collection-card">
 						<span className="collection-name">
 							New collection

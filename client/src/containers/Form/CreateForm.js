@@ -5,11 +5,12 @@ import M from 'materialize-css/dist/js/materialize.min.js'
 import { isEmpty } from 'lodash'
 import queryString from 'query-string'
 
+import FormSchemaDesign from './FormSchemaDesign'
+import FormDesigner from './FormDesigner'
 import * as helper from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
 import './CreateForm.css'
-import DesignForm from './DesignForm'
 
 class CreateForm extends Component {
 	constructor(props) {
@@ -77,7 +78,7 @@ class CreateForm extends Component {
 		// console.log('viewConfig = ', this.state.viewConfig)
 
 		return (
-			<div className="form-designer">
+			<div className="create-form-page">
 				<h4 className="center">{formId ? `Edit ${collectionDisplayName} collection` : 'Create new collection'}</h4>
 				<div className="col s12 btn-form">
 				{
@@ -667,6 +668,8 @@ class CreateForm extends Component {
 	}
 
 	renderModalEditForm () {
+		const { location } = this.props
+
 		return (
 			<div className="modal" id="modal-edit-form">
 				<div className="modal-content zero-padding">
@@ -675,10 +678,10 @@ class CreateForm extends Component {
 		        <li className="tab col s3"><a href="#form-designer">Designer view</a></li>
 		      </ul>
 		      <div id="json-schema">
-						<DesignForm location={this.props.location} />
+						<FormSchemaDesign location={location} />
 		      </div>
 		      <div id="form-designer">
-		      	<p>form designer coming soon</p>
+		      	<FormDesigner location={location} />
 		      </div>
 				</div>
 			</div>
