@@ -30,7 +30,7 @@ module.exports = (app) => {
   })
 
   // store sidenav links configuration to database
-  app.post('/api/sidenav-links', (req, res) => {
+  app.post('/api/sidenav-config', (req, res) => {
     const sidenavCollection = db.collection('sidenav')
     const { appName, groupLinks } = req.body
 

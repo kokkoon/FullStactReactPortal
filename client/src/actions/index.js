@@ -1,4 +1,5 @@
 import axios from 'axios';
+import M from 'materialize-css/dist/js/materialize.min.js'
 
 import API_URL from '../utils/api_url'
 import * as TYPES from './types';
@@ -124,8 +125,8 @@ export const setSidenavGroupLinks = (sidenavGroupLinks) => {
 // save sidenav config in DB
 export const saveSidenavConfig = (config) => {	
 	return (dispatch) => {
-		axios.post(`${API_URL}/sidenav-links`, config)
-			.then(res => {})
+		axios.post(`${API_URL}/sidenav-config`, config)
+			.then(res => {M.toast({html: res.data.message})})
 			.catch(e => console.error(e))	
 	}
 }
