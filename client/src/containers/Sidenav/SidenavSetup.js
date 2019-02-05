@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
+import M from 'materialize-css/dist/js/materialize.min.js'
 
 import * as helper from '../../utils/helperFunctions'
 import * as ACT from '../../actions'
+import SidenavDesigner from './SidenavDesigner'
 import './SidenavSetup.css'
 
 class SidenavSetup extends Component {
@@ -26,82 +28,91 @@ class SidenavSetup extends Component {
 
 		return (
 			<div className="row sidenav-setup">
-				<div className="col s3">
-					<ul id="sidenav-preview">
-			  	{
-			  		groupLinks && 
-			  		groupLinks.map((groupLink, index) => (
-			  			<div key={index}>
-			  			{
-			  				groupLink.header.length > 0 &&
-			    			<li><span className="subheader">{groupLink.header}</span></li>
-			    		}
-			  			{
-			  				groupLink.links.map((item, i) => (
-			  					<div key={i} >
-						    		<div>
-							    		<li>
-							    			{
-							    				item.isExternal ?
-											    	<a href={item.route}>
-											    		<i className="material-icons">{item.icon}</i>
-											    		{item.text}
-											    	</a>
-											    : <Link to={item.route}>
-											    		<i className="material-icons">{item.icon}</i>
-											    		{item.text}
-											    	</Link>
-							    			}
-									    </li>
-									  </div>
-								    {
-								    	item.sublink &&
-							    		item.sublink.length > 0 && 
-							    		item.sublink.map((subitem, idx) => (
-							    			<li key={idx} className="sublink">
-										    	{
-								    				subitem.isExternal ?
-												    	<a href={subitem.route}>
-												    		<i className="material-icons">{subitem.icon}</i>
-												    		{subitem.text}
+				<ul className="tabs">
+	        <li className="tab col s3"><a href="#sidenav-config">Sidenav config</a></li>
+	        <li className="tab col s3"><a href="#sidenav-designer">Sidenav designer</a></li>
+	      </ul>
+	      <div id="sidenav-designer">
+	      	<SidenavDesigner location={this.props.location} />
+	      </div>
+	      <div id="sidenav-config">
+					<div className="col s3">
+						<ul id="sidenav-preview">
+				  	{
+				  		groupLinks && 
+				  		groupLinks.map((groupLink, index) => (
+				  			<div key={index}>
+				  			{
+				  				groupLink.header.length > 0 &&
+				    			<li><span className="subheader">{groupLink.header}</span></li>
+				    		}
+				  			{
+				  				groupLink.links.map((item, i) => (
+				  					<div key={i} >
+							    		<div>
+								    		<li>
+								    			{
+								    				item.isExternal ?
+												    	<a href={item.route}>
+												    		<i className="material-icons">{item.icon}</i>
+												    		{item.text}
 												    	</a>
-												    : <Link to={subitem.route}>
-												    		<i className="material-icons">{subitem.icon}</i>
-												    		{subitem.text}
+												    : <Link to={item.route}>
+												    		<i className="material-icons">{item.icon}</i>
+												    		{item.text}
 												    	</Link>
-										    	}
+								    			}
 										    </li>
-							    		))
-							    	}
-								  </div>
-			  				))
-			  			}
-			  			{
-			  				groupLink.dividerBottom &&
-			  				<li><div className="divider"></div></li>
-			  			}
-			  			</div>
-			  		))
-			  	}
-			  	</ul>
+										  </div>
+									    {
+									    	item.sublink &&
+								    		item.sublink.length > 0 && 
+								    		item.sublink.map((subitem, idx) => (
+								    			<li key={idx} className="sublink">
+											    	{
+									    				subitem.isExternal ?
+													    	<a href={subitem.route}>
+													    		<i className="material-icons">{subitem.icon}</i>
+													    		{subitem.text}
+													    	</a>
+													    : <Link to={subitem.route}>
+													    		<i className="material-icons">{subitem.icon}</i>
+													    		{subitem.text}
+													    	</Link>
+											    	}
+											    </li>
+								    		))
+								    	}
+									  </div>
+				  				))
+				  			}
+				  			{
+				  				groupLink.dividerBottom &&
+				  				<li><div className="divider"></div></li>
+				  			}
+				  			</div>
+				  		))
+				  	}
+				  	</ul>
+					</div>
+					<div className="col s7">
+						<div className="input-field col s12">
+		          <span className="left"><strong>Sidenav JSON config</strong></span>
+		          <textarea 
+		          	id="textarea-sidenav-json-config" 
+		          	value={JSONconfig}
+		          	onChange={this.handleChangeJSONconfig}
+		          	ref={this.textJSONconfig}
+		          	onKeyDown={event => helper.handleTabPressedOnJSONTextarea(event, this.textJSONconfig.current)} />
+		        </div>
+					</div>
+					<div className="col s2 btn-actions">
+						<span className="waves-effect waves-light btn" onClick={this.handleDefaultConfig}>Default</span>
+						<span className="waves-effect waves-light btn" onClick={this.handlePreviewConfig}>Preview</span>
+						<span className="waves-effect waves-light btn" onClick={this.handleSaveApplyConfig}>Save & Apply</span>
+					</div>
 				</div>
-				<div className="col s7">
-					<div className="input-field col s12">
-	          <span className="left"><strong>Sidenav JSON config</strong></span>
-	          <textarea 
-	          	id="textarea-sidenav-json-config" 
-	          	value={JSONconfig}
-	          	onChange={this.handleChangeJSONconfig}
-	          	ref={this.textJSONconfig}
-	          	onKeyDown={event => helper.handleTabPressedOnJSONTextarea(event, this.textJSONconfig.current)} />
-	        </div>
-				</div>
-				<div className="col s2 btn-actions">
-					<span className="waves-effect waves-light btn" onClick={this.handleDefaultConfig}>Default</span>
-					<span className="waves-effect waves-light btn" onClick={this.handlePreviewConfig}>Preview</span>
-					<span className="waves-effect waves-light btn" onClick={this.handleSaveApplyConfig}>Save & Apply</span>
-				</div>
-			</div>
+      </div>
 		)
 	}
 
@@ -111,6 +122,10 @@ class SidenavSetup extends Component {
 
 		// load sidenav config based on app name
 		loadSidenavConfig(appName)
+	}
+
+	componentDidMount() {
+		M.AutoInit()
 	}
 
 	componentDidUpdate(prevProps) {
