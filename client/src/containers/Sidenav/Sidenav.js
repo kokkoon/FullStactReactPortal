@@ -26,19 +26,10 @@ class Sidenav extends Component {
 			groupLinks = initialSidenavConfig.groupLinks
 		}
 
-		// hide sidenav setup link for user with role_id < 3
+		// hide sidenav setup section for user with role_id < 3
 		if (user.role_id < 3) {
-			groupLinks = groupLinks.map(groupLink => {
-				if (groupLink.header === 'Setup') {
-					let links = [...groupLink.links]
-					const sidenavSetupLinkIdx = links.findIndex(link => link.name === 'sidenav-setup')
-					links.splice(sidenavSetupLinkIdx, 1)
-					
-					groupLink.links = links
-				}
-
-				return groupLink
-			})
+			const setupGroupLinkIdx = groupLinks.findIndex(groupLink => groupLink.header === 'setup')
+			groupLinks.splice(setupGroupLinkIdx, 1)
 		}
 		
 		return (
