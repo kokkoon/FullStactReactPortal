@@ -1,5 +1,6 @@
 const cors = require('cors')
 const URL = require('url')
+const mongodb = require('mongodb')
 
 const mongoUtil = require( '../services/mongoUtil' );
 const db = mongoUtil.getDB();
@@ -74,6 +75,22 @@ module.exports = (app) => {
 
     const promise = new Promise((resolve, reject) => {
       collection.find({}).toArray((err, result) => {
+        resolve(result)
+      })
+    })
+
+    const result = await promise.then(res => res)
+    res.send(result)
+  })
+
+  // api for testing
+  app.patch('/api/test-change-user-role-id', async (req, res) => {
+    const url = URL.parse(req.url, true)
+    const { id, role_id } = url.query
+    const collection = db.collection('users')
+
+    const promise = new Promise((resolve, reject) => {
+      collection.updateOne({_id: mongodb.ObjectID(id)}, {$set: {role_id: Number(role_id)}}, (err, result) => {
         resolve(result)
       })
     })
