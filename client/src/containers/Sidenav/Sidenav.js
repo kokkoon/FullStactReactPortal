@@ -25,6 +25,20 @@ class Sidenav extends Component {
 		if (!groupLinks || isEmpty(groupLinks)) {
 			groupLinks = initialSidenavConfig.groupLinks
 		}
+
+		if (user.role_id < 3) {
+			groupLinks = groupLinks.map(groupLink => {
+				if (groupLink.header === 'Setup') {
+					let links = [...groupLink.links]
+					const sidenavSetupLinkIdx = links.findIndex(link => link.name === 'sidenav-setup')
+					links.splice(sidenavSetupLinkIdx, 1)
+					
+					groupLink.links = links
+				}
+
+				return groupLink
+			})
+		}
 		
 		return (
 			<Fragment>
