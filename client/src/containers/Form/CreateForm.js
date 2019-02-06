@@ -10,6 +10,7 @@ import FormDesigner from './FormDesigner'
 import * as helper from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
+import { editViewHelpText, editViewJSONExample_string, linkToIconNameReference } from './editViewHelpText'
 import './CreateForm.css'
 
 class CreateForm extends Component {
@@ -643,16 +644,32 @@ class CreateForm extends Component {
 		return (
 			<div id="modal-edit-view" className="modal">
       	<div className="modal-content">
-      		<h5 className="center title"><strong>Edit view</strong></h5>
       		<ul className="tabs">
 		        <li className="tab col s3"><a href="#view-config">View config</a></li>
 		        <li className="tab col s3"><a href="#view-designer">View designer</a></li>
 		      </ul>
 		      <div id="view-config">
-	      		<textarea 
-	      			id="textarea-edit-view" 
-	      			value={viewConfigString}
-	      			onChange={this.changeViewConfig}/>
+		     		<div className="row">
+		     			<div className="col s6 zero-padding">
+		     				<textarea id="textarea-edit-view" 
+			      			value={viewConfigString}
+			      			onChange={this.changeViewConfig} 
+			      		/>
+		     			</div>
+		     			<div className="col s6" style={{ paddingRight: '0' }}>
+		     				<div className="edit-view-help-text">
+			     				{
+			     					editViewHelpText.split('\n').map((sentence, index) =>
+			     						<p style={{marginTop: '0', fontWeight: index === 0 ? 'bold' : ''}}>{sentence}</p>
+			     					)
+			     				}
+			     				{
+			     					<p>*check the icon names reference <a href={linkToIconNameReference} target="_blank">here</a></p>
+			     				}
+			     				<pre>{editViewJSONExample_string}</pre>
+		     				</div>
+		     			</div>
+		     		</div>
 	      		<div className="btn-footer-modal">
 		      		<span className="waves-effect waves-light btn" onClick={this.setDefaultTableView}>Default</span>
 		      		<span className="waves-effect waves-light btn" onClick={this.closeModalEditView}>Cancel</span>

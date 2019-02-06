@@ -266,20 +266,26 @@
 }
 
 #modal-edit-view {
-	max-height: 80vh !important;
+	max-height: 85vh !important;
+	width: 65vw;
 }
 
 #modal-edit-view .modal-content {
-	padding: 24px 50px 24px 50px;
+	padding: 8px 24px 24px 24px;
 }
 
 #modal-edit-view .modal-content #textarea-edit-view {
-	min-height: 200px;
-	resize: vertical;
+	min-height: 400px;
+	resize: none;
 	background-color: #37474f;
 	color: #ffd54f;
 	width: 100%;
 	font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
+}
+
+#modal-edit-view .modal-content .edit-view-help-text {
+	max-height: 400px;
+	overflow: auto;
 }
 
 #modal-edit-view .title {
