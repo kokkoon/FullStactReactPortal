@@ -664,7 +664,7 @@ class CreateForm extends Component {
 		     				<div className="edit-view-help-text">
 			     				{
 			     					editViewHelpText.split('\n').map((sentence, index) =>
-			     						<p style={{margin: '0 0 5px 0', fontWeight: index === 0 ? 'bold' : ''}}>{sentence}</p>
+			     						<p className="text-hint" style={{fontWeight: index === 0 ? 'bold' : ''}}>{sentence}</p>
 			     					)
 			     				}
 			     				{

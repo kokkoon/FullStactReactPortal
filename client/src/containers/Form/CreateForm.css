@@ -287,6 +287,10 @@
 	overflow: auto;
 }
 
+#modal-edit-view .modal-content .edit-view-help-text .text-hint {
+	margin: 0 0 5px 0;
+}
+
 #modal-edit-view .title {
 	margin-top: 0;
 	margin-bottom: 20px;
