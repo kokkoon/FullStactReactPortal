@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import Payments from './Payments'
 import Sidenav from '../Sidenav/Sidenav'
+import Apps from './Apps'
 import UserMenu from './UserMenu'
 import * as ACT from '../../actions'
 
@@ -45,13 +46,14 @@ class Topnav extends Component {
               item={dropdown_menu_item} 
             />
           }
-          {this.renderContent()}
+          { this.renderMenuItem() }
+          <Apps />
         </div>
       </nav>
     )
   }
 
-  renderContent() {
+  renderMenuItem() {
     const { selectedItem } = this.state
 
     switch (this.props.user.isLoggedIn) {
@@ -61,12 +63,12 @@ class Topnav extends Component {
         return ( 
           <ul className="right">
             <li>
-              <Link 
-                className={selectedItem === 'dashboard' ? "selected" : ""} 
-                to="/dashboard" 
-                onClick={this.handleClickDashboard}>
-                Dashboard
-              </Link>
+              <span 
+                className={`dropdown-trigger ${selectedItem === 'apps' ? "selected" : ""}`}
+                data-target="dropdown-apps"
+                onClick={this.handleClickApps}>
+                Apps
+              </span>
             </li>
             <li>
               <Link 
@@ -83,9 +85,9 @@ class Topnav extends Component {
     }
   }
 
-  handleClickDashboard = () => {
+  handleClickApps = () => {
     this.setSidenavUser()
-    this.setState({ selectedItem: 'dashboard' })
+    this.setState({ selectedItem: 'apps' })
   }
 
   handleClickAdmin = () => {
@@ -104,15 +106,11 @@ class Topnav extends Component {
   }
 }
 
-const mapStateToProps = ({ user }) => {
-  return { user }
-}
+const mapStateToProps = ({ user }) => ({ user })
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setApp: (appName) => dispatch(ACT.setApp(appName)),
-    loadSidenavConfig: (appName) => dispatch(ACT.loadSidenavConfig(appName))
-  }
-}
+const mapDispatchToProps = (dispatch) => ({
+  setApp: (appName) => dispatch(ACT.setApp(appName)),
+  loadSidenavConfig: (appName) => dispatch(ACT.loadSidenavConfig(appName))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps) (Topnav);
