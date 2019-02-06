@@ -1,5 +1,10 @@
 module.exports = [
 	{
+		name: 'Dashboard',
+		link: '/dashboard',
+		icon: 'dashboard'
+	},
+	{
 		name: 'HR',
 		link: '/hr',
 		icon: 'account_balance'
@@ -13,11 +18,6 @@ module.exports = [
 		name: 'IT',
 		link: '/it',
 		icon: 'ac_unit'
-	},
-	{
-		name: 'Item 4',
-		link: '/item-4',
-		icon: 'access_alarm'
 	},
 	{
 		name: 'Item 5',

@@ -1,21 +1,22 @@
 #dropdown-apps {
 	top: 64px !important;
 	width: 240px !important;
+	padding: 12px 8px;
 }
 
 #dropdown-apps > span {
 	width: 33.33%;
 	float: left;
-	
 	text-align: center;
 	padding: 0 !important;
 }
 
 #dropdown-apps li a {
 	text-align: center;
-	position: relative;
+	font-size: 12px;
+	padding: 8px;
 }
 
 #dropdown-apps li a i {
-	margin: 0 12px;
+	width: 100%;
 }
