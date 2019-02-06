@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import M from 'materialize-css/dist/js/materialize.min.js'
 import { isEmpty } from 'lodash'
@@ -86,6 +87,9 @@ class CreateForm extends Component {
 					formId &&
 					(
 						<Fragment>
+							<Link className="waves-effect waves-light btn" to='/collection-list'>
+					    	Cancel
+					    </Link>
 							<span className="waves-effect waves-light btn" onClick={this.openModalFormEvent}>
 					    	Events
 					    </span>
