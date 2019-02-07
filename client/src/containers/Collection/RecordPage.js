@@ -1,12 +1,18 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import lodash from 'lodash'
 import queryString from 'query-string'
 import Form from 'react-jsonschema-form'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
 import API_URL from '../../utils/api_url'
-import { getDataFromStringPattern } from '../../utils/helperFunctions'
+import { 
+	getDataFromStringPattern, 
+	dataURLtoBlob, 
+	replaceUndefinedValueWithEmptyString 
+} from '../../utils/helperFunctions'
 import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
+import ModalUploadProgress from './components/ModalUploadProgress'
 import './RecordPage.css'
 
 class RecordPage extends Component {
@@ -16,7 +22,10 @@ class RecordPage extends Component {
 		this.state = {
 			formStructure: { title: 'Form', type: "object", properties: {} },
 			uiSchema: {},
-			formData: {}
+			formData: {},
+			clientUploadProgress: 0,
+			totalSize: 0,
+			second: 0
 		}
 	}
 
@@ -24,7 +33,8 @@ class RecordPage extends Component {
 		const { 
 			formStructure,
 			uiSchema,
-			formData
+			formData,
+			clientUploadProgress
 		} = this.state
 
 		return (
@@ -44,6 +54,10 @@ class RecordPage extends Component {
 		        	onError={this.log("errors")} />
 		      </div>
 	      </div>
+
+	      <ModalUploadProgress 
+	      	countUploadProgress={this.countUploadProgress} 
+	      	clientUploadProgress={clientUploadProgress} />
 			</div>
 		)
 	}
@@ -103,9 +117,10 @@ class RecordPage extends Component {
 
 		axios.get(`${API_URL}/record?id=${formId}&record_id=${recordId}`)
 			.then(res => {
-				this.setState({
-					formData: res.data
-				})
+				let formData = res.data
+				if (formData.file === '') delete formData.file
+
+				this.setState({ formData })
 			})
 			.catch(e => console.error(e))
 	}
@@ -127,7 +142,7 @@ class RecordPage extends Component {
 					const category = dataPath[1]
 					const field = dataPath[2]
 					const recordId = dataPath[3]
-					
+
 					if (categoryGroup === 'collection' && field === 'key') {
 						let enum_array = []
 
@@ -286,7 +301,66 @@ class RecordPage extends Component {
 	}
 
 	onSubmit = ({ formData }) => {
-		this.submitFormFields(formData)
+		if (formData.file) {
+			const { file } = formData
+			const nameStartIdx = file.indexOf(';name=') + 6
+			const nameEndIdx = file.indexOf(';base64,')
+			const filename = file.slice(nameStartIdx, nameEndIdx)
+
+			const sBoundary = "---------------------------" + Date.now().toString(16)
+
+			const formFile = new FormData()
+			formFile.append("file", dataURLtoBlob(file), filename)
+
+			// open progress modal
+	    let modal = document.getElementById('modal-upload-progress')
+    	M.Modal.getInstance(modal).open()
+
+    	this.timer = setInterval(() => {
+    		this.setState({ second: this.state.second + 1 })
+    	}, 1000)
+
+			// upload attachment file
+			const config = {
+				headers: {'content-type': `multipart/form-data; boundary=${sBoundary}`},
+	    	onUploadProgress: progressEvent => {
+	    		const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        	this.setState({ 
+        		totalSize: progressEvent.total,
+        		clientUploadProgress: progress
+        	})
+	    	}
+			}
+
+			axios.post(`${API_URL}/upload`, formFile, config)
+				.then(res => {
+					const { filename, fileId, contentType, size, message } = res.data
+
+					// close progress modal
+			    let modal = document.getElementById('modal-upload-progress')
+			    M.Modal.getInstance(modal).close()
+
+					M.toast({ html: message })
+					
+					// submit form data fields
+					let formFields = lodash.omit(formData, ['file'])
+					formFields = {...formFields, filename, fileId, contentType, size}
+					this.submitFormFields(formFields)
+				})
+				.catch(err => console.log(err))
+		} else {
+			let newFormData = replaceUndefinedValueWithEmptyString(formData)
+			if (newFormData.file === '' && newFormData.filename) delete newFormData.file
+			this.submitFormFields(newFormData)
+		}
+	}
+
+	countUploadProgress = () => {
+		const { totalSize, second } = this.state
+
+		// used 125000bytes/second as average upload speed
+		const progress = Math.round((125000 * second) / totalSize * 100)
+		return progress < 100 ? progress : 100
 	}
 
 	submitFormFields (formFields) {

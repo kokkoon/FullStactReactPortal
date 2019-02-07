@@ -290,3 +290,19 @@ export function openCloseModal (id, action) {
   if (action === 'open') instance.open()
   else if (action === 'close') instance.close()
 }
+
+// replace undefined object values with empty string
+export function replaceUndefinedValueWithEmptyString (object) {
+    return Object.keys(object).reduce((obj, key) => {
+      let value = ''
+
+      if (object[key] !== undefined) {
+        value = object[key]
+      }
+
+      return {
+        ...obj,
+        [key] : value
+      }
+    }, {})
+  }

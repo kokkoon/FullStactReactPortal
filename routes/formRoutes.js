@@ -51,7 +51,12 @@ module.exports = (app) => {
     }
     updatedData = lodash.omit(updatedData, ['_id'])
 
-    collection.updateOne({ _id: mongodb.ObjectID(record_id) }, {$set: updatedData}, (err, obj) => {
+    let operation = { $set: updatedData }
+    if (updatedData.file == null) {
+      operation = { ...operation, $unset: { file: '' } }
+    }
+
+    collection.updateOne({ _id: mongodb.ObjectID(record_id) }, operation, (err, obj) => {
       if (err) {
         res.send({ success: false, message: `fail to update record ${record_id}` })
       } else {

@@ -10,11 +10,13 @@ import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
 import { 
 	dataURLtoBlob, 
 	replaceDefaultValueStringPatternWithData,
-	computeValueByFormula
+	computeValueByFormula,
+	replaceUndefinedValueWithEmptyString
 } from '../../utils/helperFunctions'
 import customFields from '../../utils/RJSFCustomFields'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
+import ModalUploadProgress from './components/ModalUploadProgress'
 import './DataInput.css'
 
 class DataInput extends Component {
@@ -56,16 +58,9 @@ class DataInput extends Component {
 	        	onError={this.log("errors")} />
 	      </div>
 
-	      <div id="modal-upload-progress" className="modal">
-          <div className="modal-content center">
-            <h4>Upload progress</h4>
-            <p>Uploading: {this.countUploadProgress()}%</p>
-            {
-            	clientUploadProgress === 100 &&
-            	<p>Please wait a moment until upload process to database completed in server side and this modal will close automatically</p>
-            }
-          </div>
-        </div>
+	      <ModalUploadProgress 
+	      	countUploadProgress={this.countUploadProgress} 
+	      	clientUploadProgress={clientUploadProgress} />
 			</div>
 		)
 	}
@@ -212,24 +207,9 @@ class DataInput extends Component {
 				})
 				.catch(err => console.log(err))
 		} else {
-			const newFormData = this.replaceUndefinedValueWithEmptyString(formData)
+			const newFormData = replaceUndefinedValueWithEmptyString(formData)
 			this.submitFormFields(newFormData)
 		}
-	}
-
-	replaceUndefinedValueWithEmptyString (object) {
-		return Object.keys(object).reduce((obj, key) => {
-			let value = ''
-
-			if (object[key] !== undefined) {
-				value = object[key]
-			}
-
-			return {
-				...obj,
-				[key] : value
-			}
-		}, {})
 	}
 
 	submitFormFields (formFields) {
