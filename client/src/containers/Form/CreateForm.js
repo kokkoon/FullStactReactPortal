@@ -188,6 +188,10 @@ class CreateForm extends Component {
 			    </span>
         </div>
       	{ this.renderCardAddNewField() }
+        { this.renderModalChooseSourceDefaultValue() }
+      	<ModalChooseTemplate 
+        	handleClickOKChooseTemplate={this.handleClickOKChooseTemplate}
+        />
         { formId && this.renderModalFormEvent() }
         { formId && this.renderModalEditView() }
         { formId && this.renderModalEditForm() }
@@ -201,10 +205,6 @@ class CreateForm extends Component {
 	        	formId={formId}
 	        />
 	      }
-        <ModalChooseTemplate 
-        	handleClickOKChooseTemplate={this.handleClickOKChooseTemplate}
-        />
-        { this.renderModalChooseSourceDefaultValue() }
       </div>
 		)
 	}
@@ -764,6 +764,7 @@ class CreateForm extends Component {
 	      		<div className="col s3">
 							<div className="input-field">
 						    <select 
+						    	className="browser-default"
 						    	value={defaultValueSourceCategoryGroup}
 						    	onChange={this.handleChangeDefaultValueSourceCategoryGroup}
 						    >
