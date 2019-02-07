@@ -11,7 +11,7 @@ class ModalSaveTemplate extends Component {
 		super(props)
 
 		this.state = {
-			templateName: '',
+			templateName: props.collectionDisplayName,
 			isTemplateNameOK: false
 		}
 	}
@@ -55,13 +55,6 @@ class ModalSaveTemplate extends Component {
 				</div>
 			</div>
 		)
-	}
-
-	componentDidUpdate (prevProps) {
-		const { collectionDisplayName } = this.props
-		if (prevProps.collectionDisplayName !== collectionDisplayName) {
-			this.setState({ templateName: collectionDisplayName })
-		}
 	}
 
 	handleChangeTemplateName = ({ target }) => {
