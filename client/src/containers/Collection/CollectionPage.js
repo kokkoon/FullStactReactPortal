@@ -36,9 +36,6 @@ export default class CollectionPage extends Component {
       <div className="collection-page center">
         <div className="row">
         	<h5 className="collection-title">/ {collectionName}</h5>
-          <span className="download-progress">
-
-          </span>
           <span className="button-new">
             <Link className="waves-effect waves-light btn" to={`/data-input?id=${id}`}>New</Link>
           </span>
