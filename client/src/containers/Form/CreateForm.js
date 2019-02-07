@@ -9,6 +9,7 @@ import queryString from 'query-string'
 import FormSchemaDesign from './FormSchemaDesign'
 import FormDesigner from './FormDesigner'
 import ModalSaveTemplate from './components/ModalSaveTemplate'
+import ModalChooseTemplate from './components/ModalChooseTemplate'
 import { stringifyPrettyJSON, isEmptyString, openCloseModal } from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
@@ -146,7 +147,8 @@ class CreateForm extends Component {
 			    {
 			    	!formId &&
 			    	(
-			    		<span className="waves-effect waves-light btn btn-collection-templates">
+			    		<span className="waves-effect waves-light btn btn-collection-templates"
+			    			onClick={this.handleClickCollectionTemplates}>
 					    	Collection Templates
 					    </span>
 					  )
@@ -196,6 +198,9 @@ class CreateForm extends Component {
         	formStructure={formStructure}
         	fields={fields}
         	formId={formId}
+        />
+        <ModalChooseTemplate 
+        	handleClickOKChooseTemplate={this.handleClickOKChooseTemplate}
         />
         { this.renderModalChooseSourceDefaultValue() }
       </div>
@@ -2090,6 +2095,20 @@ class CreateForm extends Component {
 
 	handleClickSaveAsTemplate = () => {
 		openCloseModal('modal-save-template', 'open')
+	}
+
+	handleClickCollectionTemplates = () => {
+		openCloseModal('modal-choose-template', 'open')
+	}
+
+	handleClickOKChooseTemplate = (templateName) => {
+		axios.get(`${API_URL}/template?name=${templateName}`)
+			.then(res => {
+				const { formStructure, fields } = res.data
+				
+				this.setState({ formStructure, fields })
+				openCloseModal('modal-choose-template', 'close')
+			})
 	}
 }
 

@@ -3,7 +3,7 @@ import axios from 'axios'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
 import API_URL from '../../../utils/api_url'
-import { isEmptyString } from '../../../utils/helperFunctions'
+import { isEmptyString, openCloseModal } from '../../../utils/helperFunctions'
 import './ModalSaveTemplate.css'
 
 class ModalSaveTemplate extends Component {
@@ -123,6 +123,7 @@ class ModalSaveTemplate extends Component {
 				const { message } = res.data
 				
 				M.toast({ html: message })
+				openCloseModal('modal-save-template', 'close')
 			})
 	}
 }

@@ -440,4 +440,30 @@ module.exports = (app) => {
       }
     })
   })
+
+  // retrieve all templates from template collection
+  app.get('/api/templates', (req, res) => {
+    const collection = db.collection('template')
+
+    collection.find({}).toArray((err, templates) => {
+      if (!err) {
+        res.send({ templates })
+      }
+    })
+  })
+
+  // retrieve a template by name from template collection
+  app.get('/api/template', (req, res) => {
+    const collection = db.collection('template')
+    const url = URL.parse(req.url, true)
+    const name = url.query.name.toLowerCase()
+
+    collection.findOne({name}, (err, template) => {
+      if (!err && template != null) {
+        res.send(template)
+      } else {
+        res.statusCode(404).send({ message: 'template not found'})
+      }
+    })
+  })
 }
