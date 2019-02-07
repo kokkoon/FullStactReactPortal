@@ -87,7 +87,7 @@ export default class CollectionPage extends Component {
                       {
                         r.filename &&
                         r.contentType &&
-                        column.indexOf('attachment') > -1 &&
+                        column.indexOf('file') > -1 &&
                         <td>
                           <span
                             className="download-link"

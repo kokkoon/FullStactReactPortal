@@ -184,7 +184,7 @@ module.exports = (app) => {
       if (isAllowAttachment) {
         tableViewConfig = {
           ...tableViewConfig,
-          attachment: {
+          file: {
             displayName: "Attachment",
             order: lastOrder + 1,
             showInTable: true
@@ -207,7 +207,7 @@ module.exports = (app) => {
 
         tableViewConfig = {
           ...tableViewConfig,
-          attachment: {
+          file: {
             displayName: "Attachment",
             order: lastOrder + 1,
             showInTable: true
