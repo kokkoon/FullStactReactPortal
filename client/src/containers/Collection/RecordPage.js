@@ -8,8 +8,7 @@ import M from 'materialize-css/dist/js/materialize.min.js'
 import API_URL from '../../utils/api_url'
 import { 
 	getDataFromStringPattern, 
-	dataURLtoBlob, 
-	replaceUndefinedValueWithEmptyString 
+	dataURLtoBlob 
 } from '../../utils/helperFunctions'
 import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
 import ModalUploadProgress from './components/ModalUploadProgress'
@@ -349,9 +348,7 @@ class RecordPage extends Component {
 				})
 				.catch(err => console.log(err))
 		} else {
-			let newFormData = replaceUndefinedValueWithEmptyString(formData)
-			if (newFormData.file === '' && newFormData.filename) delete newFormData.file
-			this.submitFormFields(newFormData)
+			this.submitFormFields(formData)
 		}
 	}
 

@@ -10,8 +10,7 @@ import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
 import { 
 	dataURLtoBlob, 
 	replaceDefaultValueStringPatternWithData,
-	computeValueByFormula,
-	replaceUndefinedValueWithEmptyString
+	computeValueByFormula
 } from '../../utils/helperFunctions'
 import customFields from '../../utils/RJSFCustomFields'
 import API_URL from '../../utils/api_url'
@@ -207,8 +206,7 @@ class DataInput extends Component {
 				})
 				.catch(err => console.log(err))
 		} else {
-			const newFormData = replaceUndefinedValueWithEmptyString(formData)
-			this.submitFormFields(newFormData)
+			this.submitFormFields(formData)
 		}
 	}
 

@@ -63,38 +63,36 @@ export default class CollectionPage extends Component {
                   record.map((r,i) => (
                     <tr key={i}>
                       {
-                        // show column that exists in 'column' variable
-                        // sort the order of the filtered column based on order value in tableViewConfig
-                        Object.keys(r).filter(key => column.indexOf(key) >= 0)
-                          .sort((a, b) => tableViewConfig[a].order - tableViewConfig[b].order)
-                          .map((filteredKey, idx) => {
-                            let content = typeof(r[filteredKey]) === 'string' ? r[filteredKey] : JSON.stringify(r[filteredKey])
-                            const config = tableViewConfig[filteredKey]
+                        // show only columns that exists in 'column' variable
+                        column.map((col, idx) => {
+                          const value = r[col]
+                          let content = typeof(value) === 'string' ? value : JSON.stringify(value)
+                          const config = tableViewConfig[col]
 
-                            // replace with icon if specified on valueToIcon field
-                            if (config.valueToIcon && Object.keys(config.valueToIcon).indexOf(content) > -1) {
-                              content = <i className="material-icons">{config.valueToIcon[content]}</i>
-                            } else {
-                              // limit characters up to maxLength if field showSummary true
-                              content = config.showSummary && content.length > config.maxLength ? 
-                                content.slice(0, tableViewConfig[filteredKey].maxLength) + ' ...' :
-                                content
-                            }
+                          // replace with icon if specified on valueToIcon field
+                          if (config.valueToIcon && Object.keys(config.valueToIcon).indexOf(content) > -1) {
+                            content = <i className="material-icons">{config.valueToIcon[content]}</i>
+                          } else {
+                            // limit characters up to maxLength if field showSummary true
+                            content = config.showSummary && content.length > config.maxLength ? 
+                              content.slice(0, config.maxLength) + ' ...' :
+                              content
+                          }
 
-                            return <td key={idx}>{content}</td>
-                          })
-                      }
-                      {
-                        r.filename &&
-                        r.contentType &&
-                        column.indexOf('file') > -1 &&
-                        <td>
-                          <span
-                            className="download-link"
-                            onClick={e => this.downloadFile(r.filename, r.contentType, r.size)}>
-                            {r.filename.slice(33)}
-                          </span>
-                        </td>
+                          if (col === 'file' && r.filename && r.contentType) {
+                            return (
+                              <td>
+                                <span
+                                  className="download-link"
+                                  onClick={e => this.downloadFile(r.filename, r.contentType, r.size)}>
+                                  {r.filename.slice(33)}
+                                </span>
+                              </td>
+                            )
+                          }
+
+                          return <td key={idx}>{content}</td>
+                        })
                       }
                       <td className="cell-action-btn-container">
                         <span className="waves-effect waves-light btn-floating orange" 
@@ -107,7 +105,7 @@ export default class CollectionPage extends Component {
                         </span>
                       </td>
                     </tr>
-                  )) 
+                  ))
                 }
               </tbody>
             </table>
