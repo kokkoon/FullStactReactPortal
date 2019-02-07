@@ -120,23 +120,26 @@ class RecordPage extends Component {
 
 			if (value.type !== 'array') {
 				const dataCheck = getDataFromStringPattern(value.default)
-				const dataPath = dataCheck.data.split('.')
-				const categoryGroup = dataPath[0]
-				const category = dataPath[1]
-				const field = dataPath[2]
-				const recordId = dataPath[3]
 
-				if (dataCheck.isPatternExist && categoryGroup === 'collection' && field === 'key') {
-					let enum_array = []
+				if (dataCheck.isPatternExist) {
+					const dataPath = dataCheck.data.split('.')
+					const categoryGroup = dataPath[0]
+					const category = dataPath[1]
+					const field = dataPath[2]
+					const recordId = dataPath[3]
+					
+					if (categoryGroup === 'collection' && field === 'key') {
+						let enum_array = []
 
-					enum_array = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
-						.then(res => res.data.enum.map(item => item.field))
+						enum_array = await axios.get(`${API_URL}/record?id=${category}&record_id=${recordId}`)
+							.then(res => res.data.enum.map(item => item.field))
 
-					newProperty = {
-						[key] : {
-							...value,
-							default: enum_array[0],
-							enum: enum_array
+						newProperty = {
+							[key] : {
+								...value,
+								default: enum_array[0],
+								enum: enum_array
+							}
 						}
 					}
 				}
