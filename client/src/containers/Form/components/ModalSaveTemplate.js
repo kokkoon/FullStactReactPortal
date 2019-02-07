@@ -12,14 +12,13 @@ class ModalSaveTemplate extends Component {
 
 		this.state = {
 			templateName: '',
-			hasTemplateNameChanged: false,
 			isTemplateNameOK: false
 		}
 	}
 
 	render () {
 		const { hasFormFieldsChanged } = this.props
-		const { templateName, hasTemplateNameChanged, isTemplateNameOK } = this.state
+		const { templateName, isTemplateNameOK } = this.state
 
 		return (
 			<div id="modal-save-template" className="modal">
@@ -36,7 +35,7 @@ class ModalSaveTemplate extends Component {
 						</div>
 						<div className="col s2 right-align">
 							<span className="waves-effect waves-light btn btn-check-template-name tooltipped"
-							 disabled={isEmptyString(templateName) || !hasTemplateNameChanged}
+							 disabled={isEmptyString(templateName)}
 							 data-position="right"
 							 data-tooltip="Check if name existed"
 	        		 onClick={this.handleCheckTemplateName}
@@ -69,8 +68,7 @@ class ModalSaveTemplate extends Component {
 
 	handleChangeTemplateName = ({ target }) => {
 		this.setState({ 
-			templateName: target.value, 
-			hasTemplateNameChanged: true 
+			templateName: target.value
 		})
 	}
 
