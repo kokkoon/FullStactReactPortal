@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import M from 'materialize-css/dist/js/materialize.min.js'
 
 import API_URL from '../../../utils/api_url'
 import './ModalChooseTemplate.css'

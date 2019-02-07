@@ -17,7 +17,6 @@ class ModalSaveTemplate extends Component {
 	}
 
 	render () {
-		const { hasFormFieldsChanged } = this.props
 		const { templateName, isTemplateNameOK } = this.state
 
 		return (
@@ -29,7 +28,6 @@ class ModalSaveTemplate extends Component {
 							<input type="text" 
 								id="template_name"
 								value={templateName} 
-								defaultValue={this.props.collectionDisplayName} 
 								onChange={this.handleChangeTemplateName} />
 							<label htmlFor="template_name">Template name</label>
 						</div>
@@ -80,7 +78,6 @@ class ModalSaveTemplate extends Component {
 			.then(res => {
 				const { isFound, isCurrent } = res.data
 				let message, icon, isTemplateNameOK
-				let hasFormFieldsChanged = false
 
 				if (isFound) {
 					if (isCurrent) {

@@ -46,7 +46,7 @@ class FormDesigner extends Component {
 							}}
 						>
 							<div className="control-item-preview">
-								<select className="browser-default control-item-preview" styledisabled/>
+								<select className="browser-default control-item-preview" disabled/>
 							</div>
 						</span>
 					</div>
@@ -118,8 +118,8 @@ class FormDesigner extends Component {
 						<span className="zero-margin">Control properties</span>
 					</div>
 					{
-						properties.map(item => (
-							<div className="control-property">
+						properties.map((item, index) => (
+							<div key={index} className="control-property">
 								<span className="property-label">{item} </span> :
 								<input type="text" className="property-input browser-default" />
 							</div>

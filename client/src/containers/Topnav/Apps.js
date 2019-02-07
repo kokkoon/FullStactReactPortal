@@ -18,8 +18,8 @@ class Apps extends Component {
     return (
       <ul id="dropdown-apps" className="dropdown-content">
         {
-          appList.map(app => (
-            <span>
+          appList.map((app, index) => (
+            <span key={index}>
             <li>
               <Link to={app.link}>
                 <i className="material-icons center">{app.icon}</i>

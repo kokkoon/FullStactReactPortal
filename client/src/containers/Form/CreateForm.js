@@ -686,11 +686,13 @@ class CreateForm extends Component {
 		     				<div className="edit-view-help-text">
 			     				{
 			     					editViewHelpText.split('\n').map((sentence, index) =>
-			     						<p className="text-hint" style={{fontWeight: index === 0 ? 'bold' : ''}}>{sentence}</p>
+			     						<p key={index} className="text-hint" style={{fontWeight: index === 0 ? 'bold' : ''}}>{sentence}</p>
 			     					)
 			     				}
 			     				{
-			     					<p>*check the icon names reference <a href={linkToIconNameReference} target="_blank">here</a></p>
+			     					<p>*check the icon names reference 
+			     						<a href={linkToIconNameReference} target="_blank" rel="noopener noreferrer"> here</a>
+			     					</p>
 			     				}
 			     				<pre>{editViewJSONExample_string}</pre>
 		     				</div>
@@ -885,7 +887,7 @@ class CreateForm extends Component {
 				} = res.data
 
 				input.collectionName = collectionDisplayName
-				input.collectionDescription = collectionDescription
+				input.collectionDescription = collectionDescription ? collectionDescription : ''
 
 				// insert field to arrayFields
 				const arrayFields = fields.reduce((array, field) => {
