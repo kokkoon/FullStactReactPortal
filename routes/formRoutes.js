@@ -214,8 +214,8 @@ module.exports = (app) => {
           }
         }
       } 
-      else if (!isAllowAttachment && tableViewConfig.attachment) {
-        delete tableViewConfig.attachment
+      else if (!isAllowAttachment && tableViewConfig.file) {
+        delete tableViewConfig.file
       }
 
       formData = {...formData, tableViewConfig}
