@@ -188,17 +188,19 @@ class CreateForm extends Component {
 			    </span>
         </div>
       	{ this.renderCardAddNewField() }
-        { this.renderModalFormEvent() }
-        { this.renderModalEditView() }
-        { this.renderModalEditForm() }
-        { this.renderModalPermission() }
-        <ModalSaveTemplate 
-        	collectionDisplayName={collectionDisplayName}
-        	hasFormFieldsChanged={hasFormFieldsChanged}
-        	formStructure={formStructure}
-        	fields={fields}
-        	formId={formId}
-        />
+        { formId && this.renderModalFormEvent() }
+        { formId && this.renderModalEditView() }
+        { formId && this.renderModalEditForm() }
+        { formId && this.renderModalPermission() }
+        { formId && 
+        	<ModalSaveTemplate 
+	        	collectionDisplayName={collectionDisplayName}
+	        	hasFormFieldsChanged={hasFormFieldsChanged}
+	        	formStructure={formStructure}
+	        	fields={fields}
+	        	formId={formId}
+	        />
+	      }
         <ModalChooseTemplate 
         	handleClickOKChooseTemplate={this.handleClickOKChooseTemplate}
         />
