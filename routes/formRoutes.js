@@ -402,4 +402,42 @@ module.exports = (app) => {
       }
     })
   })
+
+  // check if template name already existed in database
+  app.get('/api/check-template-name', (req, res) => {
+    const collection = db.collection('template')
+    const url = URL.parse(req.url, true)
+    const name = url.query.name.toLowerCase()
+    const formId = url.query.form_id
+
+    collection.findOne({ name }, (err, template) => {
+      if (!err) {
+        if (template == null) {
+          res.send({ isFound: false })
+        } else {
+          if (template.formId === formId) {
+            res.send({ isFound: true, isCurrent: true })
+          } else {
+            res.send({ isFound: true, isCurrent: false })
+          }
+        }
+      }
+    })
+  })
+
+  // save form fields and form structure to template collection
+  app.post('/api/save-template', (req, res) => {
+    const collection = db.collection('template')
+    const name = req.body.name.toLowerCase()
+    const updateField = { $set: req.body }
+    const options = { upsert: true } // create new document if doesn't find document with queried name
+
+    collection.updateOne({ name }, updateField, options, (err, result) => {
+      if (!err) {
+        res.send({ message: 'template saved'})
+      } else {
+        res.send({ message: 'fail to save template'})
+      }
+    })
+  })
 }

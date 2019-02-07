@@ -8,6 +8,7 @@ import queryString from 'query-string'
 
 import FormSchemaDesign from './FormSchemaDesign'
 import FormDesigner from './FormDesigner'
+import ModalSaveTemplate from './components/ModalSaveTemplate'
 import { stringifyPrettyJSON, isEmptyString, openCloseModal } from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
@@ -68,15 +69,16 @@ class CreateForm extends Component {
 	render() {
 		const { collectionName: inputCollectionName, collectionDescription } = this.state.input
 		const {
+			formId,
 			hasCollectionNameChanged,
-			collectionDisplayName,
 			hasFormFieldsChanged,
 			disableSubmitButton,
 			isCollectionNameOK,
 			isAllowAttachment,
 			collectionName,
-			formStructure, 
-			formId,
+			collectionDisplayName,
+			formStructure,
+			fields,
 			input
 		} = this.state
 		// console.log('fields = ', this.state.fields)
@@ -106,6 +108,9 @@ class CreateForm extends Component {
 					    </span>
 					    <span className="waves-effect waves-light btn" onClick={e => openCloseModal('modal-permission', 'open')}>
 					    	Permission
+					    </span>
+					    <span className="waves-effect waves-light btn" onClick={this.handleClickSaveAsTemplate}>
+					    	Save as Template
 					    </span>
 			    	</Fragment>
 			    )
@@ -185,6 +190,13 @@ class CreateForm extends Component {
         { this.renderModalEditView() }
         { this.renderModalEditForm() }
         { this.renderModalPermission() }
+        <ModalSaveTemplate 
+        	collectionDisplayName={collectionDisplayName}
+        	hasFormFieldsChanged={hasFormFieldsChanged}
+        	formStructure={formStructure}
+        	fields={fields}
+        	formId={formId}
+        />
         { this.renderModalChooseSourceDefaultValue() }
       </div>
 		)
