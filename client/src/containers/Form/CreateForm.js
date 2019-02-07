@@ -8,10 +8,14 @@ import queryString from 'query-string'
 
 import FormSchemaDesign from './FormSchemaDesign'
 import FormDesigner from './FormDesigner'
-import * as helper from '../../utils/helperFunctions'
+import { stringifyPrettyJSON, isEmptyString, openCloseModal } from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
-import { editViewHelpText, editViewJSONExample_string, linkToIconNameReference } from './editViewHelpText'
+import { 
+	editViewHelpText, 
+	editViewJSONExample_string, 
+	linkToIconNameReference 
+} from './editViewHelpText'
 import './CreateForm.css'
 
 class CreateForm extends Component {
@@ -33,6 +37,7 @@ class CreateForm extends Component {
 				arrayField: ''
 			},
 			collectionName: '',
+			collectionDisplayName: '',
 			isNewField: true,
 			currentIndex: -1,
 			fields: [], // see fields data structure at the bottom of the code
@@ -96,10 +101,10 @@ class CreateForm extends Component {
 					    <span className="waves-effect waves-light btn" onClick={this.openModalEditView}>
 					    	Edit View
 					    </span>
-					    <span className="waves-effect waves-light btn" onClick={e => this.openCloseModal('modal-edit-form', 'open')}>
+					    <span className="waves-effect waves-light btn" onClick={e => openCloseModal('modal-edit-form', 'open')}>
 					    	Edit Form
 					    </span>
-					    <span className="waves-effect waves-light btn" onClick={e => this.openCloseModal('modal-permission', 'open')}>
+					    <span className="waves-effect waves-light btn" onClick={e => openCloseModal('modal-permission', 'open')}>
 					    	Permission
 					    </span>
 			    	</Fragment>
@@ -115,9 +120,9 @@ class CreateForm extends Component {
 							<input id="collection_display_name" type="text" value={inputCollectionName} onChange={event => this.handleInputChange('collection_name', event)}/>
 						</div>
 						<span className="waves-effect waves-light btn btn-check-collection-name tooltipped"
-							 disabled={helper.isEmptyString(inputCollectionName) || !hasCollectionNameChanged}
+							 disabled={isEmptyString(inputCollectionName) || !hasCollectionNameChanged}
 							 data-position="right"
-							 data-tooltip="Check collection name"
+							 data-tooltip="Check if name existed"
 	        		 onClick={this.handleCheckCollectionName}>
 				    	Check
 				    </span>
@@ -590,7 +595,7 @@ class CreateForm extends Component {
 							}
 							</div>
 							<div className="col s3 zero-padding btn-connect-container">
-								<span className={helper.isEmptyString(apiUrlText) ? 'btn disabled' : 'waves-effect waves-light btn'} onClick={handleConnectApiURL}>
+								<span className={isEmptyString(apiUrlText) ? 'btn disabled' : 'waves-effect waves-light btn'} onClick={handleConnectApiURL}>
 									Connect
 								</span>
 							</div>
@@ -711,7 +716,7 @@ class CreateForm extends Component {
 
 	renderModalPermission () {
 		return (
-			<div className="modal" id="modal-permission">
+			<div id="modal-permission" className="modal">
 				<div className="modal-content">
 					<h5 className="center">Set permission (coming soon)</h5>
 				</div>
@@ -998,7 +1003,7 @@ class CreateForm extends Component {
 		axios.get(`${API_URL}/retrieve-table-view-config?form_id=${formId}`)
 		.then(response => {
 			const viewConfig = response.data.data
-			const viewConfigString = helper.stringifyPrettyJSON(viewConfig)
+			const viewConfigString = stringifyPrettyJSON(viewConfig)
 
 			this.setState({
 				viewConfig,
@@ -1254,7 +1259,7 @@ class CreateForm extends Component {
 		const newField = { fieldName, dataType, defaultValue }
 		let newFields = fields
 
-		if (isFieldOfArray && !helper.isEmptyString(arrayField)) {
+		if (isFieldOfArray && !isEmptyString(arrayField)) {
 			newFields = this.addNewArrayFieldItem(fields, arrayField, newField)
 		} else {
 			newFields = this.addNewFormFields(fields, newField)
@@ -2040,7 +2045,7 @@ class CreateForm extends Component {
 
 	setDefaultTableView = () => {
 		const { defaultViewConfig } = this.state
-		const viewConfigString = helper.stringifyPrettyJSON(defaultViewConfig)
+		const viewConfigString = stringifyPrettyJSON(defaultViewConfig)
 
 		this.setState({
 			viewConfig: defaultViewConfig,
@@ -2071,11 +2076,8 @@ class CreateForm extends Component {
 		this.setState({ viewConfig })
 	}
 
-	openCloseModal (id, action) {
-		let modal = document.getElementById(id)
-		let instance = M.Modal.getInstance(modal)
-		if (action === 'open') instance.open()
-		else if (action === 'close') instance.close()
+	handleClickSaveAsTemplate = () => {
+		openCloseModal('modal-save-template', 'open')
 	}
 }
 
