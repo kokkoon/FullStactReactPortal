@@ -1055,7 +1055,7 @@ class CreateForm extends Component {
 	handleToggleAllowAttachment = () => {
 		const { isAllowAttachment } = this.state
 		const fileField = {
-			fieldName: 'file',
+			fieldName: 'attachment',
 			dataType: 'file',
 			defaultValue: ''
 		}
