@@ -38,7 +38,7 @@ module.exports = (app) => {
   })
 
   // delete collection
-  app.get('/api/delete-collection', (req, res) => {
+  app.delete('/api/delete-collection', (req, res) => {
   	const url = URL.parse(req.url, true)
   	const name = url.query.name
   	const collection = db.collection(name)
