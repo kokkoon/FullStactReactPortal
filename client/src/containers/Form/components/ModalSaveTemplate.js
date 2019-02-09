@@ -74,17 +74,17 @@ class ModalSaveTemplate extends Component {
 
 				if (isFound) {
 					if (isCurrent) {
-						message = '<span> Name is the same with current template name</span>'
+						message = '<span>&nbsp;Name is the same with current template name</span>'
 						icon = '<i class="material-icons">check_circle</i>'
 						isTemplateNameOK = true
 					} else {
-						message = '<span> Name is already used, please change</span>'
+						message = '<span>&nbsp;Name is already used, please change</span>'
 						icon = '<i class="material-icons">highlight_off</i>'
 						isTemplateNameOK = false
 					}
 				} 
 				else { // not found
-					message = '<span> Name is unique, you can create new template with it</span>'
+					message = '<span>&nbsp;Name is unique, you can create new template with it</span>'
 					icon = '<i class="material-icons">check_circle</i>'
 					isTemplateNameOK = true
 				}

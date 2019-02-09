@@ -4,8 +4,8 @@ const URL = require('url')
 const mongodb = require('mongodb')
 const { isEmpty } = lodash
 
-const mongoUtil = require( '../services/mongoUtil' );
-const db = mongoUtil.getDB();
+const mongoUtil = require( '../services/mongoUtil' )
+const db = mongoUtil.getDB()
 
 module.exports = (app) => {	  
   app.use(cors());
