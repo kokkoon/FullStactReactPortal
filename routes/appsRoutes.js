@@ -1,7 +1,5 @@
-// const { isEmpty } = require('lodash')
 const cors = require('cors')
 const URL = require('url')
-const mongodb = require('mongodb')
 
 const mongoUtil = require( '../services/mongoUtil' )
 const db = mongoUtil.getDB()
