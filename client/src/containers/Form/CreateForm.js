@@ -1820,7 +1820,7 @@ class CreateForm extends Component {
 	}
 
 	handleCreateCollection = () => {
-		const { location } = this.props
+		const { location, user } = this.props
 		const { id } = queryString.parse(location.search)
 		const { 
 			formStructure, 
@@ -1843,6 +1843,7 @@ class CreateForm extends Component {
 		formStructure.title = collectionName
 
 		let data = {
+			appName: user.appName,
 			collectionName,
 			collectionDescription,
 			tableColumns, 

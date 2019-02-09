@@ -150,6 +150,7 @@ module.exports = (app) => {
   	const formId = url.query.id
     const collectionName = req.body.collectionName.toLowerCase()
     const { 
+      appName,
       collectionDescription, 
       tableColumns,
       isAllowAttachment,
@@ -159,6 +160,7 @@ module.exports = (app) => {
     } = req.body
 
     let formData = {
+      appName,
       icon: 'format_list_bulleted',
       collectionName,
       collectionDescription,
@@ -342,7 +344,10 @@ module.exports = (app) => {
   // get all type of forms in DB
   app.get('/api/collection-list', (req, res) => {
   	const formCollection = db.collection('form')
-  	formCollection.find({}).toArray((err, result) => {
+    const url = URL.parse(req.url, true)
+    const { appName } = url.query
+
+  	formCollection.find({appName}).toArray((err, result) => {
   		const data = result.map(r => {
   			return { 
   				id: r._id,

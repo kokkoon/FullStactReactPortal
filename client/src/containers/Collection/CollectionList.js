@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 
@@ -46,7 +47,9 @@ class CollectionList extends Component {
 	}
 
 	loadCollectionList () {
-		axios.get(`${API_URL}/collection-list`)
+		const { appName } = this.props.user
+		
+		axios.get(`${API_URL}/collection-list?appName=${appName}`)
 			.then(res => {
 				this.setState({
 					collectionList: res.data.data
@@ -56,4 +59,12 @@ class CollectionList extends Component {
 	}
 }
 
-export default CollectionList
+const mapStateToProps = ({ user }) => ({
+	user
+})
+
+const mapDispatchToProps = (dispatch) => ({
+
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(CollectionList)
