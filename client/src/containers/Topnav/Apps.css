@@ -20,3 +20,8 @@
 #dropdown-apps li a i {
 	width: 100%;
 }
+
+#dropdown-apps #btn-create-new-app {
+	margin-top: 20px;
+	width: 100%;
+}

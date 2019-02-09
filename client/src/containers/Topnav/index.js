@@ -86,18 +86,12 @@ class Topnav extends Component {
   }
 
   handleClickApps = () => {
-    this.setSidenavUser()
     this.setState({ selectedItem: 'apps' })
   }
 
   handleClickAdmin = () => {
     this.setSidenavAdmin()
     this.setState({ selectedItem: 'admin' })
-  }
-
-  setSidenavUser = () => {
-    this.props.setApp('default')
-    this.props.loadSidenavConfig('default')
   }
 
   setSidenavAdmin = () => {

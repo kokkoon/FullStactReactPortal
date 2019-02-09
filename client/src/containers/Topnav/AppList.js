@@ -3,6 +3,14 @@ module.exports = [
 		name: 'Dashboard',
 		link: '/dashboard',
 		icon: 'dashboard'
+	}
+]
+
+const example_list_apps = [
+	{
+		name: 'Dashboard',
+		link: '/dashboard',
+		icon: 'dashboard'
 	},
 	{
 		name: 'HR',

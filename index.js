@@ -37,6 +37,7 @@ mongoUtil.connectToDB(err => {
   require('./routes/sidenavRoutes')(app)
   require('./routes/externalCollectionRoutes')(app)
   require('./routes/eventApiRoutes')(app)
+  require('./routes/appsRoutes')(app)
   require('./routes/mongodbUtilityRoutes')(app)
 
   // init GridFS stream

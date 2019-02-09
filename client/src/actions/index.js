@@ -140,10 +140,10 @@ export const unsetSidenavFromConfig = () => {
 export const loadSidenavConfig = (appName) => {
 	return (dispatch) => {
 		axios.get(`/api/sidenav-config?app_name=${appName}`)
-		.then(res => {
-			dispatch({ type: TYPES.LOAD_SIDENAV_CONFIG, sidenavConfig: res.data.data })
-		})
-		.catch(e => console.error(e))
+			.then(res => {
+				dispatch({ type: TYPES.LOAD_SIDENAV_CONFIG, sidenavConfig: res.data.data })
+			})
+			.catch(e => console.error(e))
 	}
 }
 
