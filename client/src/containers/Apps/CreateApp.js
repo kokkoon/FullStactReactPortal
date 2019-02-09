@@ -162,10 +162,18 @@ class CreateApp extends Component {
   	const { appName, appIcon, selectedUsers } = this.state
   	const { user, history } = this.props
 
+  	const userData = {
+  		_id: user._id,
+  		firstname: user.firstname,
+  		lastname: user.lastname,
+  		role_id: user.role_id,
+  		level: user.level
+  	}
+
   	const body = {
   		name: appName,
   		icon: appIcon,
-  		owner: user,
+  		owner: userData,
   		userList: selectedUsers
   	}
 

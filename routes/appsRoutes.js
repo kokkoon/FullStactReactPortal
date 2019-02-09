@@ -1,7 +1,7 @@
 // const { isEmpty } = require('lodash')
 const cors = require('cors')
 const URL = require('url')
-// const mongodb = require('mongodb')
+const mongodb = require('mongodb')
 
 const mongoUtil = require( '../services/mongoUtil' )
 const db = mongoUtil.getDB()
@@ -57,12 +57,19 @@ module.exports = (app) => {
   // get all apps from collection
   app.get('/api/apps', (req, res) => {
     const collection = db.collection('app')
+    const user = req.user
+    const query = { 
+      $or: [
+        { 'owner._id': user._id.toString() }, 
+        { userList: { $elemMatch: { _id: user._id.toString() } } }
+      ]
+    }
 
-    collection.find({}).toArray((err, result) => {
+    collection.find(query).toArray((err, result) => {
       if (err) {
         res.statusCode(404).send()
       } else {
-        const apps = result.map(app => ({ 
+        const apps = result.map(app => ({
           name: app.name,
           icon: app.icon,
           link: `/apps/${app.name}`
