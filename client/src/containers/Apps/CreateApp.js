@@ -187,7 +187,7 @@ class CreateApp extends Component {
   			axios.post(`${API_URL}/sidenav-config`, sidenav)
 		  		.then(res2 => {
 		  			M.toast({ html: res.data.message })
-		  			// history.push('/')
+		  			window.location = '/'
 		  		})
   		})
   }
