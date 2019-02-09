@@ -1038,8 +1038,9 @@ class CreateForm extends Component {
 
 	loadCollectionList () {
 		const { setCollectionList } = this.props
+		const { appName } = this.props.user
 
-		axios.get(`${API_URL}/collection-list`)
+		axios.get(`${API_URL}/collection-list?appName=${appName}`)
 			.then(res => {
 				setCollectionList(res.data.data)
 			})
