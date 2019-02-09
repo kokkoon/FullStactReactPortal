@@ -5,7 +5,7 @@ const mongoUtil = require( '../services/mongoUtil' )
 const db = mongoUtil.getDB()
 
 module.exports = (app) => {	  
-  app.use(cors());
+  app.use(cors())
 
   // get all users from collection
   app.get('/api/users', (req, res) => {
