@@ -6,6 +6,7 @@ module.exports = [
 	}
 ]
 
+// eslint-disable-next-line
 const example_list_apps = [
 	{
 		name: 'Dashboard',

@@ -6,7 +6,7 @@ import M from 'materialize-css/dist/js/materialize.min.js'
 
 import initialSidenavConfig from '../Sidenav/initialSidenavConfig'
 import API_URL from '../../utils/api_url'
-import * as ACT from '../../actions'
+// import * as ACT from '../../actions'
 import './CreateApp.css'
 
 class CreateApp extends Component {
@@ -169,7 +169,7 @@ class CreateApp extends Component {
 
   handleClickCreateApp = () => {
   	const { appName, appIcon, selectedUsers } = this.state
-  	const { user, history } = this.props
+  	const { user } = this.props
 
   	const userData = {
   		_id: user._id,
