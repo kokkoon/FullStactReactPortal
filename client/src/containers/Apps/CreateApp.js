@@ -29,76 +29,85 @@ class CreateApp extends Component {
 
     return (
       <div className="create-app-page">
-        <h4>Create new app</h4>
-        <span className="btn btn-create-app right" 
-        	onClick={this.handleClickCreateApp}
-        	disabled={!isAppNameOk}>
-        	Create
-      	</span>
+        <h4 className="title">Create new app</h4>
         <div className="row">
         	<div className="col s3">
-		        <div className="input-field">
-		        	<input id="app-name" type="text" value={appName} onChange={this.handleChangeAppName} />
-		        	<label htmlFor="app-name">App name</label>
+        		<span className="app-preview-container">
+        			<span className="container">
+			        	<p><strong>App preview</strong></p>
+				    		<span id="app-preview">
+				    			<i className="material-icons">{appIcon}</i>
+				    			{appName}
+				    		</span>
+				    	</span>
+			    		<span className="btn btn-create-app" 
+			        	onClick={this.handleClickCreateApp}
+			        	disabled={!isAppNameOk}>
+			        	Create
+			      	</span>
+			    	</span>
+        	</div>
+        	<div className="col s7">
+        		<div className="col s6 left-align">
+			        <div className="input-field input-icon-container">
+			        	<input id="app-icon" type="text" value={appIcon} onChange={this.handleChangeAppIcon} />
+			        	<label htmlFor="app-icon">App icon</label>
+			        </div>
+			        <a href="https://materializecss.com/icons.html" 
+		        		target="_blank" 
+		        		rel="noopener noreferrer">
+		        		Icon name reference
+		        	</a>
 		        </div>
-        	</div>
-        	<div className="col s2">
-        		<span className="btn btn-check-app-name" onClick={this.handleClickCheckAppName}>Check</span>
-	        </div>
-        	<div className="col s3">
-		        <div className="input-field">
-		        	<input id="app-icon" type="text" value={appIcon} onChange={this.handleChangeAppIcon} />
-		        	<label htmlFor="app-icon">App icon</label>
-		        </div>
-        	</div>
-        	<div className="col s3">
-	        	<a href="https://materializecss.com/icons.html" 
-	        		target="_blank" 
-	        		rel="noopener noreferrer">
-	        		Icon name reference
-	        	</a>
-        	</div>
-      	</div>
-      	<div className="row left-align">
-      	<div className="col s3">
-      	<p><strong>Choose users</strong></p>
-      	{
-      		users.map((user, index) => (
-      			<div>
-	      			<label key={index}>
-				        <input type="checkbox" 
-				        	className="filled-in" 
-				        	checked={selectedUsers.includes(user)}
-				        	onChange={e => this.handleChangeSelectedUsers(user)}
-				        />
-				        <span>{user.firstname + ' ' + user.lastname}</span>
-				      </label>
-				    </div>
-      		))
-      	}
-      	</div>
-      	<div className="col s3">
-      		<p><strong>Selected users</strong></p>
-      		{
-      			selectedUsers.map(user => user.firstname + ' ' + user.lastname)
-      				.sort((a, b) => { // ignore case comparison
-      					const A = a.toUpperCase()
-      					const B = b.toUpperCase()
+	        	<div className="col s6">
+	        		<div className="col s9 zero-padding">
+				        <div className="input-field">
+				        	<input id="app-name" type="text" value={appName} onChange={this.handleChangeAppName} />
+				        	<label htmlFor="app-name">App name</label>
+				        </div>
+	        		</div>
+	        		<div className="col s3">
+				        <span className="btn btn-check-app-name" onClick={this.handleClickCheckAppName}>Check</span>
+	        		</div>
+	        	</div>
+		      	<div className="col s12 left-align">
+			      	<div className="col s6">
+			      	<p><strong>Choose users</strong></p>
+			      	{
+			      		users.map((user, index) => (
+			      			<div>
+				      			<label key={index}>
+							        <input type="checkbox" 
+							        	className="filled-in" 
+							        	checked={selectedUsers.includes(user)}
+							        	onChange={e => this.handleChangeSelectedUsers(user)}
+							        />
+							        <span>{user.firstname + ' ' + user.lastname}</span>
+							      </label>
+							    </div>
+			      		))
+			      	}
+			      	</div>
+			      	<div className="col s6">
+			      		<p><strong>Selected users</strong></p>
+			      		{
+			      			selectedUsers.map(user => user.firstname + ' ' + user.lastname)
+			      				.sort((a, b) => { // ignore case comparison
+			      					const A = a.toUpperCase()
+			      					const B = b.toUpperCase()
 
-      					if (A < B) return -1
-      					else if (A > B) return 1
-      					return 0
-      				})
-      				.map((userFullName, index) => (
-      					<p key={index} className="selected-users">{`${index + 1}. ${userFullName}`}</p>
-      				))
-      		}
-      	</div>
-      	<div className="col s3"></div>
-      	<div className="col s3">
-      		<p><strong>Apps preview</strong></p>
-      	</div>
-      	</div>
+			      					if (A < B) return -1
+			      					else if (A > B) return 1
+			      					return 0
+			      				})
+			      				.map((userFullName, index) => (
+			      					<p key={index} className="selected-users">{`${index + 1}. ${userFullName}`}</p>
+			      				))
+			      		}
+			      	</div>
+		      	</div>
+        	</div>
+	      </div>
       </div>
     )
   }
