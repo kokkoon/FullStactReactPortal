@@ -70,23 +70,23 @@ class CreateApp extends Component {
 				        <span className="btn btn-check-app-name" onClick={this.handleClickCheckAppName}>Check</span>
 	        		</div>
 	        	</div>
-		      	<div className="col s12 left-align">
+		      	<div className="col s12 left-align zero-padding">
 			      	<div className="col s6">
-			      	<p><strong>Choose users</strong></p>
-			      	{
-			      		users.map((user, index) => (
-			      			<div>
-				      			<label key={index}>
-							        <input type="checkbox" 
-							        	className="filled-in" 
-							        	checked={selectedUsers.includes(user)}
-							        	onChange={e => this.handleChangeSelectedUsers(user)}
-							        />
-							        <span>{user.firstname + ' ' + user.lastname}</span>
-							      </label>
-							    </div>
-			      		))
-			      	}
+				      	<p><strong>Choose users</strong></p>
+				      	{
+				      		users.map((user, index) => (
+				      			<div>
+					      			<label key={index}>
+								        <input type="checkbox" 
+								        	className="filled-in" 
+								        	checked={selectedUsers.includes(user)}
+								        	onChange={e => this.handleChangeSelectedUsers(user)}
+								        />
+								        <span>{user.firstname + ' ' + user.lastname}</span>
+								      </label>
+								    </div>
+				      		))
+				      	}
 			      	</div>
 			      	<div className="col s6">
 			      		<p><strong>Selected users</strong></p>
