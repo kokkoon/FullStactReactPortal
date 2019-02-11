@@ -10,6 +10,7 @@ import FormSchemaDesign from './FormSchemaDesign'
 import FormDesigner from './FormDesigner'
 import ModalSaveTemplate from './components/ModalSaveTemplate'
 import ModalChooseTemplate from './components/ModalChooseTemplate'
+import defaultValueSourceCategoryGroupItems from './defaultValueSourceCategoryGroup'
 import { stringifyPrettyJSON, isEmptyString, openCloseModal } from '../../utils/helperFunctions'
 import API_URL from '../../utils/api_url'
 import * as ACT from '../../actions'
@@ -769,9 +770,11 @@ class CreateForm extends Component {
 						    	onChange={this.handleChangeDefaultValueSourceCategoryGroup}
 						    >
 						      <option value="">Category Group</option>
-						      <option value="user">User data</option>
-						      <option value="collection">Collection data</option>
-						      <option value="date">Date system</option>
+						      {
+						      	defaultValueSourceCategoryGroupItems.map((categoryGroup, index) => (
+						      		<option key={index} value={categoryGroup.value}>{categoryGroup.text}</option>
+						      	))
+						      }
 						    </select>
 						  </div>
 						</div>
@@ -789,8 +792,8 @@ class CreateForm extends Component {
 						      <option value="">Category</option>
 						      {
 						      	defaultValueSourceCategories &&
-						      	defaultValueSourceCategories.map(category => (
-						      		<option value={category.id}>{category.name}</option>
+						      	defaultValueSourceCategories.map((category, index) => (
+						      		<option key={index} value={category.id}>{category.name}</option>
 						      	))
 						      }
 						    </select>
@@ -807,8 +810,8 @@ class CreateForm extends Component {
 						      <option value="">Field</option>
 						      {
 						      	defaultValueSourceCategoryFields &&
-						      	defaultValueSourceCategoryFields.map(field => (
-						      		<option value={field}>{field}</option>
+						      	defaultValueSourceCategoryFields.map((field, index) => (
+						      		<option key={index} value={field}>{field}</option>
 						      	))
 						      }
 						    </select>
@@ -825,8 +828,8 @@ class CreateForm extends Component {
 						      <option value="">Value</option>
 						      {
 						      	defaultValueSourceCategoryFieldValues &&
-						      	defaultValueSourceCategoryFieldValues.map(value => (
-						      		<option value={value.id}>{value.name}</option>
+						      	defaultValueSourceCategoryFieldValues.map((value, index) => (
+						      		<option key={index} value={value.id}>{value.name}</option>
 						      	))
 						      }
 						    </select>
@@ -1723,7 +1726,7 @@ class CreateForm extends Component {
 			const defaultValueSourceCategoryFields = Object.keys(user)
 			this.setState({ defaultValueSourceCategoryFields })
 		} 
-		else if (group === 'collection') {
+		else if (group === 'collection' || group === 'collection-lookup') {
 			const { collectionList } = this.props
 			this.setState({ defaultValueSourceCategories: collectionList })
 		}
@@ -1757,7 +1760,7 @@ class CreateForm extends Component {
 		const { defaultValueSourceCategoryGroup: categoryGroup } = this.state
 		let defaultValueSourceCategoryFields = []
 
-		if (categoryGroup === 'collection')
+		if (categoryGroup === 'collection' || categoryGroup === 'collection-lookup')
 		{
 			const { collectionList } = this.props
 			const index = collectionList.findIndex(collection => collection.id === category)
@@ -1787,6 +1790,28 @@ class CreateForm extends Component {
 					this.setState({ defaultValueSourceCategoryFieldValues: res.data })
 				})
 		}
+		else if (defaultValueSourceCategoryGroup === 'collection-lookup') {
+			const { fields } = this.state
+			let sourceFields = []
+
+			fields.forEach(field => {
+				if (field.dataType === 'array') {
+					field.items.forEach(item => {
+						sourceFields.push({ 
+							id: `${field.fieldName}:${item.fieldName}`, 
+							name: `${field.fieldName}.${item.fieldName}` 
+						})
+					})
+				} else {
+					sourceFields.push({ 
+						id: field.fieldName, 
+						name: field.fieldName 
+					})
+				}
+			})
+
+			this.setState({ defaultValueSourceCategoryFieldValues: sourceFields })
+		}
 	}
 
 	handleChangeDefaultValueSourceValue = ({ target }) => {
@@ -1794,7 +1819,7 @@ class CreateForm extends Component {
 	}
 
 	handleConfirmDefaultValueSource = () => {
-		const { 
+		const {
 			defaultValueSourceCategoryGroup: categoryGroup,
 			defaultValueSourceCategory: category,
 			defaultValueSourceField: field,
@@ -1812,6 +1837,9 @@ class CreateForm extends Component {
 		} 
 		else if (categoryGroup === 'date') {
 			defaultValue = `<<${categoryGroup}.${value}>>`
+		}
+		else if (categoryGroup === 'collection-lookup') {
+			defaultValue = `<<${categoryGroup}.${category}.${field}.${value}>>`
 		}
 
 		const newInput = { ...input, defaultValue }

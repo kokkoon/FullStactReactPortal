@@ -108,6 +108,25 @@ export function replaceDefaultValueStringPatternWithData (formStructure, user) {
               .then(res => res.data[field])
           }
         }
+        else if (categoryGroup === 'collection-lookup') {
+          const collection = dataPath[1]
+          const field = dataPath[2]
+          const parameterField = dataPath[3]
+
+          const lookup = {
+            collection,
+            field,
+            parameterField
+          }
+
+          newProperty = {
+            [key] : {
+              ...value,
+              lookup,
+              default: ''
+            }
+          }
+        }
         else if (categoryGroup === 'date') {
           const datePattern = dataPath[1].split(':')
 
@@ -143,7 +162,7 @@ export function replaceDefaultValueStringPatternWithData (formStructure, user) {
           }
         }
 
-        if (categoryGroup !== 'formula') {
+        if (categoryGroup !== 'formula' && categoryGroup !== 'collection-lookup') {
           newProperty = {
             [key] : {
               ...value,
@@ -280,6 +299,47 @@ export function computeValueByFormula (properties, formData) {
     }
   })
 
+  return newFormData
+}
+
+// lookup value based on value of other field
+export function lookUpValue (properties, formData, parentFieldName, parentFormData) {
+  let newFormData = {...formData}
+
+  Object.keys(properties).forEach(async (key) => {
+    if (properties[key].lookup) {
+      const { collection, field, parameterField } = properties[key].lookup
+
+      if (parentFormData !== undefined) { // pattern is in array field item
+        if (parameterField.indexOf(':') > 0) { // parsing array field item
+          const arrayRef = parameterField.split(':')
+          const arrayField = arrayRef[0]
+          const itemField = arrayRef[1]
+          
+          if (arrayField === parentFieldName) {
+            const lookupValue = formData[itemField]
+            newFormData[key] = await axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${itemField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
+              .then(res => res.data.data)
+          }
+        } else {
+          const lookupValue = parentFormData[parameterField]
+          newFormData[key] = await axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${parameterField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
+            .then(res => res.data.data)
+        }
+      } else {
+        const lookupValue = formData[parameterField]
+        newFormData[key] = await axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${parameterField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
+          .then(res => res.data.data)
+      }
+    }
+    else if (properties[key].type === 'array') {
+      if (formData[key] !== undefined) {
+        newFormData[key] = formData[key].map((item, childKey) => 
+          lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData)
+        )
+      }
+    }
+  })
   return newFormData
 }
 

@@ -476,4 +476,23 @@ module.exports = (app) => {
       }
     })
   })
+
+  // get(`${API_URL}/record?id=${collection}&lookup_field=${itemField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
+  app.get('/api/record-lookup', (req, res) => {
+    const url = URL.parse(req.url, true)
+    const { 
+      collection_id, 
+      lookup_field, 
+      lookup_value, 
+      lookup_target_field 
+    } = url.query
+    const collection = db.collection(collection_id)
+    const dbQuery = { [lookup_field] : lookup_value }
+
+    collection.findOne(dbQuery, (err, result) => {
+      if (!err && result != null) {
+        res.send({ data: result[lookup_target_field] })
+      }
+    })
+  })
 }

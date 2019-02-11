@@ -10,7 +10,8 @@ import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
 import { 
 	dataURLtoBlob, 
 	replaceDefaultValueStringPatternWithData,
-	computeValueByFormula
+	computeValueByFormula,
+	lookUpValue
 } from '../../utils/helperFunctions'
 import customFields from '../../utils/RJSFCustomFields'
 import API_URL from '../../utils/api_url'
@@ -125,7 +126,9 @@ class DataInput extends Component {
 		
 		this.updateTotalCell(properties)
 		
-		const newFormData = computeValueByFormula(properties, formData)
+		let newFormData = computeValueByFormula(properties, formData)
+		newFormData = lookUpValue(properties, newFormData)
+
 		this.setState({ formData: newFormData })
 	}
 
