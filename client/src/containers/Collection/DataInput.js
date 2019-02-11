@@ -123,13 +123,18 @@ class DataInput extends Component {
 
 	onChange = ({ schema, formData }) => {
 		const { properties } = schema
-		
-		this.updateTotalCell(properties)
-		
-		let newFormData = computeValueByFormula(properties, formData)
-		newFormData = lookUpValue(properties, newFormData)
+    
+    this.updateTotalCell(properties)
+    
+    lookUpValue(properties, formData).then(newFormData => {
+    	// const newFormData2 = computeValueByFormula(properties, newFormData)
+    	// this.setState({ formData: newFormData2 })
 
-		this.setState({ formData: newFormData })
+      setTimeout(() => {
+       const newFormData2 = computeValueByFormula(properties, newFormData)
+       this.setState({ formData: newFormData2 })
+      }, 2000)
+    })
 	}
 
 	updateTotalCell (properties) {

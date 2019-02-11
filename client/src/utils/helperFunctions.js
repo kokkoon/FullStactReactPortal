@@ -285,16 +285,19 @@ export function computeValueByFormula (properties, formData) {
         const operators = formula.replace(/\w/g, '').split('')
         const updatedFormula = operands.map(operand => operators.length > 0 ? operand + operators.shift() : operand).join('')
         newFormData[key] = mathCalculation(updatedFormula)
-      } 
+      }
       else if (properties[key].type === 'string'){
         newFormData[key] = operands.join(' ')
       }
     }
     else if (properties[key].type === 'array') {
       if (formData[key] !== undefined) {
-        newFormData[key] = formData[key].map((item, childKey) => 
-          computeValueByFormula(properties[key].items.properties, formData[key][childKey])
-        )
+        newFormData[key].forEach((item, childKey) => {
+          newFormData[key][childKey] = computeValueByFormula(properties[key].items.properties, formData[key][childKey])
+        })
+        // newFormData[key] = newFormData[key].map((item, childKey) => 
+        //   computeValueByFormula(properties[key].items.properties, newFormData[key][childKey])
+        // )
       }
     }
   })
@@ -334,13 +337,14 @@ export function lookUpValue (properties, formData, parentFieldName, parentFormDa
     }
     else if (properties[key].type === 'array') {
       if (formData[key] !== undefined) {
-        newFormData[key] = formData[key].map((item, childKey) => 
-          lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData)
-        )
+        newFormData[key].forEach(async (item, childKey) => {
+            newFormData[key][childKey] = await lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData).then(data => data)
+        })
       }
     }
   })
-  return newFormData
+
+  return Promise.resolve(newFormData)
 }
 
 // open and close materialize css modal with input id

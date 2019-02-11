@@ -128,12 +128,10 @@ const countValuesOnCells = (targetProperty, props) => {
 
 const handleClickAdd = (e, props) => {
 	props.onAddClick(e)
-
-	const delay = setInterval(() => {
+	setTimeout(() => {
 		// fix hidden dropdown select due to materializecss override script
 		// by adding 'browser-default' class
 		addBrowserDefaultClassOnSelectElements() 
-		clearInterval(delay)
 	}, 50)
 }
 
