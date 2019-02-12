@@ -123,7 +123,8 @@ export function replaceDefaultValueStringPatternWithData (formStructure, user) {
             [key] : {
               ...value,
               lookup,
-              default: ''
+              // default: ''
+              default: undefined
             }
           }
         }
@@ -303,10 +304,10 @@ export function computeValueByFormula (properties, formData) {
 }
 
 // lookup value based on value of other field
-export function lookUpValue (properties, formData, parentFieldName, parentFormData) {
+export async function lookUpValue (properties, formData, parentFieldName, parentFormData) {
   let newFormData = {...formData}
 
-  Object.keys(properties).forEach(async (key) => {
+  const promisedFormData = Object.keys(properties).reduce(async (lastPromise, key) => {
     if (properties[key].lookup) {
       const { collection, field, parameterField } = properties[key].lookup
 
@@ -335,14 +336,62 @@ export function lookUpValue (properties, formData, parentFieldName, parentFormDa
     else if (properties[key].type === 'array') {
       if (formData[key] !== undefined) {
         newFormData[key].forEach(async (item, childKey) => {
-            newFormData[key][childKey] = await lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData).then(data => data)
+            // newFormData[key][childKey] = await lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData).then(data => data)
+            newFormData[key][childKey] = await lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData)
         })
       }
     }
-  })
 
-  return Promise.resolve(newFormData)
+    return lastPromise.then(obj => ({
+      ...obj,
+      ...newFormData
+    }))
+  }, Promise.resolve({}))
+
+  return promisedFormData.then(data => data)
 }
+
+// lookup value based on value of other field
+// export async function lookUpValue (properties, formData, parentFieldName, parentFormData) {
+//   let newFormData = {...formData}
+
+//   Object.keys(properties).forEach(async (key) => {
+//     if (properties[key].lookup) {
+//       const { collection, field, parameterField } = properties[key].lookup
+
+//       if (parentFormData !== undefined) { // pattern is in array field item
+//         if (parameterField.indexOf(':') > 0) { // parsing array field item
+//           const arrayRef = parameterField.split(':')
+//           const arrayField = arrayRef[0]
+//           const itemField = arrayRef[1]
+          
+//           if (arrayField === parentFieldName) {
+//             const lookupValue = formData[itemField]
+//             newFormData[key] = await axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${itemField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
+//               .then(res => res.data.data)
+//           }
+//         } else {
+//           const lookupValue = parentFormData[parameterField]
+//           newFormData[key] = await axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${parameterField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
+//             .then(res => res.data.data)
+//         }
+//       } else {
+//         const lookupValue = formData[parameterField]
+//         newFormData[key] = await axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${parameterField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
+//           .then(res => res.data.data)
+//       }
+//     }
+//     else if (properties[key].type === 'array') {
+//       if (formData[key] !== undefined) {
+//         newFormData[key].forEach(async (item, childKey) => {
+//             // newFormData[key][childKey] = await lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData).then(data => data)
+//             newFormData[key][childKey] = await lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData)
+//         })
+//       }
+//     }
+//   })
+//   return await newFormData
+// }
 
 // open and close materialize css modal with input id
 export function openCloseModal (id, action) {
