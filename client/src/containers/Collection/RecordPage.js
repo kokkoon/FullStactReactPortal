@@ -10,7 +10,7 @@ import {
 	getDataFromStringPattern, 
 	dataURLtoBlob 
 } from '../../utils/helperFunctions'
-import { arrayFieldTemplate } from '../../utils/jsonSchemaFormUITemplate'
+import { arrayFieldTemplate, setCellWidthEqually } from '../../utils/jsonSchemaFormUITemplate'
 import ModalUploadProgress from './components/ModalUploadProgress'
 import './RecordPage.css'
 
@@ -44,10 +44,10 @@ class RecordPage extends Component {
 					</div>
 					<div className="json-form">
 						<Form 
+		        	formData={formData}
 							schema={formStructure}
 							uiSchema={uiSchema}
 		        	ArrayFieldTemplate={arrayFieldTemplate}
-		        	formData={formData}
 		        	onChange={this.onChange.bind(this)}
 		        	onSubmit={this.onSubmit.bind(this)}
 		        	onError={this.log("errors")} />
@@ -55,7 +55,7 @@ class RecordPage extends Component {
 	      </div>
 
 	      <ModalUploadProgress 
-	      	countUploadProgress={this.countUploadProgress} 
+	      	countUploadProgress={this.countUploadProgress}
 	      	clientUploadProgress={clientUploadProgress} />
 			</div>
 		)
@@ -85,6 +85,8 @@ class RecordPage extends Component {
 
 			if (this.isFoundSelectElement) clearInterval(delay)
 		}, 100)
+
+		
 	}
 
 	componentWillUnmount() {
@@ -109,6 +111,16 @@ class RecordPage extends Component {
 				promisedStructure.then(newFormStructure => {
 					this.setState({
 						formStructure: newFormStructure
+					})
+
+					// set equal width for array cells
+					const { properties} = newFormStructure
+					Object.keys(properties).forEach(key => {
+						console.log(key)
+						if (properties[key].type === 'array') {
+							const arrayLength = Object.keys(properties[key].items.properties).length
+							setCellWidthEqually(arrayLength)
+						}
 					})
 				})
 			})

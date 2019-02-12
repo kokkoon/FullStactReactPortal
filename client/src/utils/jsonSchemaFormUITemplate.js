@@ -156,7 +156,7 @@ const addBrowserDefaultClassOnSelectElements = () => {
 	}
 }
 
-const setCellWidthEqually = (numberOfItems) => {
+export const setCellWidthEqually = (numberOfItems) => {
 	const cells = document.getElementsByClassName('array-item-cell')
 	for (let i = 0; i < cells.length; i++) {
 		cells[i].style.width = `${100/numberOfItems}%`
