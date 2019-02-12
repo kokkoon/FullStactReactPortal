@@ -491,7 +491,10 @@ module.exports = (app) => {
 
     collection.findOne(dbQuery, (err, result) => {
       if (!err && result != null) {
-        res.send({ data: result[lookup_target_field] })
+        res.send({ 
+          data: result[lookup_target_field],
+          message: `Updated ${lookup_target_field} for ${lookup_field} ${lookup_value} = ${result[lookup_target_field]}`
+        })
       }
     })
   })

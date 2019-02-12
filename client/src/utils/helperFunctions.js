@@ -304,12 +304,12 @@ export function computeValueByFormula (properties, formData) {
 }
 
 // lookup value based on value of other field
-// array.reduce implementation
 export async function lookUpValue (properties, formData, parentFieldName, parentFormData) {
   let newFormData = {...formData}
 
   const promisedFormData = Object.keys(properties).reduce(async (lastPromise, key) => {
     if (properties[key].lookup) {
+
       const { collection, field, parameterField } = properties[key].lookup
 
       if (parentFormData !== undefined) { // pattern is in array field item
@@ -320,79 +320,57 @@ export async function lookUpValue (properties, formData, parentFieldName, parent
           
           if (arrayField === parentFieldName) {
             const lookupValue = formData[itemField]
-            newFormData[key] = await axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${itemField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
-              .then(res => res.data.data)
+            newFormData[key] = axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${itemField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
+              .then(res => {
+                M.toast({ html: res.data.message })
+                return res.data.data
+              })
           }
         } else {
           const lookupValue = parentFormData[parameterField]
-          newFormData[key] = await axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${parameterField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
-            .then(res => res.data.data)
+          newFormData[key] = axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${parameterField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
+            .then(res => {
+              M.toast({ html: res.data.message })
+              return res.data.data
+            })
         }
       } else {
         const lookupValue = formData[parameterField]
-        newFormData[key] = await axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${parameterField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
-          .then(res => res.data.data)
+        newFormData[key] = axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${parameterField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
+          .then(res => {
+            M.toast({ html: res.data.message })
+            return res.data.data
+          })
       }
     }
     else if (properties[key].type === 'array') {
       if (formData[key] !== undefined) {
         newFormData[key].forEach(async (item, childKey) => {
-            newFormData[key][childKey] = await lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData)
+          lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData).then(data => {
+            newFormData[key][childKey] = data
+          })
         })
       }
     }
 
     return lastPromise.then(obj => ({
       ...obj,
-      ...newFormData
+      [key]: newFormData[key]
     }))
+
   }, Promise.resolve({}))
 
-  return promisedFormData.then(data => data)
+  const promises = await promisedFormData.then(promises => promises)
+
+  return Promise.all(Object.values(promises))
+    .then(values => objectFromKeysAndValues(Object.keys(promises), values))
 }
 
-// lookup value based on value of other field
-// array.forEach implementation
-// export async function lookUpValue (properties, formData, parentFieldName, parentFormData) {
-//   let newFormData = {...formData}
-
-//   Object.keys(properties).forEach(async (key) => {
-//     if (properties[key].lookup) {
-//       const { collection, field, parameterField } = properties[key].lookup
-
-//       if (parentFormData !== undefined) { // pattern is in array field item
-//         if (parameterField.indexOf(':') > 0) { // parsing array field item
-//           const arrayRef = parameterField.split(':')
-//           const arrayField = arrayRef[0]
-//           const itemField = arrayRef[1]
-          
-//           if (arrayField === parentFieldName) {
-//             const lookupValue = formData[itemField]
-//             newFormData[key] = await axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${itemField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
-//               .then(res => res.data.data)
-//           }
-//         } else {
-//           const lookupValue = parentFormData[parameterField]
-//           newFormData[key] = await axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${parameterField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
-//             .then(res => res.data.data)
-//         }
-//       } else {
-//         const lookupValue = formData[parameterField]
-//         newFormData[key] = await axios.get(`${API_URL}/record-lookup?collection_id=${collection}&lookup_field=${parameterField}&lookup_value=${lookupValue}&lookup_target_field=${field}`)
-//           .then(res => res.data.data)
-//       }
-//     }
-//     else if (properties[key].type === 'array') {
-//       if (formData[key] !== undefined) {
-//         newFormData[key].forEach(async (item, childKey) => {
-//             // newFormData[key][childKey] = await lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData).then(data => data)
-//             newFormData[key][childKey] = await lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData)
-//         })
-//       }
-//     }
-//   })
-//   return await newFormData
-// }
+function objectFromKeysAndValues(keys, values) {
+  let result = {}
+  for (let i = 0; i < keys.length; i++) result[keys[i]] = values[i]
+  return result
+}
 
 // open and close materialize css modal with input id
 export function openCloseModal (id, action) {

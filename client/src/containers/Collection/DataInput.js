@@ -46,6 +46,10 @@ class DataInput extends Component {
 		return (
 			<div className="form-input">
 				<h5>Input form</h5>
+				<div className="right-align">
+					<span className="btn" onClick={this.updateLookUpValues} style={{marginRight: '5px'}}>update lookup values</span>
+					<span className="btn" onClick={this.recomputeValues}>recompute values</span>
+				</div>
 				<div className={`json-form ${formStyleTheme}`}>
 					<Form 
 						formData={formData}
@@ -53,8 +57,8 @@ class DataInput extends Component {
 						uiSchema={uiSchema}
 	        	ArrayFieldTemplate={arrayFieldTemplate}
 	        	fields={customFields}
-	        	onChange={this.onChange.bind(this)}
-	        	onSubmit={this.onSubmit.bind(this)}
+	        	onChange={this.onChange}
+	        	onSubmit={this.onSubmit}
 	        	onError={this.log("errors")} />
 	      </div>
 
@@ -121,22 +125,30 @@ class DataInput extends Component {
 	 
 	log = (type) => console.log.bind(console, type)
 
-	onChange = async ({ schema, formData }) => {
+	updateLookUpValues = () => {
+		const { formStructure, formData } = this.state
+		const { properties } = formStructure
+
+		lookUpValue(properties, formData).then(newFormData => {
+    	this.setState({ formData: newFormData })
+    })
+	}
+
+	recomputeValues = () => {
+		const { formStructure, formData } = this.state
+		const { properties } = formStructure
+
+		const newFormData = computeValueByFormula(properties, formData)
+  	this.setState({ formData: newFormData })
+	}
+
+	onChange = ({ schema, formData }) => {
 		const { properties } = schema
     
     this.updateTotalCell(properties)
-
-    const temp = await lookUpValue(properties, formData)
-    // debugger
-    const newFormData = computeValueByFormula(properties, temp)
-    this.setState({ formData: newFormData })
     
-    // lookUpValue(properties, formData).then(newFormData => {
-    // 	console.log('newFormData = ', newFormData)
-    // 	console.log('properties = ', properties)
-    // 	const newFormData2 = computeValueByFormula(properties, newFormData)
-    // 	this.setState({ formData: newFormData2 })
-    // })
+  	const newFormData = computeValueByFormula(properties, formData)
+  	this.setState({ formData: newFormData })
 	}
 
 	updateTotalCell (properties) {
