@@ -304,6 +304,7 @@ export function computeValueByFormula (properties, formData) {
 }
 
 // lookup value based on value of other field
+// array.reduce implementation
 export async function lookUpValue (properties, formData, parentFieldName, parentFormData) {
   let newFormData = {...formData}
 
@@ -336,7 +337,6 @@ export async function lookUpValue (properties, formData, parentFieldName, parent
     else if (properties[key].type === 'array') {
       if (formData[key] !== undefined) {
         newFormData[key].forEach(async (item, childKey) => {
-            // newFormData[key][childKey] = await lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData).then(data => data)
             newFormData[key][childKey] = await lookUpValue(properties[key].items.properties, formData[key][childKey], key, formData)
         })
       }
@@ -352,6 +352,7 @@ export async function lookUpValue (properties, formData, parentFieldName, parent
 }
 
 // lookup value based on value of other field
+// array.forEach implementation
 // export async function lookUpValue (properties, formData, parentFieldName, parentFormData) {
 //   let newFormData = {...formData}
 
