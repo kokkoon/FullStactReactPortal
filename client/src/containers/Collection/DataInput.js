@@ -127,13 +127,13 @@ class DataInput extends Component {
     this.updateTotalCell(properties)
     
     lookUpValue(properties, formData).then(newFormData => {
-    	// const newFormData2 = computeValueByFormula(properties, newFormData)
-    	// this.setState({ formData: newFormData2 })
+    	const newFormData2 = computeValueByFormula(properties, newFormData)
+    	this.setState({ formData: newFormData2 })
 
-      setTimeout(() => {
-       const newFormData2 = computeValueByFormula(properties, newFormData)
-       this.setState({ formData: newFormData2 })
-      }, 2000)
+      // setTimeout(() => {
+      //  const newFormData2 = computeValueByFormula(properties, newFormData)
+      //  this.setState({ formData: newFormData2 })
+      // }, 2000)
     })
 	}
 
