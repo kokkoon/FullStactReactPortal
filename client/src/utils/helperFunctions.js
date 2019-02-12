@@ -292,12 +292,9 @@ export function computeValueByFormula (properties, formData) {
     }
     else if (properties[key].type === 'array') {
       if (formData[key] !== undefined) {
-        newFormData[key].forEach((item, childKey) => {
-          newFormData[key][childKey] = computeValueByFormula(properties[key].items.properties, formData[key][childKey])
-        })
-        // newFormData[key] = newFormData[key].map((item, childKey) => 
-        //   computeValueByFormula(properties[key].items.properties, newFormData[key][childKey])
-        // )
+        newFormData[key] = newFormData[key].map((item, childKey) => 
+          computeValueByFormula(properties[key].items.properties, newFormData[key][childKey])
+        )
       }
     }
   })

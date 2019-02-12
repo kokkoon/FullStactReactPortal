@@ -94,7 +94,7 @@ const innerObjectFieldTemplate = (props) => {
 			<tr className="array-object-properties-row">
 			{
 				props.properties.map((property, idx2) => (
-					<td key={idx2} className={`${property.name}-cell`}>{property.content}</td>
+					<td key={idx2} className={`${property.name}-cell array-item-cell`}>{property.content}</td>
 				))
 			}
 			</tr>
@@ -128,10 +128,12 @@ const countValuesOnCells = (targetProperty, props) => {
 
 const handleClickAdd = (e, props) => {
 	props.onAddClick(e)
+	const propertiesLength = Object.keys(props.schema.items.properties).length
 	setTimeout(() => {
 		// fix hidden dropdown select due to materializecss override script
 		// by adding 'browser-default' class
 		addBrowserDefaultClassOnSelectElements() 
+		setCellWidthEqually(propertiesLength)
 	}, 50)
 }
 
@@ -151,5 +153,27 @@ const addBrowserDefaultClassOnSelectElements = () => {
 		for (let i = 0; i < selects.length; i++) {
 			selects[i].classList.add('browser-default')
 		}
+	}
+}
+
+const setCellWidthEqually = (numberOfItems) => {
+	const cells = document.getElementsByClassName('array-item-cell')
+	for (let i = 0; i < cells.length; i++) {
+		cells[i].style.width = `${100/numberOfItems}%`
+	}
+
+	const cells2 = document.getElementsByClassName('array-item-cell')
+	let minWidth
+	for (let i = 0; i < cells2.length; i++) {
+		if (i === 0) {
+			minWidth = cells2[i].offsetWidth
+		} else {
+			minWidth = Math.min(minWidth, cells2[i].offsetWidth)
+		}
+	}
+
+	for (let i = 0; i < cells2.length; i++) {
+		const input = cells2[i].getElementsByTagName('INPUT')[0]
+		if (input !== undefined) input.style.maxWidth = `${minWidth}px`
 	}
 }

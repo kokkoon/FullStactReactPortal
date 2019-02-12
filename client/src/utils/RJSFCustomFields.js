@@ -5,7 +5,7 @@ import ObjectField from "react-jsonschema-form/lib/components/fields/ObjectField
 export const CustomSchemaField = (props) => {
 	const column = props.uiSchema ? props.uiSchema.column ? `col s${props.uiSchema.column}` : '' : ''
 	return (
-		<div className={`${column}`} style={{padding: '0 10.5px'}}>
+		<div className={`${column}`} style={{padding: '0 5px'}}>
 			<SchemaField {...props} />
 		</div>
 	)
