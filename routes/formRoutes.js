@@ -131,8 +131,8 @@ module.exports = (app) => {
       if (result.length === 0) {
         res.send({ isFound: false, message: 'not found' })
       } else {
-        formCollection.findOne({_id: mongodb.ObjectID(id)}, (err, form) => {
-          if (err) console.error(err)
+        formCollection.findOne({_id: mongodb.ObjectID(id)}, (err2, form) => {
+          if (err2) console.error(err2)
           if (form !== null) {
             res.send({ isFound: true, currentName: form.collectionName, message: 'found' })
           } else {
@@ -472,7 +472,7 @@ module.exports = (app) => {
       if (!err && template != null) {
         res.send(template)
       } else {
-        res.statusCode(404).send({ message: 'template not found'})
+        res.status(404).send({ message: 'template not found'})
       }
     })
   })

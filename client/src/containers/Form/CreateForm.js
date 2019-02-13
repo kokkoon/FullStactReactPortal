@@ -1671,18 +1671,18 @@ class CreateForm extends Component {
 
 				if (isFound) {
 					if (currentName === collectionName.toLowerCase()) {
-						message = '<span>&nbsp;Name is the same with current collection name.</span>'
+						message = '<span>&nbsp;Name is the same with current collection name</span>'
 						icon = '<i class="material-icons">check_circle</i>'
 						isCollectionNameOK = true
 					} else {
-						message = '<span>&nbsp;Name is already used for other collection, please change.</span>'
+						message = '<span>&nbsp;Name is already used for other collection, please change</span>'
 						icon = '<i class="material-icons">highlight_off</i>'
 						isCollectionNameOK = false
 					}
 					
 				} 
 				else { // not found
-					message = '<span>&nbsp;Name is unique, you can create new collection with it.</span>'
+					message = '<span>&nbsp;Name is unique, you can create new collection with it</span>'
 					icon = '<i class="material-icons">check_circle</i>'
 					isCollectionNameOK = true
 					hasFormFieldsChanged = true
