@@ -1,40 +1,45 @@
-.create-app-page {
+.app-settings-page {
 	margin: 0 10vw;
 }
 
-.create-app-page > .title {
+.app-settings-page > .title {
 	margin-bottom: 20px;
 	text-align: center;
 }
 
-.create-app-page .app-preview-container {
+.app-settings-page .app-preview-container {
 	margin-top: -22px;
 	text-align: center;
 }
-.create-app-page .app-preview-container .container {
+
+.app-settings-page .app-preview-container .container {
 	width: 100%;
 	display: block;
 }
 
-.create-app-page .btn-create-app {
-	margin-top: 20px;
+.app-settings-page .btn-update-container {
+	margin-top: 15px;
+}
+
+.app-settings-page .btn-action-app {
+	margin-top: 5px;
 	display: inline-block;
 	width: 90px;
 }
 
-.create-app-page .btn-check-app-name {
+.app-settings-page .btn-check-app-name {
 	margin-top: 22px;
 }
 
-.create-app-page .selected-users {
+.app-settings-page .selected-users {
 	margin: 0;
 }
 
-.create-app-page .input-field {
+.app-settings-page .input-field {
 	margin-bottom: 0 !important;
 }
 
-.create-app-page #app-preview {
+.app-settings-page #app-preview {
 	display: inline-block;
 	width: 80px;
 	height: 62px;
@@ -45,6 +50,6 @@
 	color: #009688;
 }
 
-.create-app-page #app-preview > i {
+.app-settings-page #app-preview > i {
 	width: 100%;
 }

@@ -33,6 +33,12 @@ module.exports = {
             route: "/sidenav-setup",
             icon: "settings",
             text: "Sidenav"
+        },
+        {
+            name: "app-settings",
+            route: "/app-settings",
+            icon: "computer",
+            text: "App"
         }
       ]
     }

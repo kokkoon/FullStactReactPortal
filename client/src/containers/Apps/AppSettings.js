@@ -4,32 +4,37 @@ import { isEqual } from 'lodash'
 import axios from 'axios'
 import M from 'materialize-css/dist/js/materialize.min.js'
 
-import initialSidenavConfig from '../Sidenav/initialSidenavConfig'
 import API_URL from '../../utils/api_url'
-// import * as ACT from '../../actions'
-import './CreateApp.css'
+import * as ACT from '../../actions'
+import { openCloseModal } from '../../utils/helperFunctions'
+import ModalConfirmation from '../../components/ModalConfirmation'
+import './AppSettings.css'
 
-class CreateApp extends Component {
+class AppSettings extends Component {
 	state = {
-		appName: '',
-		appIcon: '',
-		users: [],
-		selectedUsers: [],
-		isAppNameOk: false
+    appName: '',
+    appIcon: '',
+    users: [],
+    selectedUsers: [],
+    isAppNameOk: false,
+    isAppLoaded: false,
+    isAppNameChanged: false
 	}
 
   render() {
   	const { 
-  		appName, 
-  		appIcon, 
-  		users, 
-  		selectedUsers, 
-  		isAppNameOk 
+      appName, 
+      appIcon, 
+      users, 
+      selectedUsers, 
+      isAppNameOk,
+      isAppLoaded,
+      isAppNameChanged
   	} = this.state
 
     return (
-      <div className="create-app-page">
-        <h4 className="title">Create new app</h4>
+      <div className="app-settings-page">
+        <h4 className="title">App settings</h4>
         <div className="row">
         	<div className="col s3">
         		<span className="app-preview-container">
@@ -40,11 +45,20 @@ class CreateApp extends Component {
 				    			{appName}
 				    		</span>
 				    	</span>
-			    		<span className="btn btn-create-app" 
-			        	onClick={this.handleClickCreateApp}
-			        	disabled={!isAppNameOk}>
-			        	Create
-			      	</span>
+              <div className="btn-update-container">
+  			    		<span className="btn btn-action-app" 
+  			        	onClick={this.handleClickUpdateApp}
+  			        	disabled={!isAppNameOk}>
+  			        	Update
+  			      	</span>
+              </div>
+              <div>
+                <span className="btn btn-action-app red" 
+                  disabled={!isAppLoaded}
+                  onClick={this.handleClickDeleteApp}>
+                  Delete
+                </span>
+              </div>
 			    	</span>
         	</div>
         	<div className="col s7">
@@ -67,7 +81,11 @@ class CreateApp extends Component {
 				        </div>
 	        		</div>
 	        		<div className="col s3">
-				        <span className="btn btn-check-app-name" onClick={this.handleClickCheckAppName}>Check</span>
+				        <span className="btn btn-check-app-name" 
+                  onClick={this.handleClickCheckAppName}
+                  disabled={!isAppNameChanged}>
+                  Check
+                </span>
 	        		</div>
 	        	</div>
 		      	<div className="col s12 left-align zero-padding">
@@ -78,7 +96,7 @@ class CreateApp extends Component {
 				      			<div key={index}>
 					      			<label>
 								        <input type="checkbox" 
-								        	className="filled-in" 
+								        	className="filled-in browser-default" 
 								        	checked={selectedUsers.includes(user)}
 								        	onChange={e => this.handleChangeSelectedUsers(user)}
 								        />
@@ -108,12 +126,47 @@ class CreateApp extends Component {
 		      	</div>
         	</div>
 	      </div>
+
+        <ModalConfirmation 
+          id='modal-confirm-delete-app'
+          contentClass='center'
+          title='Delete app'
+          text='Are you sure you want to delete this app?'
+          showOkButton={true}
+          showCancelButton={true}
+          onConfirm={this.handleConfirmDeleteApp}
+        />
       </div>
     )
   }
 
   componentWillMount () {
-  	this.loadUsers()
+    this.loadAppSettings()
+    this.loadUsers()
+  }
+
+  componentDidMount () {
+    M.AutoInit()
+  }
+
+  loadAppSettings () {
+    const { user } = this.props
+    const { appName } = user
+
+    axios.get(`${API_URL}/app?app_name=${appName}`)
+      .then(res => {
+        const { app } = res.data
+        const { _id, name, icon, userList } = app
+
+        this.setState({
+          appId: _id,
+          appName: name,
+          appIcon: icon,
+          selectedUsers: userList,
+          isAppNameOk: true,
+          isAppLoaded: true
+        })
+      })
   }
 
   loadUsers () {
@@ -125,7 +178,11 @@ class CreateApp extends Component {
   }
 
   handleChangeAppName = ({ target }) => {
-  	this.setState({ appName: target.value })
+  	this.setState({ 
+      appName: target.value,
+      isAppNameOk: false,
+      isAppNameChanged: true
+    })
   }
 
   handleChangeAppIcon = ({ target }) => {
@@ -133,11 +190,11 @@ class CreateApp extends Component {
   }
 
   handleClickCheckAppName = () => {
-    const { appName } = this.state
+  	const { appName, appId } = this.state
 
-    axios.get(`${API_URL}/check-app-name?name=${appName}`)
-      .then(res => {
-        const { isFound, currentName } = res.data
+  	axios.get(`${API_URL}/check-app-name?name=${appName}&id=${appId}`)
+  		.then(res => {
+  			const { isFound, currentName } = res.data
         let message, icon = ''
         let isAppNameOk = false
 
@@ -155,8 +212,8 @@ class CreateApp extends Component {
         }
 
         M.toast({ html: icon + message })
-        this.setState({ isAppNameOk })
-      })
+  			this.setState({ isAppNameOk, isAppNameChanged: false })
+  		})
   }
 
   handleChangeSelectedUsers = (user) => {
@@ -173,38 +230,42 @@ class CreateApp extends Component {
   	this.setState({ selectedUsers: newSelectedUsers })
   }
 
-  handleClickCreateApp = () => {
-  	const { appName, appIcon, selectedUsers } = this.state
-  	const { user } = this.props
-
-  	const userData = {
-  		_id: user._id,
-  		firstname: user.firstname,
-  		lastname: user.lastname,
-  		role_id: user.role_id,
-  		level: user.level
-  	}
+  handleClickUpdateApp = () => {
+    const { 
+      appId,
+      appName, 
+      appIcon,
+      selectedUsers 
+    } = this.state
 
   	const body = {
   		name: appName,
   		icon: appIcon,
-  		owner: userData,
   		userList: selectedUsers
   	}
 
-  	const sidenav = {
-  		appName,
-  		groupLinks: initialSidenavConfig.groupLinks
-  	}
-
-  	axios.post(`${API_URL}/create-app`, body)
+  	axios.patch(`${API_URL}/update-app?id=${appId}`, body)
   		.then(res => {
-  			axios.post(`${API_URL}/sidenav-config`, sidenav)
-		  		.then(res2 => {
-		  			M.toast({ html: res.data.message })
-		  			window.location = '/'
-		  		})
+  			M.toast({ html: res.data.message })
+  			window.location = '/'
   		})
+  }
+
+  handleClickDeleteApp = () => {
+    openCloseModal('modal-confirm-delete-app', 'open')
+  }
+
+  handleConfirmDeleteApp = () => {
+    const { appId } = this.state
+    const { setApp, loadSidenavConfig } = this.props
+
+    axios.delete(`${API_URL}/app?id=${appId}`)
+      .then(res => {
+        M.toast({ html: res.data.message })
+        setApp('default')
+        loadSidenavConfig('default')
+        window.location = '/'
+      })
   }
 }
 
@@ -213,7 +274,8 @@ const mapStateToProps = ({ user }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-
+  setApp: (appName) => dispatch(ACT.setApp(appName)),
+  loadSidenavConfig: (appName) => dispatch(ACT.loadSidenavConfig(appName))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateApp)
+export default connect(mapStateToProps, mapDispatchToProps)(AppSettings)
